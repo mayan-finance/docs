@@ -1,0 +1,9 @@
+---
+title: "Relayer Fees"
+---
+
+Relayer fee is the fee that the user pays to relayers so they can pay for the gas on behalf of user and perform transactions.
+
+To make a cross-chain swap have we have to commit 3 transactions: The first transaction is the instruction to send tokens along with the necessary info for the swap using [Swap Bridge](/architecture/wh-swap), this transaction will be initiated by user and therefore user pays the transaction fee with the chain native token. Then relayers get the signed message from Wormhole guardians and Register the swap for auction on Solana and the last transaction is the redeem transaction which sends the output tokens to user's wallet.
+
+Users have to pay relayer fees so relayers commit the register and redeem transactions on behalf of users, otherwise they have to do it manually.
