@@ -1,0 +1,38 @@
+---
+title: "WH Swap"
+---
+
+WH Swap Bridge is a permissionless, open-source bridge built on Wormhole primitives and developed by the Mayan team to facilitate cross-chain, one-click token swaps.
+
+The Token Bridge, a widely recognized component of the Wormhole ecosystem, facilitates cross-chain token transfers using a mint-and-burn mechanism. To expand its functionality, we leveraged Wormhole's generic message-passing capabilities to design a new bridge tailored for cross-chain swaps. This innovative structure embeds swap-specific information alongside a reference to the Token Bridge message. Upon relayers delivering these messages on Solana, drivers are equipped with all the data needed to seamlessly engage in the Mayan swap auction.
+
+<Frame caption="Linking Swap Bridge VAA to Token Bridge VAA">
+  <img src="/images/Linking Swap Bridge VAA to Token Bridge VAA.png" />
+</Frame>
+
+Post-auction, the winner becomes responsible for swapping the tokens in a flash swap transaction. In this atomic transaction, the winner receives the funds and must send the promised output amount within the same transaction.
+
+After the successful execution of the swap, if the destination address is on Solana, the relayer simply transfers the output token to the user's wallet. Otherwise, the relayer uses a token bridge to send the tokens to the destination chain.
+
+Here is an overview of what happens when a user executes a cross-chain transaction on Mayan:
+
+<Frame caption="Overview of the flow">
+  <img src="/images/Mayan Wormhole Swap.avif" />
+</Frame>
+
+
+
+The protocol fee of WH Swap method is set to 10 basis points.
+
+### WH Swap Contract Addresses
+
+| Network   | Wormhole Chain Id | Contract Address                               |
+| --------- | ----------------- | ---------------------------------------------- |
+| Solana    | 1                 | `FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf` |
+| Ethereum  | 2                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
+| BSC       | 4                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
+| Polygon   | 5                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
+| Avalanche | 6                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
+| Arbitrum  | 23                | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
+| Optimism  | 24                | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
+| Base      | 30                | `0x11AA521C888d84f374B63823d9b873CAa3591f55`   |

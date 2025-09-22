@@ -1,0 +1,194 @@
+---
+title: "Quote API"
+---
+
+We highly recommand using [Mayan SDK](https://github.com/mayan-finance/swap-sdk) for integration as it simplfies the integration process.
+
+Before performing a swap we need find the best route and get the swap rate for the token pair using quote API.
+
+### API Reference
+
+<Card color="#83E72E" title="Swagger UI" icon="circle-s" href="https://price-api.mayan.finance/swagger" horizontal />
+
+### Example:
+
+The request to get the quote for swapping BNB tokens from Binance Smart Chain (BSC) to receive USDC tokens on Solana would be like this:
+
+#### Request:
+
+```powershell
+curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf&forwarderAddress=0x0654874eb7F59C6f5b39931FC45dC45337c967c3&amountIn=100&fromToken=0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e&fromChain=avalanche&toToken=0x0000000000000000000000000000000000000000&toChain=solana&slippageBps=300&referrer=7HN4qCvG2dP5oagZRxj2dTGPhksgRnKCaLPjtjKEr1Ho&gasDrop=0&gasless=true'
+```
+
+#### List of request parameters:
+
+| Parameter     | Type   | Required | Description                                                                                              |
+| ------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------- |
+| solanaProgram | String | Yes      | Mayan [WH Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                        |
+| amountIn      | Number | Yes      | Human readable amount of input token (e.g for 100 USDC it should be 100)                                 |
+| fromToken     | String | Yes      | Token address of input token                                                                             |
+| fromChain     | String | Yes      | Wormhole chain id of source network                                                                      |
+| toToken       | String | Yes      | Token address of output Token                                                                            |
+| toChain       | String | Yes      | Wormhole chain id of destination network                                                                 |
+| slippageBps   | Number | Yes      | Maximum slippage in bps, If the output token amount exceeds the slippage the swap will refund, (Max=100) |
+| referrer      | String | No       | Referrer address that receives the referrer fee                                                          |
+| gasDrop       | Number | No       | Default is 0. the amount of gas drop that must be delivered to user on delivered on destination network  |
+
+#### Response:
+
+```json
+{
+  "quotes": [
+    {
+      "sendTransactionCost": 0,
+      "gasless": false,
+      "slippageBps": 300,
+      "effectiveAmountIn": 100,
+      "expectedAmountOut": 0.536793552,
+      "price": 0.005460072,
+      "minAmountOut": 0.520689746,
+      "minReceived": 0.520689746,
+      "solanaRelayerFee": 0,
+      "solanaRelayerFee64": "0",
+      "redeemRelayerFee": 1.687464,
+      "redeemRelayerFee64": "1687464",
+      "refundRelayerFee": 1.687464,
+      "refundRelayerFee64": "1687464",
+      "clientRelayerFeeSuccess": 1.687464,
+      "clientRelayerFeeRefund": 1.687464,
+      "cancelRelayerFee64": null,
+      "deadline64": "1716287657",
+      "fromToken": {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "mint": "FHfba3ov5P3RjaiLVgh8FTv4oirxQDoVXuoUUDvHuXax",
+        "contract": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+        "chainId": 43114,
+        "wChainId": 6,
+        "decimals": 6,
+        "logoURI": "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
+        "coingeckoId": "usd-coin",
+        "realOriginContractAddress": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+        "realOriginChainId": 6,
+        "supportsPermit": true
+      },
+      "fromChain": "avalanche",
+      "toToken": {
+        "name": "SOL",
+        "symbol": "SOL",
+        "mint": "So11111111111111111111111111111111111111112",
+        "contract": "0x0000000000000000000000000000000000000000",
+        "chainId": 0,
+        "wChainId": 1,
+        "decimals": 9,
+        "logoURI": "https://statics.mayan.finance/SOL.png",
+        "wrappedAddress": "So11111111111111111111111111111111111111112",
+        "coingeckoId": "solana",
+        "realOriginContractAddress": "So11111111111111111111111111111111111111112",
+        "realOriginChainId": 1,
+        "supportsPermit": false
+      },
+      "toChain": "solana",
+      "mintDecimals": null,
+      "gasDrop": 0,
+      "eta": 1,
+      "etaSeconds": 60,
+      "clientEta": "1 min",
+      "bridgeFee": 0,
+      "suggestedPriorityFee": 0,
+      "type": "MCTP",
+      "priceStat": {
+        "ratio": 1,
+        "status": "GOOD"
+      },
+      "referrerBps": 0,
+      "meta": {
+        "advertisedDescription": "Cheapest and Fastest",
+        "advertisedTitle": "Best",
+        "icon": "https://cdn.mayan.finance/fast_icon.png",
+        "switchText": "Switch to the best route",
+        "title": "Best"
+      },
+      "cheaperChain": "solana",
+      "lockFeesOnSource": false,
+      "hasAuction": true,
+      "onlyBridging": false,
+      "mctpInputContract": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+      "mctpOutputContract": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "mctpMayanContract": "0xF18f923480dC144326e6C65d4F3D47Aa459bb41C",
+      "toPrice": 183.42,
+      "minMiddleAmount": 98.5,
+      "sourceSwapExpense": 0
+    }
+  ],
+  "minimumSdkVersion": [
+    7,
+    0,
+    0
+  ]
+}
+```
+
+### Response fields:
+
+The following table shows the common fields of response:
+
+| Field                   | Type   | Description                                                                                                                              |
+| ----------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| type                    | String | Determines the bridge method which can be "WH", "SWIFT" or "MCTP"                                                                        |
+| effectiveAmountIn       | Number | The actual input amount that will be deducted from user's wallet                                                                         |
+| expectedAmountOut       | Number | Expected output amount that user receives                                                                                                |
+| minAmountOut            | Number | Minimum output amount of auction                                                                                                         |
+| minReceived             | Number | The minimum amount that user receives after deducting relayer fees                                                                       |
+| price                   | Number | The amount of output token that user receives per 1 unit of input token                                                                  |
+| solanaRelayerFee        | Number | For "WH" type this fee is denominated in input token. For "MCTP" type the fee is denominated in USDC. For "SWIFT" type the fee is zero.  |
+| redeemRelayerFee        | Number | For "WH" type this fee is denominated in output token. For "MCTP" type the fee is denominated in USDC. For "SWIFT" type the fee is zero. |
+| RefundRelayerFee        | Number | For "WH" and "SWIFT" types this fee is denominated in input token. For "MCTP" type the fee is denominated in USDC.                       |
+| clientRelayerFeeSuccess | Number | Total dollar value of relayer fees in the success scenario                                                                               |
+| clientRelayerFeeRefund  | Number | Total dollar value of relayer fee in the refund scenario                                                                                 |
+| eta                     | Number | estimated time of arrival in minutes                                                                                                     |
+| client eta              | String | human readable string of eta                                                                                                             |
+| fromToken               | Object | Input token details                                                                                                                      |
+| fromChain               | String | Source network name                                                                                                                      |
+| toToken                 | Object | Output token details                                                                                                                     |
+| toChain                 | String | Destination network name                                                                                                                 |
+
+### **Supported Tokens**
+
+Mayan is an intent-based protocol and supports any token as input or output, provided there is sufficient liquidity on the source or destination chains. We also maintain an approved, whitelisted token list for convenience:
+
+<Card color="#83E72E" title="Swagger UI" icon="circle-s" href="https://price-api.mayan.finance/swagger/#/default/TokensController_getTokens" horizontal />
+
+#### Example:
+
+```powershell
+curl -X 'GET' \
+  'https://price-api.mayan.finance/v3/tokens?chain=solana' \
+  -H 'accept: application/json'
+```
+
+To get the aggregated list of tokens from all chains remove `chain` from in the query .
+
+### Supported Chains
+
+#### `GET` `sia.mayan.finance/v6/init`
+
+Returns configuration for every supported chain, including whether it can be used as a origin or destination** **chain.
+
+#### Example:
+
+```powershell
+curl -X 'GET' \
+  'https://sia.mayan.finance/v6/init' \
+  -H 'accept: application/json'
+```
+
+This endpoint provides a JSON response containing a comprehensive list of all chains supported by the platform. Each chain entry includes detailed metadata such as the chain's name, chain ID, and other relevant attributes.
+
+Two key fields indicate the chain's functionality within the platform:
+
+* `originActive`: Specifies whether the chain is supported as a source chain.
+
+* `destinationActive`: Specifies whether the chain is supported as a destination chain.
+
+Use this endpoint to determine compatibility and availability of specific chains for your operations.

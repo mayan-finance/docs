@@ -1,0 +1,16 @@
+---
+title: "Referral"
+---
+
+Integrators of Mayan Swap SDK and widget can earn from swaps by setting their wallet address as the referrer.
+
+The default referrer fee rate is **10 bps** ([basis points](https://en.wikipedia.org/wiki/Basis_point)), however as a referrer, you have the flexibility to set your referral fee rate according to your preferences. The referral fee can range from **0 **up to** 50 bps**.
+
+For [WH](/architecture/wh-swap) method you can set your referrer fee [here](https://explorer.mayan.finance/referrer-fee), for [Swift](/architecture/swift) and [MCTP](/architecture/mctp) you can simply pass the `referrerBps` parameter to the SDK or API.
+
+<Info>
+Please check [Mayan SDK](https://github.com/mayan-finance/swap-sdk) and [widget](/integration/swap-widget)to see how you can set your referrer address
+
+</Info>
+
+*P.S. zero bps makes sense if you want to just track swaps going through your widget or SDK.*

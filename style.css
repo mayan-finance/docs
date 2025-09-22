@@ -1,0 +1,23 @@
+li[id="topbar-cta-button"] > a > div > span {
+    color: #1A1A1F !important;
+   }
+   li[id="topbar-cta-button"] > a > div > svg > path {
+    stroke: #1A1A1F !important;
+   }
+
+   .dark li[id="topbar-cta-button"] > a > div > span {
+    color: #1A1A1F !important;
+   }
+   li[id="topbar-cta-button"] > a > span {
+    background: linear-gradient(90deg, #aeefff 0%, #e0bfff 30%, #fff6b3 65%, #f8ffe5 100%) !important;
+   }
+   .dark li[id="topbar-cta-button"] > a > span {
+    background: linear-gradient(90deg, #aeefff 0%, #e0bfff 25%, #fff6b3 50%, #ffffff 100%) !important;
+   }
+
+  
+
+   .dark div[id="navbar"] > div  {
+    background-color: #25252B !important;
+   }
+

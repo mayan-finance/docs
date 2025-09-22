@@ -1,88 +1,92 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "aspen",
+  "name": "mayan",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#6C2A87",
+    "light": "#F4D9D7",
+    "dark": "#F0CEE8"
   },
-  "favicon": "/favicon.svg",
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
+  "background": {
+    "decoration": "grid",
+    "color": {
+      "dark": "#1A1A1F"
+    }
+  },
+  "fonts": {
+    "heading": {
+      "family": "Space Grotesk"
+    },
+    "body": {
+      "family": "Titillium Web"
+    }
+  },
+  "favicon": "/favicon.jpg",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
+        "group": " ",
+        "pages": [
+          "index"
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
+        "group": "ARCHITECTURE",
+        "pages": [
+          "architecture/wh-swap",
+          "architecture/swift",
+          "architecture/mctp",
+          "architecture/relayers",
+          "architecture/auction"
+        ]
+      },
+      {
+        "group": "INTEGRATION",
+        "pages": [
+          "integration/quote-api",
+          "integration/explorer-api",
+          "integration/forwarder-contract",
+          "integration/referral",
+          "integration/swap-widget",
+          "link/swap"
+        ]
+      },
+      {
+        "group": "DAPP",
+        "pages": [
+          "dapp/user-manual",
+          "dapp/mayan-explorer",
+          "dapp/relayer-fees",
+          "dapp/gas-on-destination"
+        ]
+      },
+      {
+        "group": "RESOURCES",
+        "pages": [
+          "resources/audits",
+          "link/github",
+          "link/brand"
         ]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
           "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "href": "https://discord.com/invite/MayanFinance",
+          "icon": "discord"
         },
         {
           "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "href": "https://blog.mayan.finance/",
           "icon": "newspaper"
         }
       ]
@@ -95,33 +99,20 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Explorer",
+        "href": "https://explorer.mayan.finance/"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Start Bridging",
+      "href": "https://swap.mayan.finance/"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://twitter.com/mayanfinance",
+      "discord": "https://discord.com/invite/MayanFinance"
     }
   }
 }

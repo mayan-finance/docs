@@ -1,0 +1,261 @@
+---
+title: "Swap Widget"
+---
+
+You can add the Mayan cross-chain swap widget to your website by including a few lines of code:
+
+(example: [buybonk.com](https://buybonk.com))
+
+```php
+ <script src="https://cdn.mayan.finance/mayan_widget_v_1_2_3.js"
+    integrity="sha256-cuUqfbhmgeDDfwx+QGh6ncdr9kAxv8M+MLftyZ+lj9k="
+    crossorigin="anonymous" onload="(function () {
+      const config = {
+            appIdentity: {
+              name: 'My Project',
+              icon: './logo.png', // should be relative address
+              uri: 'https://myproject.io',
+            },
+            rpcs: {
+              solana: "https://example.rpc.com/solana" // must be added
+            }
+          }
+          MayanSwap.init('swap_widget', config)
+    })()"
+  /> 
+```
+
+That's it! You now have a fully-functional native to native bridge on your website.
+
+### Customizing Your Widget
+
+You can customize the widget to suit your needs, such as limiting tokens or networks. Here’s a complete example showing different parameters you can set:
+
+```html
+<html>
+<body>
+  ...
+  <div id="swap_widget"></div>
+  ...
+  <script src="https://cdn.mayan.finance/mayan_widget_v_1_2_3.js"
+      integrity="sha256-xg2EIE9pWR7nYXqX9IE+d2Lajrd34w0aKbuJHFH2+aw="
+      crossorigin="anonymous" onload="(function () {
+        const config = {
+              appIdentity: {
+                name: 'My Project',
+                icon: './logo.png', // should be relative address
+                uri: 'https://myproject.io',
+              },
+              rpcs: {
+                solana: 'https://example.rpc.com/solana', // must be added
+              },
+              sourceChains: ['ethereum', 'base'],
+              destinationChains: ['solana'],
+              tokens: {
+                from: {
+                  solana: ['sampleMintAddress1', 'sampleMintAddress2'],
+                  ethereum: ['0xsampleContractAddress1', '0xsampleContractAddress2'],
+                },
+                to: {
+                  solana: ['sampleMintAddress3', 'sampleMintAddress4'],
+                  ethereum: ['0xsampleContractAddress3', '0xsampleContractAddress4'],
+                }
+              },
+              defaultGasDrop: {
+                solana: 0.04,
+                ethereum: 0.005,
+              },
+              colors: {
+                N500: '#FF00FF',
+              },
+              referrerAddress: 'mysolanawallet'
+            }
+            MayanSwap.init('swap_widget', config)
+      })()"
+    /> 
+  ...
+</body>
+</html>
+```
+
+### Customizable Properties
+
+* `appIdentity`: This object contains information about your project, such as the name, icon, and website URL.
+
+* `rpcs`: This object contains the RPC URLs for the blockchain networks you want to support. Make sure to update these URLs with your own URLs.
+
+* `sourceChains`: List of supported source chains by the widget. To fetch list of supported tokens you can use the [Token List API](/integration/quote-api#token-list).
+
+* `destinationChains`: List of supported destination chains by the widget. To fetch list of supported tokens you can use the [Token List API](/integration/quote-api#token-list).
+
+* `tokens`: This object contains the list of token mint/contract addresses for each network you want to support. You can add or remove tokens as needed. You can check the list of supported chains by Mayan using [Chain List API](/integration/quote-api#chain-list).
+
+* `defaultGasDrop`: You can change the default gas of ["Gas on destination"](/dapp/gas-on-destination) for each chain. if you don't set this parameter, widget will use values from the this [table](/dapp/gas-on-destination#gas-on-destination-default-and-max-values%3A).
+
+* `solanaReferrerAddress, evmReferrerAddress`: if you wish to receive referrer fee you can assign your wallet address to these parameters.
+
+* `referrerBps`: You can set the referrerBps you are willing to receive from user (Max: 50 bps)
+
+<Info>
+If you don't specify list of tokens/chains, all the the supported tokens/chains will appear.
+
+</Info>
+
+* `solanaExtraRpcs`: Optional field to improve transaction speed and success rate by sending transactions to multiple RPCs. Use this if user experience is a priority.
+
+* `isNarrow`: A flag to render the widget in containers less than 300px wide. Not recommended as it can damage the widget interface.
+
+* `colors`: This object allows you to customize the colors of the widget by setting the following properties:
+
+```go
+type Colors = {
+  N000?: string;
+  N100?: string;
+  N300?: string;
+  N500?: string;
+  N600?: string;
+  N700?: string;
+  N900?: string;
+  tLightBlue?: string;
+  green?: string;
+  lightGreen?: string;
+  red?: string;
+  lightRed?: string;
+  lightYellow?: string;
+  primary?: string;
+  primaryGradient?: string;
+  tWhiteLight?: string;
+  tWhiteBold?: string;
+  tBlack?: string;
+  mainBox?: string;
+  background?: string;
+  darkPrimary?: string;
+  alwaysWhite?: string;
+  tableBg?: string;
+  transparentBg?: string;
+  transparentBgDark?: string;
+  buttonBackground?: string;
+  toastBgRed?: string;
+  toastBgNatural?: string;
+  toastBgGreen?: string;
+}
+```
+
+<Frame caption="Mayan Widget Color Pallet">
+  <img src="/images/Mayan Widget Color Pallet.avif" />
+</Frame>
+
+You can try Mayan widget with your website's design in Figma:
+
+<Card title="Mayan Widget" icon="figma" href="https://price-api.mayan.finance/swagger" horizontal>
+  Figma
+</Card>
+
+### Listeners:
+
+You can set listeners if you need to trigger custom actions (e.g., show notification when the swap finishes)
+
+Mayan Swap fires events upon swap initiation, completion, or refund.
+
+```javascript
+MayanSwap.setSwapInitiateListener(callback: (swap: SwapInfo) => void)
+MayanSwap.setSwapCompleteListener(callback: (swap: SwapInfo) => void)
+MayanSwap.setSwapRefundListener(callback: (swap: SwapInfo) => void)
+```
+
+```typescript
+type SwapInfo = {
+    hash: string,
+    fromChain: string,
+    toChain: string,
+    fromToken: string,
+    toToken: string,
+    fromAmount: number
+}
+```
+
+<Info>
+Note: even when the widget isn't on the DOM, the callbacks will still be invoked if you set them.
+
+To avoid unexpected errors, you can remove the listeners:
+
+`MayanSwap.removeSwapInitiateListener()`<br/>`MayanSwap.removeSwapCompleteListener()`<br/>`MayanSwap.removeSwapRefundListener()`
+
+</Info>
+
+### Default destination wallet
+
+You can set default destination wallets so users don't need to connect their destination wallet:
+
+```javascript
+destinationWallets: { 
+    solana: 'solanaWalletAddress',
+    ethereum: 'ethereumWalletAddress'
+},
+```
+
+### Alternative Widget Version Without WalletConnect
+
+To avoid redeclaring web components if you've already added WalletConnect dependencies to your project or use a third party that includes it, use the version of the widget without WalletConnect:
+
+```js
+<script src="https://cdn.mayan.finance/mayan_widget_v_1_2_3_nowc.js"
+    integrity="sha256-bJh3N4pFRH9XtG0u2icxu+PUsyPKGguVp5wmTKVsw3g="
+    crossorigin="anonymous" onload="(function () {
+      const config = {
+            appIdentity: {
+              name: 'My Project',
+              icon: './logo.png', // should be relative address
+              uri: 'https://myproject.io',
+            }
+          MayanSwap.init('swap_widget', config)
+    })()"
+  />
+```
+
+### TypeScript Types
+
+To use the Mayan Widget in a TypeScript project, you can define the configuration object types as follows:
+
+```python
+type MayanWidgetChainName =
+  | "solana"
+  | "ethereum"
+  | "bsc"
+  | "polygon"
+  | "avalanche"
+  | "arbitrum"
+  | "optimism"
+  | "base";
+```
+
+```typescript
+type MayanWidgetConfigType = {
+  appIdentity: {
+    uri: string;
+    icon: string; // should be relative
+    name: string;
+  }; // use for Wallet Adapter
+  setDefaultToken?: boolean;
+  rpcs?: { [index in MayanWidgetChainName]?: string };
+  solanaExtraRpcs?: string[];
+  defaultGasDrop?: { [index in MayanWidgetChainName]?: number };
+  sourceChains?: MayanWidgetChainName[];
+  destinationChains?: MayanWidgetChainName[];
+  tokens?: {
+    from?: { [index in MayanWidgetChainName]?: string[] };
+    to?: { [index in MayanWidgetChainName]?: string[] };
+    featured?: { [index in MayanWidgetChainName]?: string[] };
+  };
+  solanaReferrerAddress?: string;
+  evmReferrerAddress?: string;
+  referrerBps?: number;
+  // Theme
+  isNarrow?: boolean;
+  colors?: Colors;
+}
+```
+
+### Full Example
+
+For a full example of the integration, you can check the source code of [buybonk.com](https://buybonk.com) on [GitHub](https://github.com/mayan-finance/buybonk). This repository provides a comprehensive example of how to integrate the Mayan Swap Widget into a project.
