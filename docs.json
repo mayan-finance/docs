@@ -88,11 +88,6 @@
           "anchor": "Blog",
           "href": "https://blog.mayan.finance/",
           "icon": "newspaper"
-        },
-        {
-          "anchor": "X",
-          "href": "https://twitter.com/mayanfinance",
-          "icon": "x-twitter"
         }
       ]
     }
@@ -103,14 +98,6 @@
   },
   "navbar": {
     "links": [
-      {
-        "label": "Integrate SDK",
-        "href": "https://mayan.finance/"
-      },
-      {
-        "label": "Add Widget",
-        "href": "https://mayan.finance/"
-      },
       {
         "label": "Explorer",
         "href": "https://explorer.mayan.finance/"
