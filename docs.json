@@ -105,11 +105,11 @@
     "links": [
       {
         "label": "Integrate SDK",
-        "href": "https://mayan.finance/"
+        "href": "https://github.com/mayan-finance/swap-sdk"
       },
       {
         "label": "Add Widget",
-        "href": "https://mayan.finance/"
+        "href": "https://www.npmjs.com/package/@mayanfinance/swap-sdk"
       },
       {
         "label": "Explorer",
