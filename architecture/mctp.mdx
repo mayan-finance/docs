@@ -1,16 +1,25 @@
 ---
 title: "MCTP"
+description: "A seamless way to move tokens cross-chain using native USDC powered by Circle CCTP."
 ---
 
-MCTP (Mayan-Circle Transfer Protocol) method is powered by the [Circle CCTP](https://www.circle.com/en/cross-chain-transfer-protocol) protocol. Essentially, what we do in this method is convert the input tokens to USDC and send them to the destination chain. Simultaneously, drivers conduct an auction on Solana to identify the best provider for converting the received USDC on the destination chain into the user's requested output token. Once the auction concludes, the winner utilizes the Mayan flash swap method to complete the trade on the destination chain and delivers the output tokens to the user's wallet. The protocol fee of MCTP is zero if output token is USDC and 3 basis points if output token is other than USDC.
+**What it is:**\
+The MCTP (Mayan-Circle Transfer Protocol) method converts input tokens to USDC and sends them to the destination chain via Circle’s CCTP. Drivers then compete in an on-chain auction on Solana to deliver the best rate for swapping USDC into the user’s requested output token.
+
+**How it works:**
+
+- Input tokens are swapped to USDC on the source chain, then forwarded using Circle CCTP.
+- An auction is held on Solana. The winning driver converts USDC on the destination chain to the requested output token.
+- Output tokens are delivered directly to the user’s wallet.
+- The protocol fee is zero if the output token is USDC and 3 basis points for other tokens.
 
 <Frame caption="MCTP Design">
-  <img src="/images/Mayan CCT Swap.avif" />
+  ![](/images/Mayan CCT Swap.avif)
 </Frame>
 
 ### MCTP Contract Addresses
 
-| Network   | Wormhole Chain Id | Contract Address                              |
+| Network   | Wormhole Chain ID | Contract Address                              |
 | --------- | ----------------- | --------------------------------------------- |
 | Solana    | 1                 | `dkpZqrxHFrhziEMQ931GLtfy11nFkCsfMftH9u6QwBU` |
 | Ethereum  | 2                 | `0x875d6d37EC55c8cF220B9E5080717549d8Aa8EcA`  |
@@ -21,11 +30,10 @@ MCTP (Mayan-Circle Transfer Protocol) method is powered by the [Circle CCTP](htt
 | Optimism  | 24                | `0x875d6d37EC55c8cF220B9E5080717549d8Aa8EcA`  |
 | Base      | 30                | `0x875d6d37EC55c8cF220B9E5080717549d8Aa8EcA`  |
 | Unichain  | 44                | `0x875d6d37EC55c8cF220B9E5080717549d8Aa8EcA`  |
-| Sui  | 21                |  |
+| Sui       | 21                |                                               |
 
-## Fast MCTP
-
-Fast MCTP is a variation of the MCTP that uses Circle’s CCTPv2 instead of CCTP. While the core flow remains the same—converting input tokens to USDC, transferring them cross-chain, and swapping them to the desired output token on the destination chain—CCTPv2 enables faster finality and more efficient messaging. This results in reduced latency and improved settlement times, making Fast MCTP ideal for time-sensitive cross-chain swaps. The protocol fee of Fast MCTP is set to 3 bps.
+**Fast MCTP:**\
+A variant using Circle CCTPv2 for faster settlement and more efficient messaging. Flow and auction structure are identical; finality is faster and latency reduced. Protocol fee is 3 basis points.
 
 | Network   | Wormhole Chain Id | Contract Address                             |
 | --------- | ----------------- | -------------------------------------------- |
@@ -36,4 +44,3 @@ Fast MCTP is a variation of the MCTP that uses Circle’s CCTPv2 instead of CCTP
 | Optimism  | 24                | `0xC1062b7C5Dc8E4b1Df9F200fe360cDc0eD6e7741` |
 | Base      | 30                | `0xC1062b7C5Dc8E4b1Df9F200fe360cDc0eD6e7741` |
 | Unichain  | 44                | `0xC1062b7C5Dc8E4b1Df9F200fe360cDc0eD6e7741` |
-
