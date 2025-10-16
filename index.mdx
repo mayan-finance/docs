@@ -45,22 +45,3 @@ Mayan provides industry-leading uptime, rigorous audits, and security measures d
 - Explore our [**Developer Guides**](https://docs.mayan.finance/) to build your own integrations.
 
   **OLD:**
-
-Mayan uses three different methods to facilicate the cross-chain swaps. These methods are complementary and can offer different trade-offs between speed and price. All three methods are powered by Wormhole message passing.
-
-- [**WH Swap**](/architecture/wh-swap)\
-  This method uses Solana as the trading hub and Token Bridge as the value transfer protocol, this method transfers the assets to Solana and on Solana driver fulfills user's trade using Mayan Flash Swap program and then if the destination chain is not Solana relayers transfer the tokens to the destination chain.
-- [**MCTP**](/architecture/mctp)\
-  Mayan-Circle Transfer Protocol (MCTP) facilicas CCTP as the highway for transfering the value to the destination chain and on the destination chain the driver fullfills user's trade using Mayan Flash Swap smart contract/program and delivers the output tokens.
-- [**Swift**](/architecture/swift)\
-  Swift is intent-centric and is the fastest method of bridging, in Swift user creates an order by locking the funds using Mayan contract on the source chain and specifying the details. The designated driver then fullfills user's order on the destination chain and brings back the proof to source chain to receive the locked funds.
-
-<Card title="GitHub - mayan-finance/swap-sdk: npm package for sending cross-chain swap transactions" icon="github" color="#000000" horizontal href="https://github.com/mayan-finance/swap-sdk">
-  Github
-</Card>
-
-<Card title="GitHub - mayan-finance/swap-bridge: Contracts for publishing and verifying cross-chain swap messages using Wormhole message passing and token bridge" icon="github" color="#000000" horizontal href="https://github.com/mayan-finance/swap-bridge">
-  Github
-</Card>
-
-For users and integrators all the three methods are available under one unified interface.
