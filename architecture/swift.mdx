@@ -1,16 +1,32 @@
 ---
 title: "Swift"
+description: "Lightning fast, intent-based bridging and cross-chain swaps with Mayan."
 ---
 
-Swift is the intent-based method for fast bridging and cross-chain swaps. In this method, instead of sending funds directly to the destination chain, the user creates an order by locking the funds on the source chain. The Mayan network of Drivers sees this order and starts an auction on Solana to find the best provider among themselves. The winner of the auction is responsible for fulfilling the order on the destination chain. Once the order is fulfilled, the driver receives a receipt, which can be used to unlock the funds on the source chain. Swift protocol fee is set to 3 basis points.
+**What it is:**\
+Swift is Mayan’s intent-based protocol designed for rapid bridging and swaps. Users simply specify their input token and source chain, along with their desired output token and destination chain. All underlying complexities such as order creation and asset locking are fully handled by the protocol and hidden from users and integrators.
+
+**How it works:**
+
+- When a cross-chain swap is initiated, an auction is triggered on-chain.
+- Drivers (solvers) bid competitively in this auction.
+- The highest bidder fulfills the order on the destination chain exactly as specified by the user, using liquidity (inventory) they already hold on that chain. This results in near-instant settlement with guaranteed output amount.
+- Upon fulfillment, the winning driver receives a receipt that enables the secure unlocking and transfer of assets on the source chain.
+- The entire process from order initiation to final settlement typically completes within seconds.
 
 <Frame caption="Swift Design">
-  <img src="/images/Mayan Swift .avif" />
+  ![](/images/Mayan Swift .avif)
 </Frame>
+
+**User experience:**\
+Swift abstracts all technical steps—and there is no need for users or integrators to manually interact with contracts or manage asset locking. Mayan automatically orchestrates the flow to ensure a smooth experience.
+
+**Protocol fee:**\
+Swift charges a fee of 3 basis points (0.03%).
 
 ### Swift Contract Addresses
 
-| Network   | Wormhole Chain Id | Contract Address                               |
+| Network   | Wormhole Chain ID | Contract Address                               |
 | --------- | ----------------- | ---------------------------------------------- |
 | Solana    | 1                 | `BLZRi6frs4X4DNLw56V4EXai1b6QVESN1BhHBTYM9VcY` |
 | Ethereum  | 2                 | `0xC38e4e6A15593f908255214653d3D947CA1c2338`   |
