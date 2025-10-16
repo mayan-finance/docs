@@ -8,11 +8,13 @@ Before performing a swap we need find the best route and get the swap rate for t
 
 ### API Reference
 
-<Card color="#83E72E" title="Swagger UI" icon="circle-s" href="https://price-api.mayan.finance/swagger" horizontal />
+<Card title="Swagger UI" icon="circle-s" color="#83E72E" horizontal href="https://price-api.mayan.finance/swagger">
+  
+</Card>
 
 ### Example:
 
-The request to get the quote for swapping BNB tokens from Binance Smart Chain (BSC) to receive USDC tokens on Solana would be like this:
+The request to get the quote for swapping BNB tokens from BNB Smart Chain (BSC) to receive USDC tokens on Solana would be like this:
 
 #### Request:
 
@@ -24,12 +26,12 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrM
 
 | Parameter     | Type   | Required | Description                                                                                              |
 | ------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------- |
-| solanaProgram | String | Yes      | Mayan [WH Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                        |
+| solanaProgram | String | Yes      | Mayan [Wormhole Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                  |
 | amountIn      | Number | Yes      | Human readable amount of input token (e.g for 100 USDC it should be 100)                                 |
 | fromToken     | String | Yes      | Token address of input token                                                                             |
-| fromChain     | String | Yes      | Wormhole chain id of source network                                                                      |
+| fromChain     | String | Yes      | Wormhole chain ID of source network                                                                      |
 | toToken       | String | Yes      | Token address of output Token                                                                            |
-| toChain       | String | Yes      | Wormhole chain id of destination network                                                                 |
+| toChain       | String | Yes      | Wormhole chain ID of destination network                                                                 |
 | slippageBps   | Number | Yes      | Maximum slippage in bps, If the output token amount exceeds the slippage the swap will refund, (Max=100) |
 | referrer      | String | No       | Referrer address that receives the referrer fee                                                          |
 | gasDrop       | Number | No       | Default is 0. the amount of gas drop that must be delivered to user on delivered on destination network  |
@@ -157,7 +159,9 @@ The following table shows the common fields of response:
 
 Mayan is an intent-based protocol and supports any token as input or output, provided there is sufficient liquidity on the source or destination chains. We also maintain an approved, whitelisted token list for convenience:
 
-<Card color="#83E72E" title="Swagger UI" icon="circle-s" href="https://price-api.mayan.finance/swagger/#/default/TokensController_getTokens" horizontal />
+<Card title="Swagger UI" icon="circle-s" color="#83E72E" horizontal href="https://price-api.mayan.finance/swagger/#/default/TokensController_getTokens">
+  
+</Card>
 
 #### Example:
 
@@ -173,7 +177,7 @@ To get the aggregated list of tokens from all chains remove `chain` from in the 
 
 #### `GET` `sia.mayan.finance/v6/init`
 
-Returns configuration for every supported chain, including whether it can be used as a origin or destination** **chain.
+Returns configuration for every supported chain, including whether it can be used as a origin or destination\*\* \*\*chain.
 
 #### Example:
 
@@ -187,8 +191,7 @@ This endpoint provides a JSON response containing a comprehensive list of all ch
 
 Two key fields indicate the chain's functionality within the platform:
 
-* `originActive`: Specifies whether the chain is supported as a source chain.
-
-* `destinationActive`: Specifies whether the chain is supported as a destination chain.
+- `originActive`: Specifies whether the chain is supported as a source chain.
+- `destinationActive`: Specifies whether the chain is supported as a destination chain.
 
 Use this endpoint to determine compatibility and availability of specific chains for your operations.

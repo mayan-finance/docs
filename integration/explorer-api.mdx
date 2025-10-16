@@ -1,20 +1,39 @@
 ---
 title: "Explorer API"
+description: "Track the full lifecycle and details of your Mayan transactions with the Explorer API."
 ---
 
-To track progress of cross-chain swaps you can use Mayan Explorer API:
+## Overview
 
-<Card color="#83E72E" title="Swagger UI" icon="circle-s" href="https://price-api.mayan.finance/swagger" horizontal />
+The Mayan Explorer API provides a powerful interface to track and monitor cross-chain swaps executed on the Mayan protocol. It delivers comprehensive transaction data for users and developers seeking detailed insights into swap lifecycle and status.
 
-### Example:
+## Interactive API Documentation
 
-Here we have an example of getting details of swap using the transaction hash:
+For users and developers who want to explore and test the Mayan API endpoints directly, we provide a [**Swagger UI**](https://price-api.mayan.finance/swagger) portal. This user-friendly interface allows you to view all available endpoints, try out queries in real-time, and understand request and response formats without writing any code.
+
+<Card title="Swagger UI" icon="circle-s" color="#83E72E" horizontal href="https://price-api.mayan.finance/swagger">
+  
+</Card>
+
+## Querying Transaction Status
+
+Using the Explorer API, you can query transaction progress and details by providing the swap transaction hash. The API returns current statuses reflecting each step of the swap process.
+
+## Real-Time Monitoring and Auditing
+
+This API enables real-time visibility into the entire swap journey, supporting auditing, error handling, and enriched user experience for frontends or backend integrations.
+
+### Example API Request
+
+Here’s a sample request illustrating how to retrieve swap details using a transaction hash:
 
 ```powershell
 curl 'https://explorer-api.mayan.finance/v3/swap/trx/0x232bf1d5dd6e340a2e036ed0b58dbb444b56d3770d5543c7d55fecebbf0ad65e'
 ```
 
-And in response we receive all details of the swap (null values are omitted):
+## Detailed Swap Information
+
+The API response includes all relevant fields such as swap status, involved tokens and chains, amounts transferred, timestamps, fees, and verification receipts. Null values are omitted for cleaner data consumption.
 
 ```json
 {
