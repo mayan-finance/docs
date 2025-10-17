@@ -1,27 +1,35 @@
 ---
-title: "WH Swap"
+title: "Wormhole Swap"
+description: "Permissionless, open-source cross-chain token swaps built on Wormhole primitives and powered by Mayan."
 ---
 
-WH Swap Bridge is a permissionless, open-source bridge built on Wormhole primitives and developed by the Mayan team to facilitate cross-chain, one-click token swaps.
+**What it is:**\
+Wormhole Swap leverages the Wormhole Token Bridge’s mint-and-burn architecture enhanced by Wormhole’s generic message-passing capabilities to enable seamless cross-chain, one-click token swaps. Developed by Mayan, this protocol embeds swap-specific metadata alongside Token Bridge messages, making cross-chain swaps efficient and trustless.
 
-The Token Bridge, a widely recognized component of the Wormhole ecosystem, facilitates cross-chain token transfers using a mint-and-burn mechanism. To expand its functionality, we leveraged Wormhole's generic message-passing capabilities to design a new bridge tailored for cross-chain swaps. This innovative structure embeds swap-specific information alongside a reference to the Token Bridge message. Upon relayers delivering these messages on Solana, drivers are equipped with all the data needed to seamlessly engage in the Mayan swap auction.
-Post-auction, the winner becomes responsible for swapping the tokens in a flash swap transaction. In this atomic transaction, the winner receives the funds and must send the promised output amount within the same transaction.
+**How it works:**
 
-After the successful execution of the swap, if the destination address is on Solana, the relayer simply transfers the output token to the user's wallet. Otherwise, the relayer uses a token bridge to send the tokens to the destination chain.
+- Users initiate a swap that sends tokens via the Wormhole Token Bridge using mint-and-burn.
+- Swap details are embedded in generic Wormhole messages delivered by relayers on Solana.
+- Drivers receive all swap information and participate in a Mayan on-chain auction to determine the best execution price.
+- The auction winner performs a flash swap on Solana, obtaining the funds and atomically sending the promised output amount within the same transaction.
+- Post-swap, if the destination address is on Solana, the relayer directly transfers output tokens to the user's wallet. Otherwise, relayers send tokens to destination chains via the Token Bridge.
+
+**Key advantages:**
+
+- Atomic flash swaps ensure secure, simultaneous execution without intermediary risk.
+- Fully permissionless and open-source.
+- Efficient use of Wormhole messaging coupled with Mayan’s competitive auction to optimize pricing and execution.
 
 Here is an overview of what happens when a user executes a cross-chain transaction on Mayan:
 
-<Frame caption="Overview of the flow">
-  <img src="/images/Mayan Wormhole Swap.avif" />
-</Frame>
+![Mayan WH Swap.jpg](/images/MayanWHSwap.jpg)
 
-
-
-The protocol fee of WH Swap method is set to 10 basis points.
+**Protocol fee:**\
+The Wormhole Swap fees are set at 10 basis points (0.10%).
 
 ### WH Swap Contract Addresses
 
-| Network   | Wormhole Chain Id | Contract Address                               |
+| Network   | Wormhole Chain ID | Contract Address                               |
 | --------- | ----------------- | ---------------------------------------------- |
 | Solana    | 1                 | `FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf` |
 | Ethereum  | 2                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |

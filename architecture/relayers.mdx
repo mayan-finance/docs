@@ -1,10 +1,17 @@
 ---
 title: "Relayers"
+description: "How relayers keep Mayan transactions moving securely and efficiently across chains."
 ---
 
-To facilitate Mayan's functionality, it's essential to transmit messages across different blockchains. This task is performed by entities known as relayers. Functioning akin to postmen, relayers are responsible for the delivery of these messages. Specifically, in the Mayan ecosystem, relayers monitor supported blockchain networks. Upon identifying a Mayan Swap transaction, they retrieve the Verifiable Action Approvals (VAAs) associated with the transaction from Wormhole guardians. Subsequently, these signed VAAs are committed to the Solana network, or vice versa. This process incurs network fees. Therefore, to ensure the relayers are motivated to perform these actions on behalf of users, a relayer fee is charged. This fee compensates the relayers for the network costs and their service.
+**What it is:**\
+Relayers are independent entities that deliver authenticated messages between blockchains on Mayan, playing a key role in cross-chain swaps.
 
-<Info>
-Relayers have no access to users' funds and the Solana program is trustless, so anyone can run its own relayer to transfer the signed messages.
+**How it works:**
 
-</Info>
+- Relayers monitor supported blockchains for Mayan transactions.
+- When a swap is detected, they retrieve Verifiable Action Approvals (VAAs) from Wormhole guardians.
+- Using the VAA, relayers commit the message on Solana or another target network, completing the transaction.
+- Relayers earn a fee for covering network costs and acting on behalf of users.
+
+**Why it matters:**\
+Relayers never access or control users’ funds. The Solana program is trustless, enabling anyone to run their own relayer and participate in message transfer—no permissions needed. This ensures swaps remain secure and decentralized for all users.
