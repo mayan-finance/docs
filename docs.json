@@ -60,7 +60,7 @@
         ]
       },
       {
-        "group": "DAPP",
+        "group": "APPLICATION",
         "pages": [
           "dapp/user-manual",
           "dapp/mayan-explorer",
