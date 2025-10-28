@@ -62,10 +62,10 @@
       {
         "group": "APPLICATION",
         "pages": [
-          "dapp/user-manual",
-          "dapp/mayan-explorer",
-          "dapp/relayer-fees",
-          "dapp/gas-on-destination"
+          "application/user-manual",
+          "application/mayan-explorer",
+          "application/relayer-fees",
+          "application/gas-on-destination"
         ]
       },
       {
