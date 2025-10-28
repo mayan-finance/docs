@@ -41,9 +41,9 @@
       {
         "group": "ARCHITECTURE",
         "pages": [
-          "architecture/wh-swap",
           "architecture/swift",
           "architecture/mctp",
+          "architecture/wh-swap",
           "architecture/relayers",
           "architecture/auction"
         ]
