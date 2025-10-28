@@ -41,11 +41,11 @@
       {
         "group": "ARCHITECTURE",
         "pages": [
-          "architecture/swift",
-          "architecture/mctp",
-          "architecture/wh-swap",
+          "architecture/auction",
           "architecture/relayers",
-          "architecture/auction"
+          "architecture/wh-swap",
+          "architecture/mctp",
+          "architecture/swift"
         ]
       },
       {
