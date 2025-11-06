@@ -96,11 +96,11 @@ const referrerAddresses = {
 - **Note:** Always use the Solana address as your referrer, regardless of source or destination chain (even for EVM → EVM routes).
 
 ```
-const quote = await mayan.fetchQuote({
-  sourceChain: 'Ethereum',
-  destinationChain: 'Solana',
+const quote = await fetchQuote({
+  ...
   referrer: referrerAddresses.solana,
   referrerBps: 25, // example: 25 bps = 0.25%
+  ...
 });
 ```
 
@@ -118,13 +118,6 @@ type ReferrerAddresses = {
 
 Always pass the **full object** prepared in Step 1.\
 The SDK will automatically determine which wallet to use based on the selected bridge method, source, and destination.
-
-```
-await mayan.buildTransaction({
-  ...params,
-  referrerAddresses,
-});
-```
 
 This ensures referral fees are correctly routed, regardless of the bridge type or source/destination chains.
 
