@@ -1,16 +1,135 @@
 ---
-title: "Referral"
+title: "Referral Program"
 ---
 
+Each bridging method within the Mayan protocol has its own referral fee behavior and collection mechanism. This document explains how referral fees work across all methods and how to configure them in the SDK.
+
+### **Swift V1 (Current Live Version)**
+
+**Fee Collection**
+
+- Fees are collected on the **destination chain** only if the bridge is successfully completed.
+- Collected via the **output token**.
+
+**Fee Rate**
+
+- **From Solana:** up to **100 bps**
+- **From other chains:** up to **50 bps**
+
+### **Swift V2 (Coming Soon)**
+
+**Fee Collection**
+
+- Fees are collected on the **source chain** once the bridge is successfully completed.
+- Collected via the **locked assets** (e.g., USDC, ETH).
+
+**Fee Rate**
+
+- Maximum referral fee for all chains: **100 bps**
+
+\
 Integrators of Mayan Swap SDK and widget can earn from swaps by setting their wallet address as the referrer.
 
-The default referrer fee rate is **10 bps** ([basis points](https://en.wikipedia.org/wiki/Basis_point)), however as a referrer, you have the flexibility to set your referral fee rate according to your preferences. The referral fee can range from **0 **up to** 50 bps**.
+The default referrer fee rate is **10 bps** ([basis points](https://en.wikipedia.org/wiki/Basis_point)), however as a referrer, you have the flexibility to set your referral fee rate according to your preferences. The referral fee can range from ****0 up to 50 bps****.
 
-For [WH](/architecture/wh-swap) method you can set your referrer fee [here](https://explorer.mayan.finance/referrer-fee), for [Swift](/architecture/swift) and [MCTP](/architecture/mctp) you can simply pass the `referrerBps` parameter to the SDK or API.
+### **MCTP Method**
+
+**Fee Collection**
+
+- Fees are collected on the **destination chain** only if:
+  1. The bridge includes a **swap on the destination chain**. (e.g., USDC → USDC transfers have no fee)
+  2. The bridge completes **successfully**.
+- Fees are collected in the **Circle-issued stablecoin** minted during bridging (USDC or EURC).
+
+**Fee Rate**
+
+- Maximum referral fee:
+  - **From Solana:** up to **100 bps**
+  - **From other chains:** up to **50 bps**
+
+### **FastMCTP Method**
+
+**Fee Collection**
+
+- Fees are collected on the **destination chain** only if the bridge is successfully completed.
+- Unlike MCTP, the existence of a swap on the destination chain **does not matter**.
+- Fees are collected in the **Circle-issued stablecoin** (USDC or EURC).
+
+**Fee Rate**
+
+- Maximum referral fee for all chains: **100 bps**
+
+### **WH Method**
+
+**Fee Collection**
+
+- All referral fees are received on the **Solana chain**.
+- Fees are only distributed if the **bridge is successfully completed** and **includes a swap**.\
+  (Example: a bridge from Ethereum → Solana where ETH is swapped to WETH will **not** generate referral fees.)
+- The fees are collected in the **output token** and automatically transferred to the **referrer Solana address**.
+
+**Fee Rate**
+
+- The **default referral fee rate** is **10 bps (0.1%)**.
+- Referrers can configure their preferred rate from **0 to 50 bps**.
+- Use the [Referrer Fee Management](https://explorer.mayan.finance/referrer-fee) page to set your on-chain referral fee.
+- You must specify a **valid Solana wallet address** as your referral address.
+
+## **How to Enable Referral Fees in the SDK**
+
+### Step 1 — Prepare Referrer Addresses
+
+You must prepare a referral address for each VM type:
+
+```
+const referrerAddresses = {
+  solana: 'VALID_SOLANA_WALLET_ADDRESS',
+  evm: 'VALID_EVM_WALLET_ADDRESS',
+  sui: 'VALID_SUI_WALLET_ADDRESS'
+};
+```
+
+### Step 2 — During Quote Fetching
+
+- Always pass your **Solana referral address** as the `"referrer"` parameter.
+- Set your desired referral fee (in bps) as `"referrerBps"`.
+- **Note:** Always use the Solana address as your referrer, regardless of source or destination chain (even for EVM → EVM routes).
+
+```
+const quote = await mayan.fetchQuote({
+  sourceChain: 'Ethereum',
+  destinationChain: 'Solana',
+  referrer: referrerAddresses.solana,
+  referrerBps: 25, // example: 25 bps = 0.25%
+});
+```
+
+### Step 3 — During Transaction Building
+
+All transaction or bridge functions in the SDK accept an optional `referrerAddresses` parameter:
+
+```
+type ReferrerAddresses = {
+  solana: string;
+  evm: string;
+  sui: string;
+};
+```
+
+Always pass the **full object** prepared in Step 1.\
+The SDK will automatically determine which wallet to use based on the selected bridge method, source, and destination.
+
+```
+await mayan.buildTransaction({
+  ...params,
+  referrerAddresses,
+});
+```
+
+This ensures referral fees are correctly routed, regardless of the bridge type or source/destination chains.
 
 <Info>
-Please check [Mayan SDK](https://github.com/mayan-finance/swap-sdk) and [widget](/integration/swap-widget)to see how you can set your referrer address
-
+  Please check [Mayan SDK](https://github.com/mayan-finance/swap-sdk) and [widget](/integration/swap-widget)to see how you can set your referrer address
 </Info>
 
-*P.S. zero bps makes sense if you want to just track swaps going through your widget or SDK.*
+_P.S. zero bps makes sense if you want to just track swaps going through your widget or SDK._
