@@ -1,10 +1,13 @@
 ---
 title: "Referral Program"
+description: "The Mayan Referrer Program lets Integrators of the Mayan SDK and widget earn referral fees on transactions by setting their wallet address as the referrer."
 ---
 
-Each bridging method within the Mayan protocol has its own referral fee behavior and collection mechanism. This document explains how referral fees work across all methods and how to configure them in the SDK.
+Each bridging method within the Mayan protocol has its own unique referral fee behavior and collection mechanism. This document explains how referral fees are earned across all bridging methods, details fee collection mechanisms, and guides you through configuring referral fees in the SDK effectively. 
 
-### **Swift V1 (Current Live Version)**
+Referral fees collected are paid directly to the wallet addresses specified by the integrators acting as referrers, ensuring earned fees go straight to their accounts.
+
+### **Swift V1 (Current Live Version):**
 
 **Fee Collection**
 
@@ -16,7 +19,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 - **From Solana:** up to **100 bps**
 - **From other chains:** up to **50 bps**
 
-### **Swift V2 (Coming Soon)**
+### **Swift V2 (Coming Soon):**
 
 **Fee Collection**
 
@@ -32,7 +35,7 @@ Integrators of Mayan Swap SDK and widget can earn from swaps by setting their wa
 
 The default referrer fee rate is **10 bps** ([basis points](https://en.wikipedia.org/wiki/Basis_point)), however as a referrer, you have the flexibility to set your referral fee rate according to your preferences. The referral fee can range from ****0 up to 50 bps****.
 
-### **MCTP Method**
+### **MCTP:**
 
 **Fee Collection**
 
@@ -47,7 +50,7 @@ The default referrer fee rate is **10 bps** ([basis points](https://en.wikipedia
   - **From Solana:** up to **100 bps**
   - **From other chains:** up to **50 bps**
 
-### **FastMCTP Method**
+### **FastMCTP:**
 
 **Fee Collection**
 
@@ -59,7 +62,7 @@ The default referrer fee rate is **10 bps** ([basis points](https://en.wikipedia
 
 - Maximum referral fee for all chains: **100 bps**
 
-### **WH Method**
+### **WH Method:**
 
 **Fee Collection**
 
@@ -119,10 +122,10 @@ type ReferrerAddresses = {
 Always pass the **full object** prepared in Step 1.\
 The SDK will automatically determine which wallet to use based on the selected bridge method, source, and destination.
 
-This ensures referral fees are correctly routed, regardless of the bridge type or source/destination chains.
+This ensures Referral fees are correctly routed, regardless of the bridge type or source/destination chains.
 
 <Info>
-  Please check [Mayan SDK](https://github.com/mayan-finance/swap-sdk) and [widget](/integration/swap-widget)to see how you can set your referrer address
+  Please check [Mayan SDK](https://github.com/mayan-finance/swap-sdk) and [widget](/integration/swap-widget) to see how you can set your referrer address
 </Info>
 
-_P.S. zero bps makes sense if you want to just track swaps going through your widget or SDK._
+P.S. Even if you don’t plan to charge Referrer fees, it’s important to set your referrer wallet address. This allows you to track all swaps going through your widget or SDK accurately and be ready to earn fees if you decide to enable them later.
