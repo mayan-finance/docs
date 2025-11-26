@@ -1,0 +1,149 @@
+---
+title: "Custom Payloads"
+description: "Learn how to attach custom payloads to Mayan swaps and bridges, which routes support them, and how to pass raw payload bytes through the EVM, Solana, and Sui SDK integrations."
+---
+
+## Overview
+
+Custom payloads let you attach a small piece of data to a cross-chain swap or bridge. This data travels with the transfer and can be read by your destination contract or backend once the funds arrive.
+
+The [Swap SDK](https://github.com/mayan-finance/swap-sdk) sends this payload as raw bytes. It does not interpret or modify the contents, and your destination logic is responsible for decoding them. Some routes, such as HyperCore deposits, construct their own fixed payload instead.
+
+This page explains what custom payloads are, why they are useful, and how to include them when calling the Swap SDK.
+
+## Definition and Guarantees
+
+A custom payload is an arbitrary sequence of bytes attached to a supported swap route. When a route accepts payloads, the SDK forwards the raw bytes exactly as provided.
+
+### Core guarantees
+
+- Payloads are forwarded verbatim; the SDK does not hash, transform, or validate them.
+- In [MCTP](/architecture/mctp) and Fast MCTP routes, the `payloadType` enum is set accordingly when a payload is present.
+- The bytes are included in the cross-chain message or transaction and delivered to the destination program or contract.
+- Some routes do not accept caller-supplied payloads or build their own fixed payload (such as HyperCore).
+
+## Why use a custom payload?
+
+Custom payloads let you attach additional context to a transfer, such as user metadata, routing parameters, or application-specific instructions for your destination logic. If your integration does not require extra data on the destination chain, you can omit it.
+
+Only specific swap routes support caller-supplied payloads; others will reject or override the bytes.
+
+## Use Custom Payloads in the Swap SDK
+
+You can attach a custom payload from EVM, Solana, or Sui by passing a `Buffer` or `Uint8Array` to the relevant SDK call. Payload support depends on the chain and the route type, so refer to the sections below for precise behavior.
+
+Payloads should stay small. Each chain and route has its own message-size limits, and larger payloads may increase fees or cause the swap to fail if the underlying protocol rejects the message.
+
+### EVM
+
+On EVM, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/evm/evmSwap.ts#L362) can be included in calls such as `swapFromEvm`, `getSwapFromEvmTxPayload`, or `getMctpFromEvmTxPayload`.
+
+**Example:**
+
+```ts
+import { swapFromEvm } from '@mayanfinance/swap-sdk';
+
+const customPayload = Buffer.from('hello-world');
+
+// ensure this route supports payloads
+if (
+  !['WH', 'MCTP', 'FAST_MCTP'].includes(quote.type) ||
+  quote.toChain === 'hypercore' ||                        // HyperCore builds its own payload
+  (quote.type === 'MCTP' && quote.cheaperChain === quote.fromChain) || // lock-fee MCTP rejects payload
+  quote.hasAuction                                        // auction paths ignore caller payload
+) {
+  throw new Error('Custom payloads only work on WH, with-fee non-auction MCTP, or non-auction Fast MCTP (never HyperCore)');
+}
+
+const tx = await swapFromEvm(
+  quote,
+  fromAddress,
+  destAddr,
+  null,          // optional referrer
+  signer,
+  undefined,     // optional permit
+  undefined,     // optional overrides (gas settings)
+  customPayload
+);
+```
+
+> **Important**
+> - Custom payloads on EVM are supported only on [Wormhole swaps](/architecture/wh-swap) and on MCTP or Fast MCTP routes when the swap is with-fee (`quote.cheaperChain !== quote.fromChain`) and non-auction (`quote.hasAuction === false`).
+> - Payloads are rejected when `quote.hasAuction === true`, when the route uses lock-fee mode (`quote.cheaperChain === quote.fromChain`), or when the destination is HyperCore (`quote.toChain === 'hypercore'`, which always builds its own payload).
+> - [Swift](/architecture/swift), Shuttle, and MONO_CHAIN routes do not forward caller payloads.
+> - HyperCore deposits only occur on MCTP or Fast MCTP routes, and they always ignore caller payloads by constructing their own fixed payload.
+
+### Solana
+
+On Solana, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/solana/solanaSwap.ts#L328) can only be used for MCTP swaps. It is passed through the `instructionOptions.customPayload` field during `swapFromSolana` and then forwarded to `createMctpFromSolanaInstructions` when the quote type is MCTP.
+
+**Example:**
+
+```ts
+import { swapFromSolana } from '@mayanfinance/swap-sdk';
+
+const customPayload = Buffer.from('hello-world');
+
+// ensure this route supports payloads
+if (quote.type !== 'MCTP' || quote.hasAuction) {
+  throw new Error('Custom payloads only work on non-auction MCTP quotes from Solana');
+}
+
+const result = await swapFromSolana(
+  quote,
+  swapperWalletAddress,
+  destinationAddress,
+  referrerAddresses,
+  signTransaction,
+  connection,
+  undefined,   // extraRpcs
+  undefined,   // sendOptions
+  undefined,   // jitoOptions
+  { customPayload }      // forwarded only for MCTP routes
+);
+```
+
+> **Important**
+> - Caller-supplied `customPayload` on Solana is supported only with-fee, non-auction MCTP swaps.
+> - Lock-fee MCTP paths (`cheaperChain === 'solana'`) do not forward the payload, and auction MCTP quotes (`quote.hasAuction === true`) also skip it.
+> - All other Solana routes either reject caller payloads or construct their own fixed payload. This includes Swift, MONO_CHAIN, Wormhole-from-Solana, and HyperCore.
+
+### Sui
+
+On Sui, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/sui/suiSwap.ts#L19) is passed directly as the payload argument to `createSwapFromSuiMoveCalls`. This function only supports MCTP quotes (plus the HyperCore special case). Any other quote type will cause an immediate error.
+
+**Example:**
+
+```ts
+import { createSwapFromSuiMoveCalls } from '@mayanfinance/swap-sdk';
+
+const customPayload = Buffer.from('hello-world');
+
+// ensure this route supports payloads
+if (
+  quote.type !== 'MCTP' ||
+  quote.cheaperChain === 'sui' ||    // lock-fee path won’t forward
+  quote.hasAuction ||               // auction path won’t forward
+  quote.toChain === 'hypercore'     // HyperCore builds its own payload
+) {
+  throw new Error('Custom payloads are only forwarded on non-auction, with-fee MCTP quotes from Sui (non-HyperCore)');
+}
+
+const tx = await createSwapFromSuiMoveCalls(
+  quote,
+  swapperWalletAddress,
+  destinationAddress,
+  referrerAddresses,
+  customPayload,
+  suiClient
+);
+```
+
+> **Important**
+> - Custom payloads on Sui are forwarded only on with-fee, non-auction MCTP swaps.
+> - Lock-fee and auction MCTP paths do not forward the payload. These routes may log the payload for observability, but it is not included in the bridge call.
+> - HyperCore routes construct their own fixed payload, and any non-MCTP quote passed to `createSwapFromSuiMoveCalls` will throw an error.
+
+## Summary
+
+Custom payloads let you attach application-specific data to supported Mayan swap routes. Only specific paths accept payloads, and each chain has its own conditions. Always confirm the quote type and route before attaching a payload, and ensure your destination logic is prepared to decode the data you send.
