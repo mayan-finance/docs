@@ -17,10 +17,10 @@ A custom payload is an arbitrary sequence of bytes attached to a supported swap 
 
 ### Core guarantees
 
-- Payloads are forwarded verbatim; the SDK does not hash, transform, or validate them.
-- In [MCTP](/architecture/mctp) and Fast MCTP routes, the `payloadType` enum is set accordingly when a payload is present.
-- The bytes are included in the cross-chain message or transaction and delivered to the destination program or contract.
-- Some routes do not accept caller-supplied payloads or build their own fixed payload (such as HyperCore).
+- Payloads are forwarded verbatim; the SDK does not transform, validate, or decode them. Some routes hash the payload into an order key for verification or indexing, but the raw bytes sent cross-chain are unchanged.
+- When a route supports payloads (e.g., [MCTP](/architecture/mctp), Fast MCTP, Swift), it sets the `payloadType` enum accordingly.
+- The raw payload bytes are included in the cross-chain message or transaction and reach the destination exactly as provided. Your destination logic is responsible for parsing them.
+- Some routes do not accept caller-supplied payloads, may ignore them, or construct their own fixed payload (such as HyperCore or specific lock-fee/auction paths).
 
 ## Why use a custom payload?
 
@@ -36,7 +36,7 @@ Payloads should stay small. Each chain and route has its own message-size limits
 
 ### EVM
 
-On EVM, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/evm/evmSwap.ts#L362) can be included in calls such as `swapFromEvm`, `getSwapFromEvmTxPayload`, or `getMctpFromEvmTxPayload`.
+On EVM, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/evm/evmSwap.ts#L365) can be included in calls such as `swapFromEvm`, `getSwapFromEvmTxPayload`, or `getMctpFromEvmTxPayload`.
 
 **Example:**
 
@@ -47,13 +47,18 @@ const customPayload = Buffer.from('hello-world');
 
 // ensure this route supports payloads
 if (
-  !['WH', 'MCTP', 'FAST_MCTP'].includes(quote.type) ||
-  quote.toChain === 'hypercore' ||                        // HyperCore builds its own payload
-  (quote.type === 'MCTP' && quote.cheaperChain === quote.fromChain) || // lock-fee MCTP rejects payload
-  quote.hasAuction                                        // auction paths ignore caller payload
+  !['WH', 'MCTP', 'FAST_MCTP', 'SWIFT'].includes(quote.type) ||
+  quote.toChain === 'hypercore' ||                               // HyperCore builds its own payload
+  (['MCTP', 'FAST_MCTP'].includes(quote.type) && (
+    quote.cheaperChain === quote.fromChain ||                    // lock-fee MCTP/FastMCTP reject payloads
+    quote.hasAuction                                             // auctioned MCTP/FastMCTP won't forward payloads
+  ))
 ) {
-  throw new Error('Custom payloads only work on WH, with-fee non-auction MCTP, or non-auction Fast MCTP (never HyperCore)');
+  throw new Error(
+    'Payloads are supported on WH, Swift, and with-fee, non-auction MCTP/Fast MCTP (never HyperCore).'
+  );
 }
+
 
 const tx = await swapFromEvm(
   quote,
@@ -68,10 +73,10 @@ const tx = await swapFromEvm(
 ```
 
 > **Important**
-> - Custom payloads on EVM are supported only on [Wormhole swaps](/architecture/wh-swap) and on MCTP or Fast MCTP routes when the swap is with-fee (`quote.cheaperChain !== quote.fromChain`) and non-auction (`quote.hasAuction === false`).
-> - Payloads are rejected when `quote.hasAuction === true`, when the route uses lock-fee mode (`quote.cheaperChain === quote.fromChain`), or when the destination is HyperCore (`quote.toChain === 'hypercore'`, which always builds its own payload).
-> - [Swift](/architecture/swift), Shuttle, and MONO_CHAIN routes do not forward caller payloads.
-> - HyperCore deposits only occur on MCTP or Fast MCTP routes, and they always ignore caller payloads by constructing their own fixed payload.
+> - On EVM, payloads are supported on [Wormhole](/architecture/wh-swap), [Swift](/architecture/swift), and on MCTP/Fast MCTP only when the route is with-fee (`quote.cheaperChain !== quote.fromChain`) and non-auction (`quote.hasAuction === false`).
+> - MCTP and Fast MCTP reject payloads in lock-fee or auction mode, and HyperCore destinations (`quote.toChain === 'hypercore'`) always ignore caller payloads by building their own fixed payload.
+> - Shuttle and MONO_CHAIN routes do not support payloads.
+> - Swift-specific: payloads are forwarded verbatim, hashed into the order key, and for `payloadType = 2`, the destination funds are staged until a settlement call releases them.
 
 ### Solana
 
@@ -85,8 +90,12 @@ import { swapFromSolana } from '@mayanfinance/swap-sdk';
 const customPayload = Buffer.from('hello-world');
 
 // ensure this route supports payloads
-if (quote.type !== 'MCTP' || quote.hasAuction) {
-  throw new Error('Custom payloads only work on non-auction MCTP quotes from Solana');
+if (
+  quote.type !== 'MCTP' ||
+  quote.hasAuction ||                    // auction paths skip payloads
+  quote.cheaperChain === 'solana'        // lock-fee MCTP won't forward payloads
+) {
+  throw new Error('Custom payloads only work on with-fee, non-auction MCTP quotes from Solana');
 }
 
 const result = await swapFromSolana(
@@ -106,7 +115,7 @@ const result = await swapFromSolana(
 > **Important**
 > - Caller-supplied `customPayload` on Solana is supported only with-fee, non-auction MCTP swaps.
 > - Lock-fee MCTP paths (`cheaperChain === 'solana'`) do not forward the payload, and auction MCTP quotes (`quote.hasAuction === true`) also skip it.
-> - All other Solana routes either reject caller payloads or construct their own fixed payload. This includes Swift, MONO_CHAIN, Wormhole-from-Solana, and HyperCore.
+> - All other Solana routes either reject caller payloads or construct their own fixed payload. This includes MONO_CHAIN, Wormhole-from-Solana, and HyperCore.
 
 ### Sui
 
@@ -126,7 +135,7 @@ if (
   quote.hasAuction ||               // auction path won’t forward
   quote.toChain === 'hypercore'     // HyperCore builds its own payload
 ) {
-  throw new Error('Custom payloads are only forwarded on non-auction, with-fee MCTP quotes from Sui (non-HyperCore)');
+  throw new Error('Custom payloads are only forwarded on with-fee, non-auction MCTP quotes from Sui (non-HyperCore)');
 }
 
 const tx = await createSwapFromSuiMoveCalls(
