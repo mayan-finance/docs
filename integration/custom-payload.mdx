@@ -92,8 +92,8 @@ const customPayload = Buffer.from('hello-world');
 // ensure this route supports payloads
 if (
   quote.type !== 'MCTP' ||
-  quote.hasAuction ||                    // auction paths skip payloads
-  quote.cheaperChain === 'solana'        // lock-fee MCTP won't forward payloads
+  quote.hasAuction ||               // auction paths skip payloads
+  quote.cheaperChain === 'solana'   // lock-fee MCTP won't forward payloads
 ) {
   throw new Error('Custom payloads only work on with-fee, non-auction MCTP quotes from Solana');
 }
@@ -105,10 +105,10 @@ const result = await swapFromSolana(
   referrerAddresses,
   signTransaction,
   connection,
-  undefined,   // extraRpcs
-  undefined,   // sendOptions
-  undefined,   // jitoOptions
-  { customPayload }      // forwarded only for MCTP routes
+  undefined,         // extraRpcs
+  undefined,         // sendOptions
+  undefined,         // jitoOptions
+  { customPayload }  // forwarded only for MCTP routes
 );
 ```
 
@@ -131,7 +131,7 @@ const customPayload = Buffer.from('hello-world');
 // ensure this route supports payloads
 if (
   quote.type !== 'MCTP' ||
-  quote.cheaperChain === 'sui' ||    // lock-fee path won’t forward
+  quote.cheaperChain === 'sui' ||   // lock-fee path won’t forward
   quote.hasAuction ||               // auction path won’t forward
   quote.toChain === 'hypercore'     // HyperCore builds its own payload
 ) {
