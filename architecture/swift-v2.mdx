@@ -1,0 +1,76 @@
+---
+title: 'Swift v2'
+description: 'Lightning fast, intent-based bridging and cross-chain swaps with Mayan’s Swift v2.'
+---
+
+**What it is:**\
+Swift v2 is Mayan's upgraded intent-based protocol for cross-chain swaps. It uses the solver liquidity already available on the destination chain and introduces a cleaner two-contract architecture for more predictable settlement. Instead of bridging tokens or minting wrapped assets, solvers compete to deliver the user's output directly on the destination chain, and Swift v2 later unlocks the user's original funds on the source chain.
+
+This model removes the need for users to route through bridges or supply destination gas. Swift focuses on fast execution, guaranteed output amounts, and a simple integration path through the [Mayan SDK](https://github.com/mayan-finance/swap-sdk).
+
+**What's New in Swift v2:**
+
+| Aspect                   | Swift v1                            | Swift v2                                          |
+| ------------------------ | ----------------------------------- | ------------------------------------------------- |
+| **Architecture**         | Single contract per chain           | Two-contract structure (source + destination)     |
+| **Settlement Flow**      | Unlock tied directly to fulfillment | Clearer, more consistent settlement across chains |
+| **Payload Handling**     | Basic support                       | Staging + settle step for payload swaps to validate the payload before final payout |
+| **Referrer Fees**        | Not supported                       | Built-in referrer-fee support                     |
+| **Integration Clarity**  | Some logic shared in one contract   | Cleaner separation of responsibilities            |
+| **Indexing / Analytics** | Less standardized                   | Destination-side reporting improved               |
+
+**How it works:**
+
+- A user starts a swap on the source chain, and the Swift v2 source contract locks the input tokens.
+- An [auction](/architecture/auction) is run on Solana, where solvers submit bids based on the output they can deliver on the destination chain.
+- The winning solver fulfills the swap directly on the destination chain using their own liquidity, giving the user an instant payout.
+- The destination contract posts fulfillment data back to Solana, and Swift v2 emits an unlock message releasing the locked funds on the source chain.
+- For payload-enabled swaps, the destination contract stages the payout and completes it after a settlement step. The source unlock still occurs after the VAA, as usual.
+
+**Key advantages:**
+
+- Fast, predictable cross-chain settlement powered by solver liquidity on the destination chain.
+- No bridge liquidity requirements, wrapping, or mint/burn mechanics.
+- Competitive solver participation ensures reliable execution and guaranteed output amounts.
+- Simple integration handled entirely through the SDK, with minimal on-chain assumptions.
+- Optional referrer-fee support for integrators.
+
+**Protocol fee:**\
+Swift v2 keeps the same protocol fee: 3 basis points (0.03%).
+
+### Swift v2 Contract Addresses
+
+<Tabs>
+  <Tab title="Source Contracts">
+    | Network       | Wormhole Chain ID | Source Contract Address                        |
+    | ------------- | ----------------- | ---------------------------------------------- |
+    | **Solana**    | 1                 | `BLZRi6frs4X4DNLw56V4EXai1b6QVESN1BhHBTYM9VcY` |
+    | **Ethereum**  | 2                 | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **BSC**       | 4                 | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Polygon**   | 5                 | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Avalanche** | 6                 | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Arbitrum**  | 23                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Optimism**  | 24                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Base**      | 30                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Linea**     | 38                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Unichain**  | 44                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **HyperEVM**  | 47                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+    | **Monad**     | 48                | `0x1c0c8cDA49eAF0304791A7258D95089b4543E6fC`   |
+  </Tab>
+  <Tab title="Destination Contracts">
+    | Network       | Wormhole Chain ID | Destination Contract Address                 |
+    | ------------- | ----------------- | -------------------------------------------- |
+    | **Solana**    | 1                 | —                                            |
+    | **Ethereum**  | 2                 | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **BSC**       | 4                 | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Polygon**   | 5                 | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Avalanche** | 6                 | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Arbitrum**  | 23                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Optimism**  | 24                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Base**      | 30                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Linea**     | 38                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Unichain**  | 44                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **HyperEVM**  | 47                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+    | **Monad**     | 48                | `0xf17Fb0d8e311Fb2A0Dbd85b73639B1018E954b6A` |
+  </Tab>
+</Tabs>
