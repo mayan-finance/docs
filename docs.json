@@ -45,7 +45,8 @@
           "architecture/relayers",
           "architecture/wh-swap",
           "architecture/mctp",
-          "architecture/swift"
+          "architecture/swift",
+          "architecture/swift-v2"
         ]
       },
       {
