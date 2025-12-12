@@ -78,7 +78,7 @@ const tx = await swapFromEvm(
 
 ### Solana
 
-On Solana, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/solana/solanaSwap.ts#L328) can only be used for MCTP swaps. It is passed through the `instructionOptions.customPayload` field during `swapFromSolana` and then forwarded to `createMctpFromSolanaInstructions` when the quote type is MCTP.
+On Solana, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/solana/solanaSwap.ts#L328) can only be used for MCTP swaps.
 
 **Example:**
 
