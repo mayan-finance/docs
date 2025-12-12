@@ -10,14 +10,14 @@ This model removes the need for users to route through bridges or supply destina
 
 **What's New in Swift v2:**
 
-| Aspect                   | Swift v1                            | Swift v2                                          |
-| ------------------------ | ----------------------------------- | ------------------------------------------------- |
-| **Architecture**         | Single contract per chain           | Two-contract structure (source + destination)     |
-| **Settlement Flow**      | Unlock tied directly to fulfillment | Clearer, more consistent settlement across chains |
-| **Payload Handling**     | Basic support                       | Staging + settle step for payload swaps to validate the payload before final payout |
-| **Referrer Fees**        | Not supported                       | Built-in referrer-fee support                     |
-| **Integration Clarity**  | Some logic shared in one contract   | Cleaner separation of responsibilities            |
-| **Indexing / Analytics** | Less standardized                   | Destination-side reporting improved               |
+| Aspect                   | Swift v1                                         | Swift v2                                                                            |
+| ------------------------ | ------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| **Architecture**         | Single contract per chain                        | Two-contract structure (source + destination)                                       |
+| **Settlement Flow**      | Unlock tied directly to fulfillment              | Clearer, more consistent settlement across chains                                   |
+| **Payload Handling**     | Basic support                                    | Staging + settle step for payload swaps to validate the payload before final payout |
+| **Referrer Fees**        | Collected from output token on destination chain | Collected from locked source assets and paid on source chain                        |
+| **Integration Clarity**  | Some logic shared in one contract                | Cleaner separation of responsibilities                                              |
+| **Indexing / Analytics** | Less standardized                                | Destination-side reporting improved                                                 |
 
 **How it works:**
 
