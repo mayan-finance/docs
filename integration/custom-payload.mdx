@@ -47,7 +47,7 @@ const customPayload = Buffer.from('hello-world');
 
 // ensure this route supports payloads
 if (
-  !['WH', 'MCTP', 'FAST_MCTP', 'SWIFT'].includes(quote.type) ||
+  !['MCTP', 'FAST_MCTP', 'SWIFT'].includes(quote.type) ||
   quote.toChain === 'hypercore' ||                               // HyperCore builds its own payload
   (['MCTP', 'FAST_MCTP'].includes(quote.type) && (
     quote.cheaperChain === quote.fromChain ||                    // lock-fee MCTP/FastMCTP reject payloads
@@ -55,7 +55,7 @@ if (
   ))
 ) {
   throw new Error(
-    'Payloads are supported on WH, Swift, and with-fee, non-auction MCTP/Fast MCTP (never HyperCore).'
+    'Payloads are supported on Swift, and with-fee, non-auction MCTP/Fast MCTP.'
   );
 }
 
@@ -73,7 +73,7 @@ const tx = await swapFromEvm(
 ```
 
 > **Important**
-> - On EVM, payloads are supported on [Wormhole](/architecture/wh-swap), [Swift](/architecture/swift), and on MCTP/Fast MCTP only when the route is with-fee (`quote.cheaperChain !== quote.fromChain`) and non-auction (`quote.hasAuction === false`).
+> - On EVM, payloads are supported on [Swift](/architecture/swift), and on MCTP/Fast MCTP only when the route is with-fee (`quote.cheaperChain !== quote.fromChain`) and non-auction (`quote.hasAuction === false`).
 > - MCTP and Fast MCTP reject payloads in lock-fee or auction mode, and HyperCore destinations (`quote.toChain === 'hypercore'`) always ignore caller payloads by building their own fixed payload.
 > - Shuttle and MONO_CHAIN routes do not support payloads.
 > - Swift-specific: payloads are forwarded verbatim, hashed into the order key, and for `payloadType = 2`, the destination funds are staged until a settlement call releases them.
