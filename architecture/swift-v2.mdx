@@ -21,7 +21,7 @@ This model removes the need for users to route through bridges or supply destina
 
 **How it works:**
 
-- A user starts a swap on the source chain, and the Swift v2 source contract locks the input tokens.
+- A user starts a swap on the source chain, and the Swift v2 source contract locks the input tokens. The input may first be swapped into the primary locked asset on the source chain (e.g., USDC or ETH); if the swap is later refunded, the user receives that converted asset rather than the original token.
 - An [auction](/architecture/auction) is run on Solana, where solvers submit bids based on the output they can deliver on the destination chain.
 - The winning solver fulfills the swap directly on the destination chain using their own liquidity, giving the user an instant payout.
 - The destination contract posts fulfillment data that is executed on the source chain, and Swift v2 emits an unlock message releasing the locked funds.
