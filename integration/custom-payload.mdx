@@ -78,7 +78,7 @@ const tx = await swapFromEvm(
 
 ### Solana
 
-On Solana, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/solana/solanaSwap.ts#L328) can only be used for MCTP swaps.
+On Solana, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/src/solana/solanaSwap.ts#L328) is supported on specific routes, including MCTP, Fast MCTP, and Swift v2, under route-specific conditions.
 
 **Example:**
 
@@ -89,11 +89,13 @@ const customPayload = Buffer.from('hello-world');
 
 // ensure this route supports payloads
 if (
-  quote.type !== 'MCTP' ||
+  !['MCTP', 'FAST_MCTP'].includes(quote.type) ||
   quote.hasAuction ||               // auction paths skip payloads
-  quote.cheaperChain === 'solana'   // lock-fee MCTP won't forward payloads
+  (quote.type === 'MCTP' && quote.cheaperChain === 'solana') // lock-fee MCTP won't forward payloads
 ) {
-  throw new Error('Custom payloads only work on with-fee, non-auction MCTP quotes from Solana');
+  throw new Error(
+    'Custom payloads only work on non-auction MCTP (with-fee) and non-auction Fast MCTP routes from Solana'
+  );
 }
 
 const result = await swapFromSolana(
@@ -106,7 +108,7 @@ const result = await swapFromSolana(
   undefined,         // extraRpcs
   undefined,         // sendOptions
   undefined,         // jitoOptions
-  { customPayload }  // forwarded only for MCTP routes
+  { customPayload }  // forwarded only for supported routes
 );
 ```
 
