@@ -48,9 +48,9 @@ const customPayload = Buffer.from('hello-world');
 // ensure this route supports payloads
 if (
   !['MCTP', 'FAST_MCTP', 'SWIFT'].includes(quote.type) ||
-  quote.toChain === 'hypercore' ||                              // HyperCore builds its own payload
+  quote.toChain === 'hypercore' ||                                     // HyperCore builds its own payload
   (quote.type === 'MCTP' && quote.cheaperChain === quote.fromChain) || // lock-fee MCTP rejects payloads
-  (['MCTP', 'FAST_MCTP'].includes(quote.type) && quote.hasAuction)    // destination swap/auction paths won't forward payloads
+  (['MCTP', 'FAST_MCTP'].includes(quote.type) && quote.hasAuction)     // destination swap/auction paths won't forward payloads
 ) {
   throw new Error(
     'Payloads are supported on Swift, non-auction Fast MCTP, and with-fee, non-auction MCTP.'
@@ -90,7 +90,7 @@ const customPayload = Buffer.from('hello-world');
 // ensure this route supports payloads
 if (
   !['MCTP', 'FAST_MCTP'].includes(quote.type) ||
-  quote.hasAuction ||               // auction paths skip payloads
+  quote.hasAuction ||                                        // auction paths skip payloads
   (quote.type === 'MCTP' && quote.cheaperChain === 'solana') // lock-fee MCTP won't forward payloads
 ) {
   throw new Error(
@@ -113,7 +113,8 @@ const result = await swapFromSolana(
 ```
 
 > **Important**
-> - Caller-supplied `customPayload` on Solana is supported only with-fee, non-auction MCTP swaps.
+> - Caller-supplied `customPayload` on Solana is supported on non-auction MCTP (with-fee) and non-auction Fast MCTP routes.
+> - Swift v2 supports custom payloads, but `swapFromSolana` does not forward them. To include a payload with Swift v2 on Solana, call `createSwiftFromSolanaInstructions` directly and provide both `customPayload` and `customPayloadAccount`.
 > - Lock-fee MCTP paths (`cheaperChain === 'solana'`) do not forward the payload, and auction MCTP quotes (`quote.hasAuction === true`) also skip it.
 > - All other Solana routes either reject caller payloads or construct their own fixed payload. This includes MONO_CHAIN, Wormhole-from-Solana, and HyperCore.
 
