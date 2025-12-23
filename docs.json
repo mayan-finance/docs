@@ -45,18 +45,20 @@
           "architecture/relayers",
           "architecture/wh-swap",
           "architecture/mctp",
-          "architecture/swift"
+          "architecture/swift",
+          "architecture/swift-v2"
         ]
       },
       {
         "group": "INTEGRATION",
         "pages": [
-          "integration/quote-api",
-          "integration/explorer-api",
-          "integration/forwarder-contract",
-          "integration/referral",
-          "integration/swap-widget",
-          "link/swap"
+        "integration/quote-api",
+        "integration/explorer-api",
+        "integration/forwarder-contract",
+        "integration/custom-payload",
+        "integration/referral",
+        "integration/swap-widget",
+        "link/swap"
         ]
       },
       {
