@@ -8,7 +8,7 @@ Before performing a swap we need find the best route and get the swap rate for t
 
 ### API Reference
 
-<Card title="Swagger UI" icon="circle-s" color="#83E72E" horizontal href="https://price-api.mayan.finance/swagger">
+<Card color="#83E72E" icon="circle-s" horizontal href="https://price-api.mayan.finance/swagger" title="Swagger UI">
   
 </Card>
 
@@ -24,19 +24,26 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrM
 
 #### List of request parameters:
 
-| Parameter     | Type   | Required | Description                                                                                              |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------- |
-| solanaProgram | String | Yes      | Mayan [Wormhole Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                  |
-| amountIn      | Number | Yes      | Human readable amount of input token (e.g for 100 USDC it should be 100)                                 |
-| fromToken     | String | Yes      | Token address of input token                                                                             |
-| fromChain     | String | Yes      | Wormhole chain ID of source network                                                                      |
-| toToken       | String | Yes      | Token address of output Token                                                                            |
-| toChain       | String | Yes      | Wormhole chain ID of destination network                                                                 |
-| slippageBps   | Number | Yes      | Maximum slippage in bps, If the output token amount exceeds the slippage the swap will refund, (Max=100) |
-| referrer      | String | No       | Referrer address that receives the referrer fee                                                          |
-| gasDrop       | Number | No       | Default is 0. the amount of gas drop that must be delivered to user on delivered on destination network  |
+| Parameter          | Type    | Required | Description                                                                                                                        |
+| ------------------ | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| solanaProgram      | String  | Yes      | Mayan [Wormhole Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                                            |
+| amountIn           | Number  | Yes      | Human readable amount of input token (e.g for 100 USDC it should be 100)                                                           |
+| fromToken          | String  | Yes      | Token address of input token                                                                                                       |
+| fromChain          | String  | Yes      | Wormhole chain ID of source network                                                                                                |
+| toToken            | String  | Yes      | Token address of output Token                                                                                                      |
+| toChain            | String  | Yes      | Wormhole chain ID of destination network                                                                                           |
+| slippageBps        | Number  | Yes      | Maximum slippage in bps, If the output token amount exceeds the slippage the swap will refund, (Max=100)                           |
+| referrer           | String  | No       | Referrer address that receives the referrer fee                                                                                    |
+| referrerBps        | Number  | No       | Default is 0, The expected basis points the integrator intends to earn through the referral program                                |
+| gasDrop            | Number  | No       | Default is 0. the amount of gas drop that must be delivered to user on delivered on destination network                            |
+| fullList           | Boolean | No       | Default is `false, `enables returning all available quote options instead of the default limited (fastest and best-return) results |
+| destinationAddress | String  | No       | Helps provide a more accurate quote, for example by checking whether the Solana ATA exists.                                        |
 
 #### Response:
+
+> The quote service returns an array of quotes. By default, it includes at most two items: the first is the fastest option, and the second is the best-return quote. If the fastest option also provides the best return, only one quote is returned.
+>
+> It is possible to set the `fullList` request parameter to `true` to retrieve all available quote options. In this case, more than two items may be returned, and no sorting is applied. Interfaces can apply their own sorting logic by considering the `etaSeconds` and `expectedAmountOut` fields in each item.
 
 ```json
 {
@@ -159,7 +166,7 @@ The following table shows the common fields of response:
 
 Mayan is an intent-based protocol and supports any token as input or output, provided there is sufficient liquidity on the source or destination chains. We also maintain an approved, whitelisted token list for convenience:
 
-<Card title="Swagger UI" icon="circle-s" color="#83E72E" horizontal href="https://price-api.mayan.finance/swagger/#/default/TokensController_getTokens">
+<Card color="#83E72E" icon="circle-s" horizontal href="https://price-api.mayan.finance/swagger/#/default/TokensController_getTokens" title="Swagger UI">
   
 </Card>
 
@@ -175,7 +182,7 @@ To get the aggregated list of tokens from all chains remove `chain` from in the 
 
 ### Supported Chains
 
-#### `GET` `sia.mayan.finance/v6/init`
+#### `GET` `sia.mayan.finance/v10/init`
 
 Returns configuration for every supported chain, including whether it can be used as a origin or destination\*\* \*\*chain.
 
@@ -183,7 +190,7 @@ Returns configuration for every supported chain, including whether it can be use
 
 ```powershell
 curl -X 'GET' \
-  'https://sia.mayan.finance/v6/init' \
+  'https://sia.mayan.finance/v10/init' \
   -H 'accept: application/json'
 ```
 
