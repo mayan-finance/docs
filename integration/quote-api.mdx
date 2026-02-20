@@ -27,7 +27,7 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrM
 | Parameter          | Type    | Required | Description                                                                                                                        |
 | ------------------ | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | solanaProgram      | String  | Yes      | Mayan [Wormhole Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                                            |
-| amountIn           | Number  | Yes      | Human readable amount of input token (e.g for 100 USDC it should be 100)                                                           |
+| amountIn64         | String  | Yes      | is the token amount encoded in base units (smallest denomination), 1000000 USDC equals 1 USDC                                      |
 | fromToken          | String  | Yes      | Token address of input token                                                                                                       |
 | fromChain          | String  | Yes      | Wormhole chain ID of source network                                                                                                |
 | toToken            | String  | Yes      | Token address of output Token                                                                                                      |
