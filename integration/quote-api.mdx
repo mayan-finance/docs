@@ -38,6 +38,7 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrM
 | gasDrop            | Number  | No       | Default is 0. the amount of gas drop that must be delivered to user on delivered on destination network                            |
 | fullList           | Boolean | No       | Default is `false, `enables returning all available quote options instead of the default limited (fastest and best-return) results |
 | destinationAddress | String  | No       | Helps provide a more accurate quote, for example by checking whether the Solana ATA exists.                                        |
+| apiKey             | String  | No       | Defined an API that prevents the **rate-limit-exceeded** error on a per-IP basis.                                                  |
 
 #### Response:
 
@@ -202,3 +203,7 @@ Two key fields indicate the chain's functionality within the platform:
 - `destinationActive`: Specifies whether the chain is supported as a destination chain.
 
 Use this endpoint to determine compatibility and availability of specific chains for your operations.
+
+### API Key:
+
+Currently, API access is provided manually. Integrators who wish to obtain an API key should send a request email to [**support@mayan.finance**](mailto:support@mayan.finance). After receiving the request, our team will review it and contact you to complete the process. Once approved, we will generate an **API key** and send it to you via email so you can start using the API
