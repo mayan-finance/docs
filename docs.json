@@ -31,6 +31,25 @@
   },
   "favicon": "/favicon.jpg",
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Community",
+          "icon": "discord",
+          "href": "https://discord.com/invite/MayanFinance"
+        },
+        {
+          "anchor": "Blog",
+          "icon": "newspaper",
+          "href": "https://mayan.finance/blog"
+        },
+        {
+          "anchor": "X",
+          "icon": "x-twitter",
+          "href": "https://x.com/mayan"
+        }
+      ]
+    },
     "groups": [
       {
         "group": " ",
@@ -41,24 +60,24 @@
       {
         "group": "ARCHITECTURE",
         "pages": [
+          "architecture/swift-v2",
+          "architecture/swift",
           "architecture/auction",
           "architecture/relayers",
-          "architecture/wh-swap",
           "architecture/mctp",
-          "architecture/swift",
-          "architecture/swift-v2"
+          "architecture/wh-swap"
         ]
       },
       {
         "group": "INTEGRATION",
         "pages": [
-        "integration/quote-api",
-        "integration/explorer-api",
-        "integration/forwarder-contract",
-        "integration/custom-payload",
-        "integration/referral",
-        "integration/swap-widget",
-        "link/swap"
+          "integration/quote-api",
+          "integration/explorer-api",
+          "integration/forwarder-contract",
+          "integration/custom-payload",
+          "integration/referral",
+          "integration/swap-widget",
+          "link/swap"
         ]
       },
       {
@@ -78,26 +97,7 @@
           "link/brand"
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Community",
-          "href": "https://discord.com/invite/MayanFinance",
-          "icon": "discord"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://blog.mayan.finance/",
-          "icon": "newspaper"
-        },
-        {
-          "anchor": "X",
-          "href": "https://x.com/mayan",
-          "icon": "x-twitter"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",

@@ -1,11 +1,11 @@
 ---
-title: "Custom Payloads"
-description: "Learn how to attach custom payloads to Mayan swaps and bridges, which routes support them, and how to pass raw payload bytes through the EVM, Solana, and Sui SDK integrations."
+title: "Zaps (Custom Payloads) "
+description: "Learn how to attach custom payloads, to Mayan swaps, which routes support them, and how to pass raw payload bytes through the EVM, Solana, and Sui SDK integrations."
 ---
 
 ## Overview
 
-Custom payloads let you attach a small piece of data to a cross-chain swap or bridge. This data travels with the transfer and can be read by your destination contract or backend once the funds arrive.
+Custom payloads let you attach a small piece of data to a cross-chain swap. This data travels with the transfer and can be read by your destination contract or backend once the funds arrive.
 
 The [Swap SDK](https://github.com/mayan-finance/swap-sdk) sends this payload as raw bytes. It does not interpret or modify the contents, and your destination logic is responsible for decoding them. Some routes, such as HyperCore deposits, construct their own fixed payload instead.
 
@@ -22,13 +22,13 @@ A custom payload is an arbitrary sequence of bytes attached to a supported swap 
 - The raw payload bytes are included in the cross-chain message or transaction and reach the destination exactly as provided. Your destination logic is responsible for parsing them.
 - Some routes do not accept caller-supplied payloads, may ignore them, or construct their own fixed payload (such as HyperCore or specific lock-fee/auction paths).
 
-## Why use a custom payload?
+## Why use custom payloads?
 
 Custom payloads let you attach additional context to a transfer, such as user metadata, routing parameters, or application-specific instructions for your destination logic. If your integration does not require extra data on the destination chain, you can omit it.
 
 Only specific swap routes support caller-supplied payloads; others will reject or override the bytes.
 
-## Use Custom Payloads in the Swap SDK
+## Use custom payloads in the Swap SDK
 
 You can attach a custom payload from EVM, Solana, or Sui by passing a `Buffer` or `Uint8Array` to the relevant SDK call. Payload support depends on the chain and the route type, so refer to the sections below for precise behavior.
 
@@ -39,8 +39,8 @@ Payloads should stay small. Each chain and route has its own message-size limits
 To ensure you receive a quote that supports custom payloads, you must pass `payload: 'true'` in the `quoteOptions` parameter when using `fetchQuote` or `generateFetchQuoteUrl`.
 
 > **Important**
+>
 > - Custom payloads are not supported by all route types provided by Mayan. Therefore, it is important to explicitly indicate that you intend to use custom payloads so the quote service can return only routes that support them.
-
 
 ### EVM
 
@@ -111,7 +111,6 @@ const tx = await createSwapFromSuiMoveCalls(
 );
 ```
 
-
 ## Summary
 
-Custom payloads let you attach application-specific data to supported Mayan swap routes. Only specific paths accept payloads, and each chain has its own conditions. Always confirm the quote type and route before attaching a payload, and ensure your destination logic is prepared to decode the data you send.
+Zaps let you attach application-specific data to supported Mayan swap routes. Only specific paths accept payloads, and each chain has its own conditions. Always confirm the quote type and route before attaching a payload, and ensure your destination logic is prepared to decode the data you send.
