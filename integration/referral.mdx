@@ -7,7 +7,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 ---
 
-## **Swift V1 (Current Live Version)**
+## **Swift V1 (will deprecated in favour of V2)**
 
 **Fee Collection**
 
@@ -21,7 +21,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 ---
 
-## **Swift V2 (Coming Soon)**
+## **Swift V2**
 
 **Fee Collection**
 
@@ -99,7 +99,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 You must prepare a referral address for each VM type:
 
-```
+```text
 const referrerAddresses = {
   solana: 'VALID_SOLANA_WALLET_ADDRESS',
   evm: 'VALID_EVM_WALLET_ADDRESS',
@@ -113,7 +113,7 @@ const referrerAddresses = {
 - Set your desired referral fee (in bps) as `"referrerBps"`.
 - **Note:** Always use the Solana address as your referrer, regardless of source or destination chain (even for EVM → EVM routes).
 
-```
+```text
 const quote = await fetchQuote({
   ...
   referrer: referrerAddresses.solana,
@@ -126,7 +126,7 @@ const quote = await fetchQuote({
 
 All transaction or bridge functions in the SDK accept an optional `referrerAddresses` parameter:
 
-```
+```text
 type ReferrerAddresses = {
   solana: string;
   evm: string;
@@ -140,6 +140,18 @@ The SDK will automatically determine which wallet to use based on the selected b
 This ensures referral fees are correctly routed, regardless of the bridge type or source/destination chains.
 
 ---
+
+<Warning>
+  Please note that your Solana referrer address must have associated token accounts (ATAs) for USDC, USDT, and WETH. You can create these ATAs by sending a small (dust) amount of each SPL token to your referrer address.
+
+  If these ATAs are not initialized, you may lose your referral bps.
+
+  SPL token mint addresses:
+
+  - USDC: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+  - USDT: Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
+  - WETH: 7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs
+</Warning>
 
 <Info>
   Please check [Mayan SDK](https://github.com/mayan-finance/swap-sdk) and [widget](/integration/swap-widget) to see how you can set your referrer address
