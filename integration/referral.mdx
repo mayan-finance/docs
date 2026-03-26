@@ -26,6 +26,8 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 **Fee Collection**
 
 - Fees are collected on the **source chain** once the bridge is successfully completed.
+- Fees are collected in the fee manager contract and can be withdrawn using this tool:\
+  [https://explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift)
 - Collected via the **locked assets** (e.g., USDC, ETH).
 
 **Fee Rate**
@@ -99,7 +101,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 You must prepare a referral address for each VM type:
 
-```
+```text
 const referrerAddresses = {
   solana: 'VALID_SOLANA_WALLET_ADDRESS',
   evm: 'VALID_EVM_WALLET_ADDRESS',
@@ -113,7 +115,7 @@ const referrerAddresses = {
 - Set your desired referral fee (in bps) as `"referrerBps"`.
 - **Note:** Always use the Solana address as your referrer, regardless of source or destination chain (even for EVM → EVM routes).
 
-```
+```text
 const quote = await fetchQuote({
   ...
   referrer: referrerAddresses.solana,
@@ -126,7 +128,7 @@ const quote = await fetchQuote({
 
 All transaction or bridge functions in the SDK accept an optional `referrerAddresses` parameter:
 
-```
+```text
 type ReferrerAddresses = {
   solana: string;
   evm: string;
