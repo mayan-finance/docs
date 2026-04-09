@@ -2,7 +2,7 @@
 title: "Quote API"
 ---
 
-We highly recommand using [Mayan SDK](https://github.com/mayan-finance/swap-sdk) for integration as it simplfies the integration process.
+We highly recommend using [Mayan SDK](https://github.com/mayan-finance/swap-sdk) for integration as it simplifies the integration process.
 
 Before performing a swap we need find the best route and get the swap rate for the token pair using quote API.
 
@@ -14,31 +14,40 @@ Before performing a swap we need find the best route and get the swap rate for t
 
 ### Example:
 
-The request to get the quote for swapping BNB tokens from BNB Smart Chain (BSC) to receive USDC tokens on Solana would be like this:
+The request to get the quote for swapping 100 USDC on Avalanche to receive SOL on Solana would be like this:
 
 #### Request:
 
 ```powershell
-curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf&forwarderAddress=0x0654874eb7F59C6f5b39931FC45dC45337c967c3&amountIn=100&fromToken=0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e&fromChain=avalanche&toToken=0x0000000000000000000000000000000000000000&toChain=solana&slippageBps=300&referrer=7HN4qCvG2dP5oagZRxj2dTGPhksgRnKCaLPjtjKEr1Ho&gasDrop=0&gasless=true'
+curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?amountIn=100&fromToken=0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e&fromChain=avalanche&toToken=0x0000000000000000000000000000000000000000&toChain=solana&slippageBps=300&gasDrop=0&swift=true&mctp=true&fastMctp=true&wormhole=true&solanaProgram=FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf&forwarderAddress=0x337685fdaB40D39bd02028545a4FfA7D287cC3E2&sdkVersion=13_1_0'
 ```
 
 #### List of request parameters:
 
 | Parameter          | Type    | Required | Description                                                                                                                        |
 | ------------------ | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| solanaProgram      | String  | Yes      | Mayan [Wormhole Swap](/architecture/wh-swap#wh-swap-contract-addresses) program address                                            |
-| amountIn64         | String  | Yes      | is the token amount encoded in base units (smallest denomination), 1000000 USDC equals 1 USDC                                      |
-| fromToken          | String  | Yes      | Token address of input token                                                                                                       |
-| fromChain          | String  | Yes      | Wormhole chain ID of source network                                                                                                |
-| toToken            | String  | Yes      | Token address of output Token                                                                                                      |
-| toChain            | String  | Yes      | Wormhole chain ID of destination network                                                                                           |
-| slippageBps        | Number  | Yes      | Maximum slippage in bps, If the output token amount exceeds the slippage the swap will refund, (Max=100)                           |
-| referrer           | String  | No       | Referrer address that receives the referrer fee                                                                                    |
-| referrerBps        | Number  | No       | Default is 0, The expected basis points the integrator intends to earn through the referral program                                |
-| gasDrop            | Number  | No       | Default is 0. the amount of gas drop that must be delivered to user on delivered on destination network                            |
-| fullList           | Boolean | No       | Default is `false, `enables returning all available quote options instead of the default limited (fastest and best-return) results |
+| amountIn           | Number  | Yes*     | Input amount in human-readable format (e.g. `100` for 100 USDC). Either `amountIn` or `amountIn64` must be provided.               |
+| amountIn64         | String  | Yes*     | Input amount in base units (smallest denomination, e.g. `100000000` for 100 USDC). Either `amountIn` or `amountIn64` must be provided. |
+| fromToken          | String  | Yes      | Token address on the source chain (use `0x0000000000000000000000000000000000000000` for native tokens)                              |
+| fromChain          | String  | Yes      | Source chain name (e.g. `solana`, `ethereum`, `bsc`, `avalanche`, `arbitrum`, `base`, `optimism`, `polygon`, `sui`)                |
+| toToken            | String  | Yes      | Token address on the destination chain                                                                                              |
+| toChain            | String  | Yes      | Destination chain name                                                                                                              |
+| slippageBps        | Number  | Yes*     | Maximum slippage in basis points (e.g. `300` = 3%, max `500`). Either `slippageBps` or `slippage` must be provided.                |
+| slippage           | Number  | Yes*     | Maximum slippage as a decimal (e.g. `0.03` = 3%). Either `slippageBps` or `slippage` must be provided.                             |
+| swift              | Boolean | No       | Enable [Swift](/architecture/swift) routes                                                                                          |
+| mctp               | Boolean | No       | Enable [MCTP](/architecture/mctp) routes                                                                                            |
+| fastMctp           | Boolean | No       | Enable Fast MCTP routes                                                                                                             |
+| wormhole           | Boolean | No       | Enable [Wormhole Swap](/architecture/wh-swap) routes                                                                                |
+| gasless            | Boolean | No       | Enable gasless swap mode                                                                                                            |
+| solanaProgram      | String  | No       | Mayan Solana program address                                                                                                        |
+| forwarderAddress   | String  | No       | Mayan Forwarder contract address                                                                                                    |
+| sdkVersion         | String  | No       | SDK version in `major_minor_patch` format (e.g. `13_1_0`)                                                                          |
+| referrer           | String  | No       | Referrer Solana address that receives the referrer fee                                                                              |
+| referrerBps        | Number  | No       | Default is 0. The basis points the integrator earns through the referral program                                                    |
+| gasDrop            | Number  | No       | Default is 0. Amount of native gas to deliver to the user on the destination chain                                                  |
+| fullList           | Boolean | No       | Default is `false`. Enables returning all available quote options instead of the default limited (fastest and best-return) results   |
 | destinationAddress | String  | No       | Helps provide a more accurate quote, for example by checking whether the Solana ATA exists.                                        |
-| apiKey             | String  | No       | Defined an API that prevents the **rate-limit-exceeded** error on a per-IP basis.                                                  |
+| apiKey             | String  | No       | Defines an API key that prevents the **rate-limit-exceeded** error on a per-IP basis.                                               |
 
 #### Response:
 
@@ -50,24 +59,33 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrM
 {
   "quotes": [
     {
+      "meta": {
+        "advertisedDescription": "Cheapest and Fastest",
+        "advertisedTitle": "Best",
+        "icon": "https://cdn.mayan.finance/fast_icon.png",
+        "switchText": "Switch to the best route",
+        "title": "Best"
+      },
       "sendTransactionCost": 0,
       "gasless": false,
       "slippageBps": 300,
       "effectiveAmountIn": 100,
-      "expectedAmountOut": 0.536793552,
-      "price": 0.005460072,
-      "minAmountOut": 0.520689746,
-      "minReceived": 0.520689746,
-      "solanaRelayerFee": 0,
-      "solanaRelayerFee64": "0",
-      "redeemRelayerFee": 1.687464,
-      "redeemRelayerFee64": "1687464",
-      "refundRelayerFee": 1.687464,
-      "refundRelayerFee64": "1687464",
-      "clientRelayerFeeSuccess": 1.687464,
-      "clientRelayerFeeRefund": 1.687464,
-      "cancelRelayerFee64": null,
-      "deadline64": "1716287657",
+      "effectiveAmountIn64": "100000000",
+      "expectedAmountOut": 1.201839546,
+      "price": 0.01201963167985677,
+      "minAmountOut": 1.16578436,
+      "minReceived": 1.16578436,
+      "solanaRelayerFee": null,
+      "solanaRelayerFee64": null,
+      "redeemRelayerFee": null,
+      "redeemRelayerFee64": null,
+      "refundRelayerFee": null,
+      "refundRelayerFee64": "711",
+      "cancelRelayerFee64": "9147",
+      "submitRelayerFee64": "0",
+      "clientRelayerFeeSuccess": null,
+      "clientRelayerFeeRefund": 0.00902389942474755,
+      "deadline64": "1774621897",
       "fromToken": {
         "name": "USD Coin",
         "symbol": "USDC",
@@ -99,36 +117,25 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?solanaProgram=FC4eXxkyrM
         "supportsPermit": false
       },
       "toChain": "solana",
-      "mintDecimals": null,
       "gasDrop": 0,
       "eta": 1,
-      "etaSeconds": 60,
-      "clientEta": "1 min",
+      "etaSeconds": 3,
+      "clientEta": "3s",
       "bridgeFee": 0,
       "suggestedPriorityFee": 0,
-      "type": "MCTP",
+      "type": "SWIFT",
       "priceStat": {
-        "ratio": 1,
+        "ratio": 0.9996,
         "status": "GOOD"
       },
       "referrerBps": 0,
-      "meta": {
-        "advertisedDescription": "Cheapest and Fastest",
-        "advertisedTitle": "Best",
-        "icon": "https://cdn.mayan.finance/fast_icon.png",
-        "switchText": "Switch to the best route",
-        "title": "Best"
-      },
-      "cheaperChain": "solana",
-      "lockFeesOnSource": false,
-      "hasAuction": true,
+      "protocolBps": 3,
       "onlyBridging": false,
-      "mctpInputContract": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-      "mctpOutputContract": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      "mctpMayanContract": "0xF18f923480dC144326e6C65d4F3D47Aa459bb41C",
-      "toPrice": 183.42,
-      "minMiddleAmount": 98.5,
-      "sourceSwapExpense": 0
+      "minMiddleAmount": 100,
+      "sourceSwapExpense": 0,
+      "swiftVersion": "V2",
+      "swiftMayanContract": "0x40fFE85A28DC9993541449464d7529a922142960",
+      "swiftAuctionMode": 2
     }
   ],
   "minimumSdkVersion": [
@@ -145,7 +152,7 @@ The following table shows the common fields of response:
 
 | Field                   | Type   | Description                                                                                                                              |
 | ----------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| type                    | String | Determines the bridge method which can be "WH", "SWIFT" or "MCTP"                                                                        |
+| type                    | String | Determines the bridge method which can be "WH", "SWIFT", "MCTP" or "FAST_MCTP"                                                           |
 | effectiveAmountIn       | Number | The actual input amount that will be deducted from user's wallet                                                                         |
 | expectedAmountOut       | Number | Expected output amount that user receives                                                                                                |
 | minAmountOut            | Number | Minimum output amount of auction                                                                                                         |
@@ -206,4 +213,4 @@ Use this endpoint to determine compatibility and availability of specific chains
 
 ### API Key:
 
-Currently, API access is provided manually. Integrators who wish to obtain an API key should send a request email to [**support@mayan.finance**](mailto:support@mayan.finance). After receiving the request, our team will review it and contact you to complete the process. Once approved, we will generate an **API key** and send it to you via email so you can start using the API
+The `apiKey` parameter is optional. If you are using the Mayan SDK on a frontend and your request volume is low or comes from multiple origins, you can omit the `apiKey` to use the public endpoint. We recommend starting without an API key and only requesting one if you hit rate limits. To obtain an API key, email [**support@mayan.finance**](mailto:support@mayan.finance).
