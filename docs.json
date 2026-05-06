@@ -134,7 +134,7 @@
     "content": "\u27a1\ufe0f **Integrators:** update the SDK to the latest version to run on Swift v2. Swift v1 will be deprecated.",
     "dismissible": true,
     "color": {
-      "light": "#FFFFFF",
+      "light": "#111111",
       "dark": "#000000"
     }
   }
