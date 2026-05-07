@@ -7,6 +7,10 @@ description: "Learn how to attach custom payloads, to Mayan swaps, which routes 
 
 Custom payloads let you attach a small piece of data to a cross-chain swap. This data travels with the transfer and can be read by your destination contract or backend once the funds arrive.
 
+<Frame>
+  ![Group 2087330093](/images/Group-2087330093.png)
+</Frame>
+
 The [Swap SDK](https://github.com/mayan-finance/swap-sdk) sends this payload as raw bytes. It does not interpret or modify the contents, and your destination logic is responsible for decoding them. Some routes, such as HyperCore deposits, construct their own fixed payload instead.
 
 This page explains what custom payloads are, why they are useful, and how to include them when calling the Swap SDK.
