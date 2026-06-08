@@ -1,0 +1,217 @@
+---
+title: "HyperCore Deposits & Withdrawals"
+description: "Deposit USDC into a HyperCore (Hyperliquid) spot or perps balance from any supported chain, and withdraw USDC back out to an EVM chain, using the Mayan Swap SDK."
+---
+
+## Overview
+
+Mayan supports **direct HyperCore (Hyperliquid Core) deposits and withdrawals** through the
+[Swap SDK](https://github.com/mayan-finance/swap-sdk). You can:
+
+- **Deposit** — swap from any supported token on any supported chain into a HyperCore **USDC** balance.
+- **Withdraw** — move **USDC** out of a HyperCore balance back to an EVM chain.
+
+A HyperCore account is identified by an ordinary EVM-style `0x…` address — the **same address** the
+user signs with. HyperCore holds USDC in two distinct balances, and every deposit/withdrawal targets one of them:
+
+- **USDC (spot)** — the Hyperliquid spot balance.
+- **USDC (perps)** — the Hyperliquid perpetuals (collateral) balance.
+
+Both directions are built on Mayan **Swift v2**. Deposits and withdrawals construct their own fixed
+payloads internally (see [Zaps / Custom Payloads](/integration/custom-payload)); you do not need to
+craft them. Only **USDC** is supported on the HyperCore side today.
+
+<Note>
+  Requires `@mayanfinance/swap-sdk` **v14.3.0** or later. Deposits shipped in v14.0.0 and no longer
+  require any extra user signature; withdrawals shipped in v14.3.0.
+</Note>
+
+### HyperCore token identifiers
+
+When you fetch a quote, the HyperCore side is addressed with these `toToken` / `fromToken` values:
+
+| Balance        | Quote token name | Identifier (contract)                          |
+| -------------- | ---------------- | ---------------------------------------------- |
+| USDC (spot)    | `USDC (spot)`    | `0x000000000000000000000000000000000000ffff`   |
+| USDC (perps)   | `USDC (perps)`   | `0x0000000000000000000000000000000000000000`   |
+
+You can always discover these dynamically from the [Tokens API](https://price-api.mayan.finance/swagger/)
+(`fetchTokenList('hypercore')`) instead of hard-coding them.
+
+---
+
+## Deposit (into HyperCore)
+
+Bridge/swap from a source chain into a HyperCore USDC balance. This is a normal signed transaction on
+the **source** chain (so the user needs gas there); the SDK and Mayan relayer handle the rest, crediting
+the chosen HyperCore balance.
+
+### 1. Fetch a quote
+
+Set `toChain: 'hypercore'` and `toToken` to the spot or perps identifier. The returned quote is a
+`SWIFT` quote whose `toToken.name` is `'USDC (spot)'` or `'USDC (perps)'`.
+
+```ts
+import { fetchQuote } from '@mayanfinance/swap-sdk';
+
+const HC_USDC = {
+  spot: '0x000000000000000000000000000000000000ffff',
+  perps: '0x0000000000000000000000000000000000000000',
+};
+
+const quotes = await fetchQuote({
+  amountIn64: '3800000000000000', // 0.0038 ETH (wei)
+  fromToken: '0x0000000000000000000000000000000000000000', // ETH on Base
+  fromChain: 'base',
+  toToken: HC_USDC.spot, // or HC_USDC.perps
+  toChain: 'hypercore',
+  slippageBps: 'auto',
+});
+
+const quote = quotes[0];
+```
+
+<Info>
+  - The input token can be anything Mayan supports on the source chain (native ETH, USDC, etc.); Mayan
+    swaps it to USDC and deposits it.
+  - `gasDrop` is **not supported** for HyperCore deposits and is ignored.
+  - HyperCore deposits **do not accept a caller-supplied payload** — passing one throws. The route
+    builds its own fixed payload.
+  - HyperCore enforces a minimum deposit (around **5 USDC** of output). Size `amountIn64` so the
+    expected output clears it.
+</Info>
+
+### 2. Execute the deposit
+
+Use the regular `swapFromEvm` (or `swapFromSolana`) — there is **no extra signing step**. Pass the
+user's HyperCore address (the `0x…` account) as `destinationAddress`.
+
+```ts
+import { swapFromEvm } from '@mayanfinance/swap-sdk';
+import type { TransactionResponse } from 'ethers';
+
+const hyperCoreAddress = wallet.address; // the 0x account that owns the HyperCore balance
+
+const res = (await swapFromEvm(
+  quote,
+  wallet.address,    // swapperAddress (must match the signer)
+  hyperCoreAddress,  // destinationAddress = HyperCore account
+  null,              // referrerAddresses
+  signer,            // ethers Signer on the source chain
+  null,              // permit
+  null,              // overrides
+  null,              // payload — must be null for HyperCore deposits
+)) as TransactionResponse;
+
+console.log('source tx:', res.hash);
+await res.wait();
+```
+
+For a contract-level integration, build the unsigned transaction with `getSwapFromEvmTxPayload`
+instead. Solana sources are supported via `swapFromSolana`; depositing from HyperEVM uses a
+mono-chain quote and the same `swapFromEvm` entry point.
+
+<Warning>
+  **Sui → HyperCore is temporarily disabled.** Calling `createSwapFromSuiMoveCalls` with
+  `toChain: 'hypercore'` throws. A dedicated entry point will ship in a future release.
+</Warning>
+
+### 3. Track the deposit
+
+A deposit returns a normal `TransactionResponse`. Track it on the
+[Explorer API](https://explorer-api.mayan.finance/swagger/) by transaction hash and watch
+`clientStatus` (`INPROGRESS` → `COMPLETED` / `REFUNDED`):
+
+```ts
+const res = await fetch(`https://explorer-api.mayan.finance/v3/swap/trx/${txHash}`);
+const { clientStatus } = await res.json();
+```
+
+---
+
+## Withdraw (out of HyperCore)
+
+Move USDC out of a HyperCore balance to an EVM chain. Withdrawals are **gasless**: the user signs an
+EIP-712 typed-data message instead of sending an on-chain transaction, and the SDK submits it to the
+Mayan relayer. **No source-chain gas is required.**
+
+### 1. Fetch a quote
+
+Set `fromChain: 'hypercore'` and `fromToken` to the spot or perps identifier, and pass
+`{ gasless: true }`. HyperCore withdrawals **must** be gasless `SWIFT` quotes — the returned quote
+carries an `hcSwiftWithdraw` object.
+
+```ts
+import { fetchQuote } from '@mayanfinance/swap-sdk';
+
+const quotes = await fetchQuote(
+  {
+    amountIn64: '5000000', // 5 USDC (6 decimals)
+    fromToken: HC_USDC.spot, // or HC_USDC.perps
+    fromChain: 'hypercore',
+    toToken: '0x0000000000000000000000000000000000000000', // ETH on Base
+    toChain: 'base',
+    slippageBps: 'auto',
+  },
+  { gasless: true },
+);
+
+const quote = quotes[0];
+// quote.gasless === true, quote.type === 'SWIFT'
+// quote.hcSwiftWithdraw = { gasLimit, relayerFee64, maxFee64, minFinalityThreshold }
+```
+
+You can withdraw to any supported destination token/chain (e.g. ETH or USDC on Base, USDC on Arbitrum).
+
+### 2. Execute the withdrawal
+
+Call the **same** `swapFromEvm`. Because `quote.fromChain === 'hypercore'` and the quote is a gasless
+SWIFT quote, the SDK builds the `HyperliquidTransaction:SendToEvmWithData` EIP-712 message, has the
+signer sign it, submits it to the relayer, and returns an **`orderId` string** (no on-chain tx).
+
+```ts
+import { swapFromEvm } from '@mayanfinance/swap-sdk';
+
+const orderId = (await swapFromEvm(
+  quote,
+  wallet.address,   // swapperAddress = HyperCore account (must match the signer)
+  destinationAddr,  // where the funds land on the destination chain
+  null,             // referrerAddresses
+  signer,           // ethers Signer — signs the EIP-712 message
+  null,             // permit
+  null,             // overrides
+  null,             // payload — optional, supported for withdrawals
+)) as string;
+
+console.log('withdraw orderId:', orderId);
+```
+
+<Info>
+  - Withdrawals **must** use a gasless SWIFT quote. Passing a non-gasless quote (or a non-SWIFT
+    quote) throws `Only SWIFT gasless quotes are supported from hypercore withdraw`.
+  - Unlike deposits, a custom `payload` **is** supported and is appended to the order's hook data.
+  - Withdrawals settle through Arbitrum internally, then deliver to your requested destination
+    chain/token — you only specify the final `toChain` / `toToken` in the quote.
+</Info>
+
+### 3. Track the withdrawal
+
+`swapFromEvm` returns an `orderId` (e.g. `HCS_WITHDRAW_0x…`) for HyperCore withdrawals. Track it on the
+[Explorer API](https://explorer-api.mayan.finance/swagger/) via the **order-id** endpoint (not the
+`trx` endpoint used for deposits) and watch `clientStatus`:
+
+```ts
+const res = await fetch(`https://explorer-api.mayan.finance/v3/swap/order-id/${orderId}`);
+const { clientStatus } = await res.json(); // INPROGRESS -> COMPLETED / REFUNDED
+```
+
+---
+
+## Notes & limitations
+
+- **USDC only** on the HyperCore side, in either the **spot** or **perps** balance.
+- The HyperCore account is the user's `0x…` EVM address — the same key signs deposits and withdrawals.
+- **Deposits**: normal source-chain tx (needs gas), no `gasDrop`, no caller payload, ~5 USDC minimum.
+- **Withdrawals**: gasless EIP-712 signature (no gas), returns an `orderId`, caller payload supported.
+- **Sui → HyperCore** deposits are temporarily disabled.
+- Requires SDK **v14.3.0+**.
