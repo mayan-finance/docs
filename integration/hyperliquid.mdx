@@ -21,8 +21,13 @@ Both directions are built on Mayan **Swift v2**. Deposits and withdrawals constr
 payloads internally (see [Zaps / Custom Payloads](/integration/custom-payload)); you do not need to
 craft them. Only **USDC** is supported on the HyperCore side today.
 
+From an integrator's perspective, HyperCore deposits and withdrawals are **just another cross-chain
+swap route**: you call the same `fetchQuote` and `swapFromEvm` / `swapFromSolana` entry points with
+`hypercore` as the `toChain` (deposit) or `fromChain` (withdraw), and consume the resulting `Quote`
+exactly as you would for any other pair.
+
 <Note>
-  Requires `@mayanfinance/swap-sdk` **v14.3.0** or later. Deposits require no extra user signature.
+  Requires `@mayanfinance/swap-sdk` **v14.3.0** or later.
 </Note>
 
 ### HyperCore token identifiers
