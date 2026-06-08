@@ -161,7 +161,7 @@ const quote = quotes[0];
 // quote.hcSwiftWithdraw = { gasLimit, relayerFee64, maxFee64, minFinalityThreshold }
 ```
 
-You can withdraw to any supported destination token/chain (e.g. ETH or USDC on Base, USDC on Arbitrum).
+You can withdraw to any supported destination token/chain (e.g. ETH or USDC on Base).
 
 ### 2. Execute the withdrawal
 
@@ -190,8 +190,8 @@ console.log('withdraw orderId:', orderId);
   - Withdrawals **must** use a gasless SWIFT quote. Passing a non-gasless quote (or a non-SWIFT
     quote) throws `Only SWIFT gasless quotes are supported from hypercore withdraw`.
   - Unlike deposits, a custom `payload` **is** supported and is appended to the order's hook data.
-  - Withdrawals settle through Arbitrum internally, then deliver to your requested destination
-    chain/token — you only specify the final `toChain` / `toToken` in the quote.
+  - You only specify the final `toChain` / `toToken` in the quote; the SDK and relayer handle delivery
+    to that destination.
 </Info>
 
 ### 3. Track the withdrawal
