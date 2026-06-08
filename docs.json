@@ -132,7 +132,7 @@
     }
   },
   "banner": {
-    "content": "\ud83d\udd14 **Integrators:** update the SDK to the latest version to run on Swift v2. Swift v1 will be deprecated.",
+    "content": "\ud83d\udd14 **Integrators:** Swift v1 is now deprecated. Update the SDK to the latest version to run on Swift v2.",
     "dismissible": true,
     "color": {
       "light": "#111111",
