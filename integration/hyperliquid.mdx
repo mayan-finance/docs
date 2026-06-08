@@ -203,14 +203,3 @@ console.log('withdraw orderId:', orderId);
 const res = await fetch(`https://explorer-api.mayan.finance/v3/swap/order-id/${orderId}`);
 const { clientStatus } = await res.json(); // INPROGRESS -> COMPLETED / REFUNDED
 ```
-
----
-
-## Notes & limitations
-
-- **USDC only** on the HyperCore side, in either the **spot** or **perps** balance.
-- The HyperCore account is the user's `0x…` EVM address — the same key signs deposits and withdrawals.
-- **Deposits**: normal source-chain tx (needs gas), no `gasDrop`, no caller payload, ~5 USDC minimum.
-- **Withdrawals**: gasless EIP-712 signature (no gas), returns an `orderId`, caller payload supported.
-- **Sui → HyperCore** deposits are temporarily disabled.
-- Requires SDK **v14.3.0+**.
