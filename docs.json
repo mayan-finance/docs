@@ -75,7 +75,7 @@
           "integration/explorer-api",
           "integration/forwarder-contract",
           "integration/custom-payload",
-          "integration/hypercore",
+          "integration/hyperliquid",
           "integration/referral",
           "integration/swap-widget",
           "link/swap"
