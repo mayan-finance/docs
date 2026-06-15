@@ -7,25 +7,12 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 ---
 
-## **Swift V1 (will deprecated in favour of V2)**
-
-**Fee Collection**
-
-- Fees are collected on the **destination chain** only if the bridge is successfully completed.
-- Collected via the **output token**.
-
-**Fee Rate**
-
-- **From Solana:** up to **100 bps**
-- **From other chains:** up to **50 bps**
-
----
-
 ## **Swift V2**
 
 **Fee Collection**
 
 - Fees are collected on the **source chain** once the bridge is successfully completed.
+- Deposited into the [fee manager contract](https://etherscan.io/address/0x26227ACE40de5671e8355fCAFf65a0522aa7b303)**.
 - Fees are collected in the fee manager contract and can be withdrawn using this tool:\
   [https://explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift)
 - Collected via the **locked assets** (e.g., USDC, ETH).
@@ -85,13 +72,10 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 ---
 
-## **General Rules**
+## **Notes**
 
 - For all methods **except WH**, you can set your referral fee rate by including `referrerBps` in the quote request parameters.
 - For all methods **except Swift V2 with EVM source chains**, referral fees are **automatically transferred** to the referrer’s address.
-- For **Swift V2 (EVM source)** orders:
-  - Referral fees are **deposited into the fee manager contract**.
-  - Referrers can **withdraw** them using their address signature.
 
 ---
 
