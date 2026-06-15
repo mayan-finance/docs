@@ -88,8 +88,8 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 - For all methods **except WH**, you can set your referral fee rate by including `referrerBps` in the quote request parameters.
 - For all methods **except Swift V2 with EVM source chains**, referral fees are **automatically transferred** to the referrer’s address.
 - For **Swift V2 (EVM source)** orders:
-  - Referral fees are **deposited into the fee manager contract**.
-  - Referrers can **withdraw** them using their address signature.
+  - Referral fees are **deposited into the [fee manager contract](https://etherscan.io/address/0x26227ACE40de5671e8355fCAFf65a0522aa7b303)**.
+  - Referrers can **withdraw** them using your referrer wallet via the [Swift fee withdrawal UI](https://explorer.mayan.finance/withdraw-fee-swift).
 
 ---
 
