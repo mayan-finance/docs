@@ -1,0 +1,256 @@
+---
+title: "Examples"
+description: "Complete, runnable end-to-end examples — deposit ~2 USDC and watch it settle to the destination over the WebSocket."
+---
+
+These are full, copy-paste examples: generate a deposit address, have a user send **~2 USDC**, and
+watch it settle to the destination over the WebSocket.
+
+## Setup
+
+```bash
+export MPS_API_KEY=your-uuid-api-key
+export MPS_URL=https://mps-api.mayan.finance   # optional (default)
+export DEST_WALLET=0xYourMerchantWalletOnArbitrum  # optional — where you receive USDC on Arbitrum
+```
+
+Need a key? Email [support@mayan.finance](mailto:support@mayan.finance).
+
+## Shared listener (Socket.IO)
+
+The event stream is served over **Socket.IO**. The listener below resolves once a settlement is
+terminal (`completed` / `dead`) for a given wallet. Both examples import it. Install the client once:
+
+```bash
+bun add socket.io-client   # or: npm i socket.io-client
+```
+
+Socket.IO handles the connection for you — a built-in heartbeat keeps it alive through idle gaps and it auto-reconnects on a drop, so
+there's no manual keepalive to maintain.
+
+```typescript listen.ts
+// Connects to the MPS event stream (Socket.IO) and calls `onEvent` for every
+// event, then resolves once a settlement reaches a terminal state (completed /
+// dead) for the given wallet.
+
+import * as io from "socket.io-client";
+
+export interface SettlementResult {
+  status: "completed" | "dead" | string;
+  queueItemId: string;
+  txHash: string | null;
+}
+
+export function watchSettlement(opts: {
+  mpsUrl: string; // e.g. https://mps-api.mayan.finance
+  apiKey: string;
+  walletAddress: string; // resolve when this wallet reaches a terminal status
+  onEvent?: (evt: any) => void;
+}): Promise<SettlementResult> {
+  const target = opts.walletAddress.toLowerCase();
+
+  return new Promise((resolve, reject) => {
+    const socket = io.connect(opts.mpsUrl, {
+      transports: ["websocket"],
+      auth: { apiKey: opts.apiKey },
+    });
+
+    socket.on("connect", () => console.log("WS connected"));
+    socket.on("connect_error", (err: Error) => reject(new Error(`WebSocket error: ${err.message}`)));
+
+    // Every event arrives on the "event" channel as { type, data, timestamp }.
+    socket.on("event", (evt: any) => {
+      opts.onEvent?.(evt);
+
+      // Only react to this wallet's terminal transition.
+      const wallet = (evt.data?.walletAddress ?? "").toLowerCase();
+      if (evt.type === "status_changed" && evt.data?.terminal && wallet === target) {
+        socket.disconnect();
+        resolve({ status: evt.data.status, queueItemId: evt.data.queueItemId, txHash: evt.data.txHash ?? null });
+      }
+    });
+  });
+}
+```
+
+## Base (EVM): deposit USDC on Base
+
+The user sends ~2 USDC to the generated address on Base; it's settled as USDC to your destination
+wallet on Arbitrum.
+
+```typescript evm-base.ts
+import { watchSettlement } from "./listen";
+
+const MPS_URL = process.env.MPS_URL || "https://mps-api.mayan.finance";
+const API_KEY = process.env.MPS_API_KEY;
+if (!API_KEY) throw new Error("Set MPS_API_KEY");
+
+// Left-pad a 20-byte EVM address to bytes32.
+const toBytes32 = (a: string) => "0x" + a.replace(/^0x/, "").padStart(64, "0");
+
+// Where the funds end up: USDC on Arbitrum (Wormhole chain id 23).
+const DEST_CHAIN = 23;
+const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
+
+// A stable per-user id (any bytes32). Reusing it always yields the same address.
+const userId = toBytes32("0x00000000000000000000000000000000000000a1");
+
+// 1. Generate the deterministic deposit address.
+const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
+  body: JSON.stringify({
+    userId,
+    destChain: DEST_CHAIN,
+    destWallet: toBytes32(DEST_WALLET),
+    destToken: toBytes32(USDC_ARB),
+  }),
+});
+if (!res.ok) throw new Error(`generate failed: ${res.status} ${await res.text()}`);
+const { evm } = await res.json();
+
+console.log(`\n➡️  Send ~2 USDC to this address on BASE:\n   ${evm.walletAddress}\n`);
+console.log("Waiting for the deposit and settlement (Ctrl-C to stop)...\n");
+
+// 2. Watch the event stream until the settlement is terminal.
+const result = await watchSettlement({
+  mpsUrl: MPS_URL,
+  apiKey: API_KEY,
+  walletAddress: evm.walletAddress,
+  onEvent: (evt) => {
+    if (evt.type === "deposit_detected") {
+      console.log(`💰 deposit detected — queued=${evt.data.queued}${evt.data.ignoredReason ? ` (${evt.data.ignoredReason})` : ""}`);
+    } else if (evt.type === "status_changed") {
+      const err = evt.data.error ? ` [${evt.data.error.code}]` : "";
+      console.log(`   → ${evt.data.status}${err} (retry ${evt.data.retryCount})`);
+    }
+  },
+});
+
+// 3. Report the outcome.
+if (result.status === "completed") {
+  console.log(`\n✅ Settled — USDC delivered on Arbitrum.`);
+  if (result.txHash) console.log(`   Explorer: https://explorer.mayan.finance/tx/${result.txHash}`);
+} else {
+  console.log(`\n❌ Ended as "${result.status}". Check GET /swaps for the error.`);
+}
+process.exit(0);
+```
+
+Run it, then send ~2 USDC to the printed address:
+
+```bash
+bun run evm-base.ts
+```
+
+Sample output:
+
+```text
+➡️  Send ~2 USDC to this address on BASE:
+   0xff129358605c18388f527d97dbf20e30ea6ddaea
+
+WS connected
+💰 deposit detected — queued=true
+   → pending_deploy (retry 0)
+   → deploying (retry 0)
+   → pending_swap (retry 0)
+   → swapping (retry 0)
+   → completed (retry 0)
+
+✅ Settled — USDC delivered on Arbitrum.
+   Explorer: https://explorer.mayan.finance/tx/0x...
+```
+
+## Solana: deposit USDC on Solana
+
+The same generate call also returns a Solana vault. The user sends ~2 USDC to it on Solana; it's
+settled as USDC to your destination wallet on Arbitrum.
+
+```typescript solana.ts
+import { watchSettlement } from "./listen";
+
+const MPS_URL = process.env.MPS_URL || "https://mps-api.mayan.finance";
+const API_KEY = process.env.MPS_API_KEY;
+if (!API_KEY) throw new Error("Set MPS_API_KEY");
+
+// Left-pad a 20-byte EVM address to bytes32 (used for the EVM destination).
+const toBytes32 = (a: string) => "0x" + a.replace(/^0x/, "").padStart(64, "0");
+
+// Where the funds end up: USDC on Arbitrum (Wormhole chain id 23). The destination
+// can be any Mayan-supported chain; the source here is Solana.
+const DEST_CHAIN = 23;
+const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
+
+const userId = toBytes32("0x00000000000000000000000000000000000000b2");
+
+// 1. Generate — the same call returns both the EVM address and the Solana vault.
+const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
+  body: JSON.stringify({
+    userId,
+    destChain: DEST_CHAIN,
+    destWallet: toBytes32(DEST_WALLET),
+    destToken: toBytes32(USDC_ARB),
+  }),
+});
+if (!res.ok) throw new Error(`generate failed: ${res.status} ${await res.text()}`);
+const { svm } = await res.json();
+
+console.log(`\n➡️  Send ~2 USDC to this vault on SOLANA:\n   ${svm.walletAddress}\n`);
+console.log("Waiting for the deposit and settlement (Ctrl-C to stop)...\n");
+
+// 2. Watch the event stream until the settlement is terminal.
+const result = await watchSettlement({
+  mpsUrl: MPS_URL,
+  apiKey: API_KEY,
+  walletAddress: svm.walletAddress,
+  onEvent: (evt) => {
+    if (evt.type === "deposit_detected") {
+      console.log(`💰 deposit detected — queued=${evt.data.queued}${evt.data.ignoredReason ? ` (${evt.data.ignoredReason})` : ""}`);
+    } else if (evt.type === "status_changed") {
+      const err = evt.data.error ? ` [${evt.data.error.code}]` : "";
+      console.log(`   → ${evt.data.status}${err} (retry ${evt.data.retryCount})`);
+    }
+  },
+});
+
+// 3. Report the outcome.
+if (result.status === "completed") {
+  console.log(`\n✅ Settled — USDC delivered on Arbitrum.`);
+  if (result.txHash) console.log(`   Explorer: https://explorer.mayan.finance/tx/${result.txHash}`);
+} else {
+  console.log(`\n❌ Ended as "${result.status}". Check GET /swaps for the error.`);
+}
+process.exit(0);
+```
+
+Run it, then send ~2 USDC to the printed vault:
+
+```bash
+bun run solana.ts
+```
+
+Sample output:
+
+```text
+➡️  Send ~2 USDC to this vault on SOLANA:
+   9xQe...PnRk
+
+WS connected
+💰 deposit detected — queued=true
+   → pending_settle (retry 0)
+   → settling (retry 0)
+   → completed (retry 0)
+
+✅ Settled — USDC delivered on Arbitrum.
+   Explorer: https://explorer.mayan.finance/tx/...
+```
+
+<Note>
+  The status chain differs by source chain — EVM runs `pending_deploy → deploying → pending_swap →
+  swapping → completed`; Solana runs `pending_settle → settling → completed`. See
+  [Swap Statuses](/payment-service/statuses) for the full lifecycle and the `error` field.
+</Note>

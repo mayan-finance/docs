@@ -1,0 +1,111 @@
+---
+title: "Swap Statuses"
+description: "The full settlement lifecycle — phase, category, terminal, retries, and how to react to each state."
+---
+
+Every deposit that enters the settlement queue moves through a status machine. The current state is
+on each [`/swaps`](/payment-service/api-reference#list-swaps) item and on every
+[`status_changed`](/payment-service/events-and-webhooks#status_changed) event.
+
+## Don't hardcode status strings
+
+Depending on the source chain, a deposit flows through one of two machines — **EVM** (deploy → swap)
+or **Solana** (settle). So each item carries three fields that let you react to *meaning* rather than
+memorizing every string:
+
+- **`phase`** — which leg of the lifecycle: `deploy` | `swap` | `settle` | `done`
+- **`category`** — the integrator-facing meaning, independent of chain:
+  - `waiting` — queued, will be picked up automatically
+  - `active` — a transaction is in flight right now
+  - `retrying` — the last attempt failed or was deferred; will retry after backoff
+  - `success` — terminal, funds delivered
+  - `failed` — terminal, gave up
+- **`terminal`** — `true` once no further automatic transition will happen (`completed` or `dead`)
+
+The simplest integration: **watch for `terminal: true`** — `completed` is success, `dead` is
+failure. Everything else is in-progress.
+
+## Status reference
+
+| Status | Chain | phase | category | terminal | Description |
+|--------|-------|-------|----------|----------|-------------|
+| `pending_deploy` | EVM | deploy | waiting | no | Queued; waiting for smart-wallet deployment |
+| `deploying` | EVM | deploy | active | no | Wallet deployment transaction in flight |
+| `pending_swap` | EVM | swap | waiting | no | Wallet deployed; waiting for swap execution |
+| `swapping` | EVM | swap | active | no | Swap transaction in flight |
+| `failed_deploy` | EVM | deploy | retrying | no | Deployment attempt failed; will retry after backoff |
+| `failed_swap` | EVM | swap | retrying | no | Swap attempt failed; will retry after backoff |
+| `pending_settle` | Solana | settle | waiting | no | Queued; waiting for settlement |
+| `settling` | Solana | settle | active | no | Settlement transactions in flight |
+| `deferred` | Solana | settle | retrying | no | Temporarily blocked (e.g. no quote yet, amount too small); will retry |
+| `failed_settle` | Solana | settle | retrying | no | Settlement attempt failed; will retry after backoff |
+| `completed` | both | done | **success** | **yes** | Funds delivered to the destination |
+| `dead` | both | done | **failed** | **yes** | Gave up after exhausting retries (or a non-retryable error) |
+
+## Happy paths
+
+```
+EVM:     pending_deploy → deploying → pending_swap → swapping → completed
+Solana:  pending_settle → settling → completed
+```
+
+## The `error` field
+
+When a swap is in a `retrying` state (or `dead`), its `error` is a
+[structured error](/payment-service/api-reference#errors):
+
+```json
+{ "code": "PROVIDER_UNAVAILABLE", "message": "The swap provider is temporarily unavailable.", "retryable": true }
+```
+
+- `error` is `null` on any non-failing state. A **non-null `error` never means success** — success is
+  always `status: "completed"` with `error: null`.
+- Branch on `error.code` (stable), not on `message`.
+- `error.retryable` reflects whether the worker will try again. A `dead` item always reports
+  `retryable: false`.
+
+## Retries & backoff
+
+Failed attempts are retried automatically with exponential backoff:
+
+```
+5s → 15s → 30s → 45s → 1m → 5m → 15m
+```
+
+After **7** attempts — or immediately for a non-retryable error such as `UNSUPPORTED_DEST` — the item
+becomes `dead`. Every attempt emits a `status_changed` event carrying the incremented `retryCount`
+and the current `error`, so you can surface retry progress in real time.
+
+<Info>
+  `deferred` (Solana) is not a failure — it means settlement is temporarily blocked (e.g. no quote
+  yet, or the accumulated balance is still too small) and will be retried. It shares the same
+  backoff and `dead` cap as the failing states.
+</Info>
+
+## Reacting to states
+
+<CodeGroup>
+
+```typescript TypeScript
+function onSwapUpdate(s: { status: string; terminal: boolean; category: string; error?: { code: string } | null }) {
+  if (!s.terminal) return;            // still in progress
+  if (s.status === "completed") {
+    fulfilOrder();                    // success
+  } else {
+    // status === "dead"
+    flagForReview(s.error?.code);     // permanent failure
+  }
+}
+```
+
+```python Python
+def on_swap_update(s: dict) -> None:
+    if not s["terminal"]:
+        return                        # still in progress
+    if s["status"] == "completed":
+        fulfil_order()                # success
+    else:                             # "dead"
+        flag_for_review((s.get("error") or {}).get("code"))
+```
+
+</CodeGroup>
