@@ -169,6 +169,14 @@ The following table shows the common fields of response:
 | fromChain               | String | Source network name                                                                                                                      |
 | toToken                 | Object | Output token details                                                                                                                     |
 | toChain                 | String | Destination network name                                                                                                                 |
+| swiftAuctionMode        | Number | Swift quotes only. Auction mode of the order (see note below).                                                                          |
+
+<Tip>
+  **Auction modes** (Swift quotes only, `type = "SWIFT"`)
+
+  - `2`: English auction. The user receives at least `minAmountOut`, typically around `expectedAmountOut` and possibly higher or lower.
+  - `3`: Exact-out. The user is guaranteed to receive exactly `expectedAmountOut`.
+</Tip>
 
 ### **Supported Tokens**
 
