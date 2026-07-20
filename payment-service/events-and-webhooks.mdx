@@ -1,0 +1,262 @@
+---
+title: "Events & Webhooks"
+description: "Real-time Socket.IO events, durable signed webhooks, replay after disconnects, and signature verification."
+---
+
+MPS emits two event types across its whole lifecycle. You can consume them two ways:
+
+- **Socket.IO** — live, low-latency, best-effort. Great for UIs and live dashboards.
+- **Webhooks** — durable, retried, signed. Great for backend accounting and fulfilment.
+
+Both carry the same event payloads. Use the live stream for immediacy, webhooks for guaranteed
+delivery — many integrations use both.
+
+## Event types
+
+| Type | Trigger |
+|------|---------|
+| `deposit_detected` | A deposit was observed on-chain (fires whether or not it gets queued) |
+| `status_changed` | A swap moved between [statuses](/payment-service/statuses) — covers deploy/swap/settle progress, **every retry, deferrals, success, and terminal failure** |
+
+`status_changed` is the single lifecycle signal: a completed payment is `status_changed` with
+`status: "completed"`, and a freshly deployed wallet rides on the `status_changed` into
+`pending_swap` (carrying its deploy `txHash`).
+
+## Socket.IO
+
+The live stream is served over [Socket.IO](https://socket.io) (`bun add socket.io-client`). Connect
+to the base URL and pass your API key in the handshake `auth`:
+
+```typescript
+import * as io from "socket.io-client";
+
+const socket = io.connect("https://mps-api.mayan.finance", {
+  transports: ["websocket"],
+  auth: { apiKey: process.env.MPS_API_KEY }, // or query: { apiKey } for browser clients
+});
+
+socket.on("connect", () => console.log("connected"));
+socket.on("connected", ({ integratorName }) => console.log("hello", integratorName));
+
+// Every event arrives on the "event" channel as { type, data, timestamp }.
+socket.on("event", (evt) => {
+  if (evt.type === "status_changed" && evt.data.terminal) {
+    console.log(evt.data.status, evt.data.queueItemId, evt.data.txHash);
+  }
+});
+```
+
+On a successful connection the server emits a `connected` event with your integrator name:
+
+```json
+{ "integratorName": "your-name" }
+```
+
+Socket.IO keeps the connection alive with its own heartbeat and **auto-reconnects** on a drop, so you
+don't manage pings yourself. Fan-out is still best-effort — after a reconnect, catch up on anything
+missed via [`GET /events`](#delivery-and-replay).
+
+### deposit_detected
+
+```json
+{
+  "type": "deposit_detected",
+  "data": {
+    "walletAddress": "0x...",
+    "chainId": 6,
+    "tokenAddress": "0x...",
+    "queued": false,
+    "ignoredReason": "below_min"
+  },
+  "timestamp": "2026-04-03T00:00:00.000Z"
+}
+```
+
+`queued` tells you whether the deposit entered the settlement queue. If `false`, `ignoredReason`
+explains why (`below_token_min`, `below_min`, `no_adapter`, `enqueue_error`) — so a dust/spam deposit
+that will never produce a swap is an explicit signal, not a detection with no follow-up. `below_token_min`
+is the per-token minimum (see [`GET /source-config`](/payment-service/api-reference#source-config));
+`below_min` is the chain-level USD floor.
+
+### status_changed
+
+```json
+{
+  "type": "status_changed",
+  "data": {
+    "queueItemId": "uuid",
+    "chainId": 6,
+    "tokenAddress": "0x...",
+    "walletAddress": "0x...",
+    "status": "failed_swap",
+    "prevStatus": "swapping",
+    "phase": "swap",
+    "category": "retrying",
+    "terminal": false,
+    "retryCount": 2,
+    "txHash": null,
+    "error": {
+      "code": "RPC_UNAVAILABLE",
+      "message": "Upstream RPC is temporarily unavailable.",
+      "retryable": true,
+      "details": { "reason": "fetch failed" }
+    }
+  },
+  "timestamp": "2026-04-03T00:00:00.000Z"
+}
+```
+
+- `queueItemId` is the settlement id (matches [`GET /swaps`](/payment-service/api-reference#list-swaps) `id`).
+- `error` is `null` except on failing/deferred states (see the [error model](/payment-service/api-reference#errors)).
+- `txHash` carries the wallet-deployment tx on the transition into `pending_swap`, and the
+  swap/settle tx on the transition into `completed`.
+- To react only to final outcomes, filter on `terminal: true` (`completed` = success, `dead` = failure).
+
+## Delivery and replay
+
+Socket.IO fan-out is **live and best-effort**: events are pushed only to currently-connected sockets
+and are not buffered per connection. Socket.IO auto-reconnects, but events that fired while you were
+disconnected are not resent — **catch up with the replay endpoint** rather than relying on the socket.
+
+```
+GET /events?since=<ISO timestamp>&limit=50&type=status_changed
+```
+
+Returns your events in **chronological (ascending)** order strictly after `since` (omit `since` to
+start from the oldest retained event). Page forward with `nextCursor` until it is `null`.
+
+<CodeGroup>
+
+```typescript TypeScript
+async function drain(sinceISO?: string) {
+  let cursor = sinceISO;
+  while (true) {
+    const url = new URL("https://mps-api.mayan.finance/events");
+    url.searchParams.set("limit", "200");
+    if (cursor) url.searchParams.set("since", cursor);
+    const { items, nextCursor } = await fetch(url, {
+      headers: { "x-api-key": process.env.MPS_API_KEY! },
+    }).then((r) => r.json());
+
+    for (const evt of items) handleEvent(evt);
+    if (!nextCursor) break;
+    cursor = nextCursor;
+  }
+}
+```
+
+```python Python
+import os, requests
+
+def drain(since_iso: str | None = None):
+    cursor = since_iso
+    while True:
+        params = {"limit": 200}
+        if cursor:
+            params["since"] = cursor
+        data = requests.get(
+            "https://mps-api.mayan.finance/events",
+            headers={"x-api-key": os.environ["MPS_API_KEY"]},
+            params=params,
+        ).json()
+        for evt in data["items"]:
+            handle_event(evt)
+        if not data["nextCursor"]:
+            break
+        cursor = data["nextCursor"]
+```
+
+</CodeGroup>
+
+<Note>
+  Events are retained for **30 days** and pruned afterwards, so replay only reaches back over the
+  retention window. For durable long-term delivery, use a webhook.
+</Note>
+
+## Webhooks
+
+If a webhook URL is registered for your integrator, **every** event (`deposit_detected` and
+`status_changed`, including failures and retries) is also sent as a signed `POST` to that URL.
+Webhooks are the durable path — the live stream is best-effort, webhooks are retried.
+
+**Payload**
+
+```json
+{
+  "type": "status_changed",
+  "data": { "...": "..." },
+  "integratorId": "uuid",
+  "timestamp": "2026-04-03T00:00:00.000Z"
+}
+```
+
+`data` is identical to the live event `data` for that type.
+
+**Headers**
+
+| Header | Description |
+|--------|-------------|
+| `Content-Type` | `application/json` |
+| `X-Signature` | Base64-encoded Ed25519 signature of the raw request body |
+
+### Delivery and retries
+
+- Respond with any `2xx` to acknowledge. A non-2xx response, a 10s timeout, or a connection error is
+  treated as a failure.
+- Failed deliveries are retried with exponential backoff (5s, 15s, 30s, 1m, 2m, 5m, 10m, 15m, 30m,
+  1h) up to 10 attempts, after which the event is dead-lettered (still readable via `GET /events`).
+- Delivery is **at-least-once** and per-event independent — a slow endpoint never blocks other
+  events. Treat events as **idempotent**: dedupe on the event `id` (from `GET /events`), or on
+  `data.queueItemId` + `data.status`.
+
+### Verifying webhook signatures
+
+Fetch the Ed25519 public key once from
+[`GET /webhook/public-key`](/payment-service/api-reference#webhook-public-key) and verify the
+`X-Signature` header against the **raw** request body (verify before JSON-parsing, so the bytes
+match exactly).
+
+<CodeGroup>
+
+```javascript Node.js
+const crypto = require("crypto");
+const express = require("express");
+
+const app = express();
+// Capture the raw body so the signature is verified against exact bytes.
+app.use(express.json({ verify: (req, _res, buf) => { req.rawBody = buf; } }));
+
+const publicKeyPem = await fetch("https://mps-api.mayan.finance/webhook/public-key").then((r) => r.text());
+const publicKey = crypto.createPublicKey(publicKeyPem);
+
+app.post("/webhook", (req, res) => {
+  const signature = Buffer.from(req.headers["x-signature"], "base64");
+  const valid = crypto.verify(null, req.rawBody, publicKey, signature);
+  if (!valid) return res.status(401).send("Invalid signature");
+
+  // ... handle req.body (idempotently) ...
+  res.sendStatus(200);
+});
+```
+
+```python Python
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+import base64, requests
+
+pem = requests.get("https://mps-api.mayan.finance/webhook/public-key").text
+public_key = load_pem_public_key(pem.encode())
+
+def verify_webhook(raw_body: bytes, signature_b64: str) -> bool:
+    try:
+        public_key.verify(base64.b64decode(signature_b64), raw_body)
+        return True
+    except Exception:
+        return False
+```
+
+</CodeGroup>
+
+<Warning>
+  Verify the signature against the **raw** request body bytes, not a re-serialized JSON object —
+  re-serializing can reorder keys or change whitespace and break verification.
+</Warning>

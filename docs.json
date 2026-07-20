@@ -82,6 +82,17 @@
         ]
       },
       {
+        "group": "PAYMENT SERVICE",
+        "pages": [
+          "payment-service/overview",
+          "payment-service/quickstart",
+          "payment-service/api-reference",
+          "payment-service/statuses",
+          "payment-service/events-and-webhooks",
+          "payment-service/examples"
+        ]
+      },
+      {
         "group": "APPLICATION",
         "pages": [
           "application/user-manual",

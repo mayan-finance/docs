@@ -1,0 +1,152 @@
+---
+title: "Payment Service Overview"
+description: "Accept any token on any chain with deterministic deposit addresses — MPS bridges and swaps it to the token and chain you want, automatically."
+---
+
+## What is the Mayan Payment Service?
+
+The **Mayan Payment Service (MPS)** is cross-chain payment infrastructure. You generate a
+**deterministic deposit address** for each of your users; when they send *any* token on *any*
+supported chain to that address, MPS automatically detects the deposit, bridges and swaps it via
+Mayan Protocol, and delivers the **destination token on the destination chain** you specified.
+
+It turns "accept a specific token on a specific chain" into "accept anything, settle in what you
+want" — ideal for checkout, on-ramps, treasury top-ups, and wallet funding.
+
+<Info>
+  MPS is a hosted backend on top of Mayan. You integrate over a simple REST API plus real-time
+  events (WebSocket + webhooks) — no smart-contract work required.
+</Info>
+
+## How it works
+
+<Steps>
+  <Step title="Generate a deposit address">
+    Call [`POST /deposit-address/generate`](/payment-service/api-reference#generate-deposit-address)
+    with the user, destination chain, destination wallet, and destination token. You get back a
+    deterministic EVM address (works on every supported EVM chain) and a Solana vault address.
+  </Step>
+  <Step title="User deposits">
+    Show the address to your user. They send any token — native or ERC-20/SPL — on any supported
+    chain.
+  </Step>
+  <Step title="MPS detects and settles">
+    The scanner detects the deposit and checks its USD value. The worker deploys the user's smart
+    wallet (first time only), then executes the bridge/swap through Mayan Protocol.
+  </Step>
+  <Step title="Funds delivered">
+    The destination token arrives at the destination wallet on the destination chain, and the swap
+    reaches `status: "completed"`.
+  </Step>
+</Steps>
+
+You track every step in real time via [events](/payment-service/events-and-webhooks) or by polling
+the [`/swaps`](/payment-service/api-reference#list-swaps) endpoint.
+
+<Tip>
+  Already integrating Mayan quotes? You can get the **same deposit address inline from the quote API**
+  — pass `mpsDeposit: true` (with `destinationAddress`) and read `mpsDepositAddress` off each eligible
+  quote, no separate `generate` call needed. See
+  [MPS deposit address on the Quote API](/integration/quote-api#mps-deposit-address-mpsdeposit).
+</Tip>
+
+## Key concepts
+
+- **Deterministic & permanent addresses** — the same parameters always produce the same address.
+  Addresses never expire and can be reused for repeat payments from the same user.
+- **One address, many chains** — a single generated EVM address is valid on every supported EVM
+  chain. The Solana vault address accepts SOL and any SPL / Token-2022 token.
+- **Any token in, one token out** — users pay in whatever they hold; you always receive the
+  destination token you configured. Common tokens are detected automatically; anything else can be
+  indexed on demand (see [Supported tokens](#supported-tokens)).
+- **Structured, real-time lifecycle** — a single `status_changed` event stream reports progress,
+  retries, success, and terminal failure, each with a stable
+  [error model](/payment-service/api-reference#errors).
+
+## Supported chains
+
+MPS accepts **deposits** on a fixed set of source chains, and settles to **any chain Mayan supports**
+as the destination. Chains are identified by their **Wormhole chain ID** (the EVM chain ID is shown
+for reference only).
+
+### Deposit (source) chains
+
+Users can deposit on these chains:
+
+| Chain    | Wormhole chain ID | EVM chain ID | Native token |
+|----------|-------------------|--------------|--------------|
+| Solana   | 1                 | —            | SOL          |
+| Ethereum | 2                 | 1            | ETH          |
+| BSC      | 4                 | 56           | BNB          |
+| Arbitrum | 23                | 42161        | ETH          |
+| Base     | 30                | 8453         | ETH          |
+
+### Destination chains
+
+The destination (`destChain`) can be **any chain Mayan supports** — including chains not in the
+deposit list above (e.g. Polygon, Optimism, Avalanche, and many more). See
+[Mayan's supported chains](https://docs.mayan.finance/) for the full list.
+
+<Warning>
+  Always pass the **Wormhole chain ID** in `destChain` and read it in `chainId` — e.g. Base is `30`,
+  not `8453`. Passing an EVM chain ID will produce a different (wrong) deposit address or be rejected.
+</Warning>
+
+## Supported tokens
+
+A deposit address can receive **any** token, but MPS's scanner **auto-detects** (and settles with no
+action from you) this whitelist per source chain:
+
+| Chain    | Token | Contract / mint address |
+|----------|-------|-------------------------|
+| Solana   | SOL   | native |
+| Solana   | USDC  | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| Solana   | USDT  | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` |
+| Ethereum | ETH   | native |
+| Ethereum | USDC  | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
+| BSC      | BNB   | native |
+| BSC      | USDC  | `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` |
+| Arbitrum | ETH   | native |
+| Arbitrum | USDC  | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
+| Base     | ETH   | native |
+| Base     | USDC  | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+
+The table above is a convenience snapshot. The **authoritative, live** list — including the minimum
+deposit advertised per token — is [`GET /source-config`](/payment-service/api-reference#source-config).
+Poll it rather than hardcoding, and surface each token's `minDeposit` to your users before they pay
+(a deposit below it is detected but not settled).
+
+<Note>
+  **Need another token whitelisted?** Email [support@mayan.finance](mailto:support@mayan.finance) with
+  the chain and token contract — we add tokens in **under 12 hours, 24/7**. Until then, any other token
+  can still be settled on demand via
+  [`POST /request-index`](/payment-service/api-reference#request-index) (MPS sweeps the wallet's balance
+  and settles it if Mayan can route the token).
+</Note>
+
+## Next steps
+
+<Card title="Quickstart" icon="rocket" href="/payment-service/quickstart">
+  Generate your first deposit address and receive events end-to-end.
+</Card>
+
+<Card title="API Reference" icon="code" href="/payment-service/api-reference">
+  Every endpoint, request/response shape, and the structured error model.
+</Card>
+
+<Card title="Swap Statuses" icon="list-check" href="/payment-service/statuses">
+  The full status lifecycle: `phase`, `category`, `terminal`, and retries.
+</Card>
+
+<Card title="Events & Webhooks" icon="bell" href="/payment-service/events-and-webhooks">
+  Real-time WebSocket events, durable webhooks, replay, and signature verification.
+</Card>
+
+## Getting access
+
+You need an **API key** (a UUID) to call the API and connect to the event stream. To receive a key
+and optionally register a webhook URL, email [support@mayan.finance](mailto:support@mayan.finance) or
+reach out to the Mayan team in [Discord](https://discord.com/invite/MayanFinance).
+
+A web dashboard is also available — log in with your API key to browse generated addresses and
+settlement statuses.

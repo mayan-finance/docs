@@ -1,0 +1,313 @@
+---
+title: "Quickstart"
+description: "Generate a deposit address, accept a payment, and receive the settlement — end to end."
+---
+
+This guide takes you from zero to a working cross-chain payment: generate an address, let a user
+deposit, and get notified when funds are delivered.
+
+## Prerequisites
+
+- An **API key** (UUID) from the Mayan team — see [Getting access](/payment-service/overview#getting-access).
+- The base URL: `https://mps-api.mayan.finance`.
+
+All authenticated requests send your key in the `x-api-key` header.
+
+## 1. Generate a deposit address
+
+Provide the user identifier and where the funds should end up. `userId` is a **20-byte** hex
+identifier — an EVM address works directly, or use any `0x`-prefixed value that fits in 20 bytes.
+`destWallet` and `destToken` are **32-byte** hex (`0x` + 64 hex digits); to convert a 20-byte EVM
+address, left-pad it with zeros: `0x000000000000000000000000<address-without-0x>`.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://mps-api.mayan.finance/deposit-address/generate \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $MPS_API_KEY" \
+  -d '{
+    "userId": "0x0000000000000000000000000000000000000001",
+    "destChain": 30,
+    "destWallet": "0x000000000000000000000000eab4fb2de5a05ba392eb2614bd2293592d455a4f",
+    "destToken": "0x000000000000000000000000833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+  }'
+```
+
+```typescript TypeScript
+const MPS_URL = "https://mps-api.mayan.finance";
+const API_KEY = process.env.MPS_API_KEY!;
+
+// Left-pad a 20-byte EVM address to a 32-byte value (destWallet / destToken).
+const toBytes32 = (addr: string) => "0x" + addr.replace(/^0x/, "").padStart(64, "0");
+
+const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
+  body: JSON.stringify({
+    userId: "0x0000000000000000000000000000000000000001", // 20-byte id (an EVM address works as-is)
+    destChain: 30, // Base (Wormhole chain ID)
+    destWallet: toBytes32("0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f"),
+    destToken: toBytes32("0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"), // USDC on Base
+  }),
+});
+
+const { evm, svm } = await res.json();
+console.log(evm.walletAddress, svm.walletAddress);
+```
+
+```python Python
+import os, requests
+
+MPS_URL = "https://mps-api.mayan.finance"
+API_KEY = os.environ["MPS_API_KEY"]
+
+def to_bytes32(addr: str) -> str:
+    return "0x" + addr.removeprefix("0x").rjust(64, "0")
+
+res = requests.post(
+    f"{MPS_URL}/deposit-address/generate",
+    headers={"Content-Type": "application/json", "x-api-key": API_KEY},
+    json={
+        "userId": "0x0000000000000000000000000000000000000001",  # 20-byte id (an EVM address works as-is)
+        "destChain": 30,  # Base (Wormhole chain ID)
+        "destWallet": to_bytes32("0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f"),
+        "destToken": to_bytes32("0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"),  # USDC on Base
+    },
+)
+data = res.json()
+print(data["evm"]["walletAddress"], data["svm"]["walletAddress"])
+```
+
+</CodeGroup>
+
+**Response:**
+
+```json
+{
+  "evm": { "chainType": "evm", "walletAddress": "0x1234...abcd" },
+  "svm": { "chainType": "svm", "walletAddress": "9xQe...PnRk" }
+}
+```
+
+You get two addresses from the same parameters:
+
+- `evm.walletAddress` — valid on **every** supported EVM deposit chain (Ethereum, BSC, Arbitrum, Base).
+- `svm.walletAddress` — a Solana vault that accepts SOL and any SPL / Token-2022 token.
+
+<Info>
+  Addresses are deterministic and permanent. Calling generate again with the same parameters returns
+  the same addresses — safe to call on every checkout.
+</Info>
+
+## 2. Let the user deposit
+
+Show the relevant address to your user and have them send funds. MPS handles the conversion to your
+destination token.
+
+- On EVM chains → the `evm.walletAddress`.
+- On Solana → the `svm.walletAddress`.
+
+<Note>
+  Whitelisted tokens — the native gas token and **USDC** on EVM, and **SOL / USDC / USDT** on Solana
+  — are detected automatically. For any other token, trigger indexing yourself with
+  [`POST /request-index`](/payment-service/api-reference#request-index). See
+  [Supported tokens](/payment-service/overview#supported-tokens).
+</Note>
+
+## 3. Receive the settlement
+
+You have three ways to track a payment — use whichever fits your stack:
+
+<Tabs>
+  <Tab title="WebSocket (real-time)">
+    The stream is served over **Socket.IO** (`bun add socket.io-client`). Connect and receive
+    `deposit_detected` and `status_changed` events as they happen.
+
+    ```typescript
+    import * as io from "socket.io-client";
+
+    const socket = io.connect("https://mps-api.mayan.finance", {
+      transports: ["websocket"],
+      auth: { apiKey: API_KEY },
+    });
+
+    socket.on("event", (evt) => {
+      if (evt.type === "status_changed" && evt.data.terminal) {
+        // completed = success, dead = gave up
+        console.log(evt.data.status, evt.data.queueItemId, evt.data.txHash);
+      }
+    });
+    ```
+
+    See [Events & Webhooks](/payment-service/events-and-webhooks) for the full payloads and
+    reconnection/replay guidance.
+  </Tab>
+  <Tab title="Webhook (durable)">
+    Register a webhook URL with the Mayan team. Every event is POSTed to it (with retries) and signed
+    — verify the `X-Signature` header. This is the durable path; use it for backend accounting.
+
+    See [Verifying webhook signatures](/payment-service/events-and-webhooks#verifying-webhook-signatures).
+  </Tab>
+  <Tab title="Polling">
+    Poll [`GET /swaps`](/payment-service/api-reference#list-swaps) and read each item's `status`,
+    `terminal`, and `error`. A payment is delivered when `status` is `completed`.
+
+    ```bash
+    curl "https://mps-api.mayan.finance/swaps?limit=20" -H "x-api-key: $MPS_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+A payment is **done** when a swap reaches `status: "completed"` (`terminal: true`, `category: "success"`).
+Most transfers settle in seconds. See [Swap Statuses](/payment-service/statuses) for the full lifecycle.
+
+## Full example: e-commerce checkout
+
+Derive a stable `userId` from your order ID so the same order always maps to the same address, then
+watch for the terminal event.
+
+<CodeGroup>
+
+```typescript TypeScript
+import { createHash } from "node:crypto";
+
+const MPS_URL = "https://mps-api.mayan.finance";
+const API_KEY = process.env.MPS_API_KEY!;
+const USDC_BASE = "0x000000000000000000000000833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+
+const toBytes32 = (addr: string) => "0x" + addr.replace(/^0x/, "").padStart(64, "0");
+// Map any order id to a stable 20-byte userId (sha256 → first 20 bytes).
+const orderIdToUserId = (orderId: string) =>
+  "0x" + createHash("sha256").update(orderId).digest("hex").slice(0, 40);
+
+export async function createPaymentAddress(orderId: string, merchantWallet: string) {
+  const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
+    body: JSON.stringify({
+      userId: orderIdToUserId(orderId),
+      destChain: 30, // Base
+      destWallet: toBytes32(merchantWallet),
+      destToken: USDC_BASE,
+    }),
+  });
+  const { evm, svm } = await res.json();
+  return { evmAddress: evm.walletAddress, svmAddress: svm.walletAddress };
+}
+```
+
+```python Python
+import os, hashlib, requests
+
+MPS_URL = "https://mps-api.mayan.finance"
+API_KEY = os.environ["MPS_API_KEY"]
+USDC_BASE = "0x000000000000000000000000833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+
+def to_bytes32(addr: str) -> str:
+    return "0x" + addr.removeprefix("0x").rjust(64, "0")
+
+# Map any order id to a stable 20-byte userId (sha256 → first 20 bytes).
+def order_id_to_user_id(order_id: str) -> str:
+    return "0x" + hashlib.sha256(order_id.encode()).hexdigest()[:40]
+
+def create_payment_address(order_id: str, merchant_wallet: str):
+    res = requests.post(
+        f"{MPS_URL}/deposit-address/generate",
+        headers={"Content-Type": "application/json", "x-api-key": API_KEY},
+        json={
+            "userId": order_id_to_user_id(order_id),
+            "destChain": 30,  # Base
+            "destWallet": to_bytes32(merchant_wallet),
+            "destToken": USDC_BASE,
+        },
+    )
+    data = res.json()
+    return {"evm": data["evm"]["walletAddress"], "svm": data["svm"]["walletAddress"]}
+```
+
+</CodeGroup>
+
+Show both addresses to the customer. Whatever they pay — any token, any supported chain — the
+merchant receives USDC on Base, and you get a `status_changed` → `completed` event to fulfil the
+order.
+
+<Note>
+  Deposits below the per-chain minimum USD value are detected but not settled. You still receive a
+  `deposit_detected` event with `queued: false` and `ignoredReason: "below_min"`, so it's never a
+  silent gap.
+</Note>
+
+## Watch a payment end-to-end
+
+Generate an address, then subscribe to the event stream (**Socket.IO**) and wait until the settlement
+is terminal. This is the snippet most integrations start from — it prints each event and resolves on
+`completed` (success) or `dead` (gave up).
+
+<CodeGroup>
+
+```typescript TypeScript
+import * as io from "socket.io-client"; // bun add socket.io-client
+
+const MPS_URL = "https://mps-api.mayan.finance";
+const API_KEY = process.env.MPS_API_KEY!;
+
+function watchSettlement(walletAddress: string) {
+  const target = walletAddress.toLowerCase();
+  return new Promise<{ status: string; txHash: string | null }>((resolve) => {
+    const socket = io.connect(MPS_URL, { transports: ["websocket"], auth: { apiKey: API_KEY } });
+    socket.on("event", (evt) => {
+      if (evt.type === "deposit_detected") console.log("deposit detected, queued:", evt.data.queued);
+      if (evt.type === "status_changed" && evt.data.walletAddress.toLowerCase() === target) {
+        console.log("→", evt.data.status, evt.data.error?.code ?? "");
+        if (evt.data.terminal) {
+          socket.disconnect();
+          resolve({ status: evt.data.status, txHash: evt.data.txHash });
+        }
+      }
+    });
+  });
+}
+
+// const { evm } = await generateDepositAddress(...);  // from step 1
+const result = await watchSettlement(evm.walletAddress);
+console.log(result.status === "completed" ? `✅ delivered: ${result.txHash}` : `❌ ${result.status}`);
+```
+
+```python Python
+# pip install "python-socketio[client]"
+import os, socketio
+
+MPS_URL = "https://mps-api.mayan.finance"
+API_KEY = os.environ["MPS_API_KEY"]
+
+def watch_settlement(wallet_address: str):
+    target = wallet_address.lower()
+    sio = socketio.Client()
+    result = {}
+
+    @sio.on("event")
+    def on_event(evt):
+        if evt["type"] == "deposit_detected":
+            print("deposit detected, queued:", evt["data"]["queued"])
+        if evt["type"] == "status_changed" and evt["data"]["walletAddress"].lower() == target:
+            print("→", evt["data"]["status"], (evt["data"].get("error") or {}).get("code", ""))
+            if evt["data"]["terminal"]:
+                result.update(status=evt["data"]["status"], txHash=evt["data"].get("txHash"))
+                sio.disconnect()
+
+    sio.connect(MPS_URL, transports=["websocket"], auth={"apiKey": API_KEY})
+    sio.wait()
+    return result
+
+# address = generate_deposit_address(...)["evm"]["walletAddress"]  # from step 1
+result = watch_settlement(evm_wallet_address)
+print("✅" if result["status"] == "completed" else "❌", result["status"], result.get("txHash"))
+```
+
+</CodeGroup>
+
+<Tip>
+  Full runnable examples (deposit **~2 USDC** on Base or Solana → receive USDC on Base) is on the
+  [Examples](/payment-service/examples) page.
+</Tip>
