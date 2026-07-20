@@ -85,7 +85,7 @@ const MPS_URL = process.env.MPS_URL || "https://mps-api.mayan.finance";
 const API_KEY = process.env.MPS_API_KEY;
 if (!API_KEY) throw new Error("Set MPS_API_KEY");
 
-// Left-pad a 20-byte EVM address to bytes32.
+// Left-pad a 20-byte EVM address to a 32-byte value (destWallet / destToken).
 const toBytes32 = (a: string) => "0x" + a.replace(/^0x/, "").padStart(64, "0");
 
 // Where the funds end up: USDC on Arbitrum (Wormhole chain id 23).
@@ -93,8 +93,8 @@ const DEST_CHAIN = 23;
 const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
 
-// A stable per-user id (any bytes32). Reusing it always yields the same address.
-const userId = toBytes32("0x00000000000000000000000000000000000000a1");
+// A stable per-user id (any 20-byte value). Reusing it always yields the same address.
+const userId = "0x00000000000000000000000000000000000000a1";
 
 // 1. Generate the deterministic deposit address.
 const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
@@ -174,7 +174,7 @@ const MPS_URL = process.env.MPS_URL || "https://mps-api.mayan.finance";
 const API_KEY = process.env.MPS_API_KEY;
 if (!API_KEY) throw new Error("Set MPS_API_KEY");
 
-// Left-pad a 20-byte EVM address to bytes32 (used for the EVM destination).
+// Left-pad a 20-byte EVM address to a 32-byte value (used for the EVM destination).
 const toBytes32 = (a: string) => "0x" + a.replace(/^0x/, "").padStart(64, "0");
 
 // Where the funds end up: USDC on Arbitrum (Wormhole chain id 23). The destination
@@ -183,7 +183,7 @@ const DEST_CHAIN = 23;
 const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
 
-const userId = toBytes32("0x00000000000000000000000000000000000000b2");
+const userId = "0x00000000000000000000000000000000000000b2";
 
 // 1. Generate — the same call returns both the EVM address and the Solana vault.
 const res = await fetch(`${MPS_URL}/deposit-address/generate`, {

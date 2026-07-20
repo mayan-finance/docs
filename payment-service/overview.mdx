@@ -43,6 +43,13 @@ want" — ideal for checkout, on-ramps, treasury top-ups, and wallet funding.
 You track every step in real time via [events](/payment-service/events-and-webhooks) or by polling
 the [`/swaps`](/payment-service/api-reference#list-swaps) endpoint.
 
+<Tip>
+  Already integrating Mayan quotes? You can get the **same deposit address inline from the quote API**
+  — pass `mpsDeposit: true` (with `destinationAddress`) and read `mpsDepositAddress` off each eligible
+  quote, no separate `generate` call needed. See
+  [MPS deposit address on the Quote API](/integration/quote-api#mps-deposit-address-mpsdeposit).
+</Tip>
+
 ## Key concepts
 
 - **Deterministic & permanent addresses** — the same parameters always produce the same address.
@@ -103,6 +110,11 @@ action from you) this whitelist per source chain:
 | Arbitrum | USDC  | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
 | Base     | ETH   | native |
 | Base     | USDC  | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+
+The table above is a convenience snapshot. The **authoritative, live** list — including the minimum
+deposit advertised per token — is [`GET /source-config`](/payment-service/api-reference#source-config).
+Poll it rather than hardcoding, and surface each token's `minDeposit` to your users before they pay
+(a deposit below it is detected but not settled).
 
 <Note>
   **Need another token whitelisted?** Email [support@mayan.finance](mailto:support@mayan.finance) with

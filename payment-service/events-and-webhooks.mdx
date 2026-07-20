@@ -73,8 +73,10 @@ missed via [`GET /events`](#delivery-and-replay).
 ```
 
 `queued` tells you whether the deposit entered the settlement queue. If `false`, `ignoredReason`
-explains why (`below_min`, `no_adapter`, `enqueue_error`) — so a dust/spam deposit that will never
-produce a swap is an explicit signal, not a detection with no follow-up.
+explains why (`below_token_min`, `below_min`, `no_adapter`, `enqueue_error`) — so a dust/spam deposit
+that will never produce a swap is an explicit signal, not a detection with no follow-up. `below_token_min`
+is the per-token minimum (see [`GET /source-config`](/payment-service/api-reference#source-config));
+`below_min` is the chain-level USD floor.
 
 ### status_changed
 

@@ -55,7 +55,7 @@ When a swap is in a `retrying` state (or `dead`), its `error` is a
 [structured error](/payment-service/api-reference#errors):
 
 ```json
-{ "code": "PROVIDER_UNAVAILABLE", "message": "The swap provider is temporarily unavailable.", "retryable": true }
+{ "code": "NO_ROUTE", "message": "No route available for this pair right now.", "retryable": true }
 ```
 
 - `error` is `null` on any non-failing state. A **non-null `error` never means success** — success is
