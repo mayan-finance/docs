@@ -3,18 +3,20 @@ title: "Examples"
 description: "Complete, runnable end-to-end examples — deposit ~2 USDC and watch it settle to the destination over the WebSocket."
 ---
 
-These are full, copy-paste examples: generate a deposit address, have a user send **~2 USDC**, and
-watch it settle to the destination over the WebSocket.
+These are full, copy-paste examples: get a deposit address from a quote, have a user send **~2 USDC**,
+and watch it settle to the destination over the WebSocket.
 
 ## Setup
 
 ```bash
-export MPS_API_KEY=your-uuid-api-key
-export MPS_URL=https://mps-api.mayan.finance   # optional (default)
+export MAYAN_API_KEY=your-mps-enabled-api-key
+export MPS_URL=https://mps-api.mayan.finance       # optional (default) — event tracking
+export PRICE_URL=https://price-api.mayan.finance   # optional (default) — quotes
 export DEST_WALLET=0xYourMerchantWalletOnArbitrum  # optional — where you receive USDC on Arbitrum
 ```
 
-Need a key? Email [support@mayan.finance](mailto:support@mayan.finance).
+Need a key? Email [support@mayan.finance](mailto:support@mayan.finance) and ask to have **MPS enabled**
+on it — the quote returns `mpsDepositAddress` only for MPS-enabled keys.
 
 ## Shared listener (Socket.IO)
 
@@ -73,51 +75,97 @@ export function watchSettlement(opts: {
 }
 ```
 
+## Shared quote helper
+
+The deposit address comes from a **Mayan quote** with `mpsDeposit` enabled — not a separate MPS call.
+The helper below fetches a quote and returns the `mpsDepositAddress` (the deterministic address on the
+quote's source chain). Both examples import it.
+
+```typescript mps-quote.ts
+// Fetches a Mayan quote with mpsDeposit enabled and returns the MPS deposit
+// address on the source chain. Send the input token to it and MPS settles the
+// swap to your destination — no signature required.
+
+export async function getMpsDepositAddress(opts: {
+  priceUrl: string;           // e.g. https://price-api.mayan.finance
+  apiKey: string;             // your MPS-enabled Mayan API key
+  amountIn64: string;         // input amount in base units
+  fromChain: string;          // source chain name, e.g. "base" | "solana"
+  fromToken: string;          // input token address/mint
+  toChain: string;            // destination chain name
+  toToken: string;            // destination token address
+  destinationAddress: string; // final recipient
+  mpsUserId?: string;         // optional integrator-scoped id (else derived from your key)
+}): Promise<string> {
+  const res = await fetch(`${opts.priceUrl}/v3/quote?apiKey=${opts.apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amountIn64: opts.amountIn64,
+      fromChain: opts.fromChain,
+      fromToken: opts.fromToken,
+      toChain: opts.toChain,
+      toToken: opts.toToken,
+      slippageBps: "auto",
+      destinationAddress: opts.destinationAddress,
+      mpsDeposit: true,
+      ...(opts.mpsUserId ? { mpsUserId: opts.mpsUserId } : {}),
+      swift: true, mctp: true, fastMctp: true, monoChain: true, fullList: true,
+      sdkVersion: "15_0_0",
+    }),
+  });
+  if (!res.ok) throw new Error(`quote failed: ${res.status} ${await res.text()}`);
+
+  const { quotes } = await res.json();
+  // All eligible quotes carry the same address; take the first non-null one.
+  const address = quotes?.map((q: any) => q.mpsDepositAddress).find(Boolean);
+  if (!address) {
+    throw new Error(
+      "No mpsDepositAddress in quotes — is MPS enabled for your API key, and is the amount above the token's minimum deposit?",
+    );
+  }
+  return address as string;
+}
+```
+
 ## Base (EVM): deposit USDC on Base
 
-The user sends ~2 USDC to the generated address on Base; it's settled as USDC to your destination
-wallet on Arbitrum.
+The user sends ~2 USDC to the quote's deposit address on Base; it's settled as USDC to your
+destination wallet on Arbitrum.
 
 ```typescript evm-base.ts
+import { getMpsDepositAddress } from "./mps-quote";
 import { watchSettlement } from "./listen";
 
 const MPS_URL = process.env.MPS_URL || "https://mps-api.mayan.finance";
-const API_KEY = process.env.MPS_API_KEY;
-if (!API_KEY) throw new Error("Set MPS_API_KEY");
+const PRICE_URL = process.env.PRICE_URL || "https://price-api.mayan.finance";
+const API_KEY = process.env.MAYAN_API_KEY;
+if (!API_KEY) throw new Error("Set MAYAN_API_KEY");
 
-// Left-pad a 20-byte EVM address to a 32-byte value (destWallet / destToken).
-const toBytes32 = (a: string) => "0x" + a.replace(/^0x/, "").padStart(64, "0");
-
-// Where the funds end up: USDC on Arbitrum (Wormhole chain id 23).
-const DEST_CHAIN = 23;
-const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+const USDC_BASE = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"; // USDC on Arbitrum (dest)
 const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
 
-// A stable per-user id (any 20-byte value). Reusing it always yields the same address.
-const userId = "0x00000000000000000000000000000000000000a1";
-
-// 1. Generate the deterministic deposit address.
-const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
-  body: JSON.stringify({
-    userId,
-    destChain: DEST_CHAIN,
-    destWallet: toBytes32(DEST_WALLET),
-    destToken: toBytes32(USDC_ARB),
-  }),
+// 1. Get the MPS deposit address from a quote (source = Base).
+const depositAddress = await getMpsDepositAddress({
+  priceUrl: PRICE_URL,
+  apiKey: API_KEY,
+  amountIn64: "2000000", // ~2 USDC (6 decimals)
+  fromChain: "base",
+  fromToken: USDC_BASE,
+  toChain: "arbitrum",
+  toToken: USDC_ARB,
+  destinationAddress: DEST_WALLET,
 });
-if (!res.ok) throw new Error(`generate failed: ${res.status} ${await res.text()}`);
-const { evm } = await res.json();
 
-console.log(`\n➡️  Send ~2 USDC to this address on BASE:\n   ${evm.walletAddress}\n`);
+console.log(`\n➡️  Send ~2 USDC to this address on BASE:\n   ${depositAddress}\n`);
 console.log("Waiting for the deposit and settlement (Ctrl-C to stop)...\n");
 
 // 2. Watch the event stream until the settlement is terminal.
 const result = await watchSettlement({
   mpsUrl: MPS_URL,
   apiKey: API_KEY,
-  walletAddress: evm.walletAddress,
+  walletAddress: depositAddress,
   onEvent: (evt) => {
     if (evt.type === "deposit_detected") {
       console.log(`💰 deposit detected — queued=${evt.data.queued}${evt.data.ignoredReason ? ` (${evt.data.ignoredReason})` : ""}`);
@@ -164,49 +212,43 @@ WS connected
 
 ## Solana: deposit USDC on Solana
 
-The same generate call also returns a Solana vault. The user sends ~2 USDC to it on Solana; it's
-settled as USDC to your destination wallet on Arbitrum.
+A quote from a Solana source returns a **Solana vault** as its `mpsDepositAddress`. The user sends
+~2 USDC to it on Solana; it's settled as USDC to your destination wallet on Arbitrum.
 
 ```typescript solana.ts
+import { getMpsDepositAddress } from "./mps-quote";
 import { watchSettlement } from "./listen";
 
 const MPS_URL = process.env.MPS_URL || "https://mps-api.mayan.finance";
-const API_KEY = process.env.MPS_API_KEY;
-if (!API_KEY) throw new Error("Set MPS_API_KEY");
+const PRICE_URL = process.env.PRICE_URL || "https://price-api.mayan.finance";
+const API_KEY = process.env.MAYAN_API_KEY;
+if (!API_KEY) throw new Error("Set MAYAN_API_KEY");
 
-// Left-pad a 20-byte EVM address to a 32-byte value (used for the EVM destination).
-const toBytes32 = (a: string) => "0x" + a.replace(/^0x/, "").padStart(64, "0");
-
-// Where the funds end up: USDC on Arbitrum (Wormhole chain id 23). The destination
-// can be any Mayan-supported chain; the source here is Solana.
-const DEST_CHAIN = 23;
-const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+const USDC_SOLANA = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"; // USDC on Arbitrum (dest)
 const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
 
-const userId = "0x00000000000000000000000000000000000000b2";
-
-// 1. Generate — the same call returns both the EVM address and the Solana vault.
-const res = await fetch(`${MPS_URL}/deposit-address/generate`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json", "x-api-key": API_KEY },
-  body: JSON.stringify({
-    userId,
-    destChain: DEST_CHAIN,
-    destWallet: toBytes32(DEST_WALLET),
-    destToken: toBytes32(USDC_ARB),
-  }),
+// 1. Get the MPS deposit address from a quote (source = Solana → a Solana vault).
+//    The destination can be any Mayan-supported chain; here it's Arbitrum.
+const depositAddress = await getMpsDepositAddress({
+  priceUrl: PRICE_URL,
+  apiKey: API_KEY,
+  amountIn64: "2000000", // ~2 USDC (6 decimals)
+  fromChain: "solana",
+  fromToken: USDC_SOLANA,
+  toChain: "arbitrum",
+  toToken: USDC_ARB,
+  destinationAddress: DEST_WALLET,
 });
-if (!res.ok) throw new Error(`generate failed: ${res.status} ${await res.text()}`);
-const { svm } = await res.json();
 
-console.log(`\n➡️  Send ~2 USDC to this vault on SOLANA:\n   ${svm.walletAddress}\n`);
+console.log(`\n➡️  Send ~2 USDC to this vault on SOLANA:\n   ${depositAddress}\n`);
 console.log("Waiting for the deposit and settlement (Ctrl-C to stop)...\n");
 
 // 2. Watch the event stream until the settlement is terminal.
 const result = await watchSettlement({
   mpsUrl: MPS_URL,
   apiKey: API_KEY,
-  walletAddress: svm.walletAddress,
+  walletAddress: depositAddress,
   onEvent: (evt) => {
     if (evt.type === "deposit_detected") {
       console.log(`💰 deposit detected — queued=${evt.data.queued}${evt.data.ignoredReason ? ` (${evt.data.ignoredReason})` : ""}`);

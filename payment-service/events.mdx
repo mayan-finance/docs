@@ -1,15 +1,11 @@
 ---
-title: "Events & Webhooks"
-description: "Real-time Socket.IO events, durable signed webhooks, replay after disconnects, and signature verification."
+title: "Events"
+description: "Real-time Socket.IO events across the settlement lifecycle, plus replay after disconnects."
 ---
 
-MPS emits two event types across its whole lifecycle. You can consume them two ways:
-
-- **Socket.IO** — live, low-latency, best-effort. Great for UIs and live dashboards.
-- **Webhooks** — durable, retried, signed. Great for backend accounting and fulfilment.
-
-Both carry the same event payloads. Use the live stream for immediacy, webhooks for guaranteed
-delivery — many integrations use both.
+MPS emits two event types across its whole lifecycle. Consume them live over **Socket.IO**, and catch
+up on anything missed after a disconnect with the [`GET /events`](#delivery-and-replay) replay
+endpoint.
 
 ## Event types
 
@@ -32,7 +28,7 @@ import * as io from "socket.io-client";
 
 const socket = io.connect("https://mps-api.mayan.finance", {
   transports: ["websocket"],
-  auth: { apiKey: process.env.MPS_API_KEY }, // or query: { apiKey } for browser clients
+  auth: { apiKey: process.env.MAYAN_API_KEY }, // or query: { apiKey } for browser clients
 });
 
 socket.on("connect", () => console.log("connected"));
@@ -135,7 +131,7 @@ async function drain(sinceISO?: string) {
     url.searchParams.set("limit", "200");
     if (cursor) url.searchParams.set("since", cursor);
     const { items, nextCursor } = await fetch(url, {
-      headers: { "x-api-key": process.env.MPS_API_KEY! },
+      headers: { "x-api-key": process.env.MAYAN_API_KEY! },
     }).then((r) => r.json());
 
     for (const evt of items) handleEvent(evt);
@@ -156,7 +152,7 @@ def drain(since_iso: str | None = None):
             params["since"] = cursor
         data = requests.get(
             "https://mps-api.mayan.finance/events",
-            headers={"x-api-key": os.environ["MPS_API_KEY"]},
+            headers={"x-api-key": os.environ["MAYAN_API_KEY"]},
             params=params,
         ).json()
         for evt in data["items"]:
@@ -170,93 +166,6 @@ def drain(since_iso: str | None = None):
 
 <Note>
   Events are retained for **30 days** and pruned afterwards, so replay only reaches back over the
-  retention window. For durable long-term delivery, use a webhook.
+  retention window. Treat events as **idempotent** — dedupe on the event `id` (from `GET /events`),
+  or on `data.queueItemId` + `data.status`.
 </Note>
-
-## Webhooks
-
-If a webhook URL is registered for your integrator, **every** event (`deposit_detected` and
-`status_changed`, including failures and retries) is also sent as a signed `POST` to that URL.
-Webhooks are the durable path — the live stream is best-effort, webhooks are retried.
-
-**Payload**
-
-```json
-{
-  "type": "status_changed",
-  "data": { "...": "..." },
-  "integratorId": "uuid",
-  "timestamp": "2026-04-03T00:00:00.000Z"
-}
-```
-
-`data` is identical to the live event `data` for that type.
-
-**Headers**
-
-| Header | Description |
-|--------|-------------|
-| `Content-Type` | `application/json` |
-| `X-Signature` | Base64-encoded Ed25519 signature of the raw request body |
-
-### Delivery and retries
-
-- Respond with any `2xx` to acknowledge. A non-2xx response, a 10s timeout, or a connection error is
-  treated as a failure.
-- Failed deliveries are retried with exponential backoff (5s, 15s, 30s, 1m, 2m, 5m, 10m, 15m, 30m,
-  1h) up to 10 attempts, after which the event is dead-lettered (still readable via `GET /events`).
-- Delivery is **at-least-once** and per-event independent — a slow endpoint never blocks other
-  events. Treat events as **idempotent**: dedupe on the event `id` (from `GET /events`), or on
-  `data.queueItemId` + `data.status`.
-
-### Verifying webhook signatures
-
-Fetch the Ed25519 public key once from
-[`GET /webhook/public-key`](/payment-service/api-reference#webhook-public-key) and verify the
-`X-Signature` header against the **raw** request body (verify before JSON-parsing, so the bytes
-match exactly).
-
-<CodeGroup>
-
-```javascript Node.js
-const crypto = require("crypto");
-const express = require("express");
-
-const app = express();
-// Capture the raw body so the signature is verified against exact bytes.
-app.use(express.json({ verify: (req, _res, buf) => { req.rawBody = buf; } }));
-
-const publicKeyPem = await fetch("https://mps-api.mayan.finance/webhook/public-key").then((r) => r.text());
-const publicKey = crypto.createPublicKey(publicKeyPem);
-
-app.post("/webhook", (req, res) => {
-  const signature = Buffer.from(req.headers["x-signature"], "base64");
-  const valid = crypto.verify(null, req.rawBody, publicKey, signature);
-  if (!valid) return res.status(401).send("Invalid signature");
-
-  // ... handle req.body (idempotently) ...
-  res.sendStatus(200);
-});
-```
-
-```python Python
-from cryptography.hazmat.primitives.serialization import load_pem_public_key
-import base64, requests
-
-pem = requests.get("https://mps-api.mayan.finance/webhook/public-key").text
-public_key = load_pem_public_key(pem.encode())
-
-def verify_webhook(raw_body: bytes, signature_b64: str) -> bool:
-    try:
-        public_key.verify(base64.b64decode(signature_b64), raw_body)
-        return True
-    except Exception:
-        return False
-```
-
-</CodeGroup>
-
-<Warning>
-  Verify the signature against the **raw** request body bytes, not a re-serialized JSON object —
-  re-serializing can reorder keys or change whitespace and break verification.
-</Warning>
