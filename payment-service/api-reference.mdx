@@ -1,0 +1,352 @@
+---
+title: "API Reference"
+description: "Every MPS REST endpoint, request/response shape, pagination, and the structured error model."
+---
+
+## Base URL
+
+```
+https://mps-api.mayan.finance
+```
+
+## Authentication
+
+Every authenticated request must include your API key (a UUID) in the `x-api-key` header:
+
+```
+x-api-key: your-uuid-api-key
+```
+
+`GET /chains` and `GET /source-config` are public and do not require a key. A missing key
+returns `401 UNAUTHORIZED`; an invalid key returns `403 FORBIDDEN`.
+
+## Pagination
+
+List endpoints are cursor-paginated by creation time (newest first).
+
+| Query param | Description |
+|-------------|-------------|
+| `limit`     | Page size. Default `20`, max `100`. |
+| `cursor`    | ISO-8601 timestamp from a previous response's `nextCursor`. |
+
+Each response includes `nextCursor`; pass it back as `cursor` for the next page. When `nextCursor`
+is `null`, there are no more pages.
+
+## Errors
+
+### Error shape
+
+All API errors — plus the `error` field on a swap and on a `status_changed` event — share one
+structured shape:
+
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Human-readable, safe to surface.",
+  "retryable": false,
+  "details": { "field": "evm" }
+}
+```
+
+API error responses wrap it as `{ "error": { ... } }` with an appropriate HTTP status. Always branch
+on `code` (a stable enum) rather than `message` (which may be reworded). `details`, when present,
+holds only safe, parameterized context (numbers, ids, thresholds) — never raw internal exception
+text.
+
+### Error codes
+
+| Code | Retryable | Meaning |
+|------|-----------|---------|
+| `VALIDATION_ERROR` | no | Bad or missing request parameters |
+| `UNAUTHORIZED` | no | Missing `x-api-key` |
+| `FORBIDDEN` | no | Invalid API key |
+| `UNSUPPORTED_CHAIN` | no | Unknown chain id in the request |
+| `RESOLVE_FAILED` | yes | Could not fetch/decode the transaction (e.g. RPC) |
+| `NOT_CONFIGURED` | no | A server feature is not configured |
+| `NOT_FOUND` | no | Resource does not exist |
+| `INSUFFICIENT_BALANCE` | yes | Relayer/wallet lacked funds to send the tx |
+| `AMOUNT_TOO_SMALL` | yes | Deposit value below what the route/fees allow |
+| `FEE_NOT_COVERED` | yes | Collected fee does not cover settlement cost |
+| `NO_ROUTE` | yes | No quote/route available for this pair right now |
+| `QUOTE_INVALID` | yes | A quote was returned but failed validation |
+| `UNSUPPORTED_ROUTE` | no | This source/destination combination is not supported |
+| `UNSUPPORTED_DEST` | no | Destination chain is not supported |
+| `TX_REVERTED` | yes | An on-chain transaction reverted |
+| `SIMULATION_REVERTED` | yes | Pre-flight simulation reverted |
+| `RPC_UNAVAILABLE` | yes | RPC timeout / connection / rate-limit |
+| `PRICE_UNAVAILABLE` | yes | Token could not be priced |
+| `REORG` | yes | A prior on-chain step was re-orged away |
+| `CONFIG_MISSING` | yes | A required config is missing (recovers once set) |
+| `INTERNAL` | yes | Unclassified failure (message is generic; cause is logged server-side) |
+
+<Info>
+  On a swap, `error.retryable` also reflects state: a `dead` (terminal) item always reports
+  `retryable: false`, because the worker will not try it again regardless of the code.
+</Info>
+
+---
+
+## Get a deposit address
+
+You don't call MPS to mint a deposit address — you get one from the **Mayan Quote API**. Request a
+quote with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off any
+eligible quote. The address is deterministic and permanent for a given recipient, and MPS settles
+anything sent to it automatically.
+
+See [MPS deposit address on the Quote API](/integration/quote-api#mps-deposit-address-mpsdeposit) for
+the request/response shape and eligibility rules.
+
+---
+
+## List deposit addresses
+
+Paginated deposit addresses that have been created for the authenticated integrator (each is minted
+the first time you request a quote with `mpsDeposit: true` for a new recipient).
+
+```
+GET /deposit-addresses?limit=20&cursor=<ISO timestamp>
+```
+
+**Response**
+
+```json
+{
+  "items": [
+    {
+      "id": "uuid",
+      "walletAddress": "0x...",
+      "userId": "0x...",
+      "destChain": "30",
+      "destWallet": "0x...",
+      "destToken": "0x...",
+      "chainType": "evm",
+      "createdAt": "2026-04-03T00:00:00.000Z"
+    }
+  ],
+  "nextCursor": "2026-04-02T23:59:00.000Z"
+}
+```
+
+---
+
+## List swaps
+
+Paginated settlement status for your deposit addresses. This is the endpoint to poll for payment
+progress. Each item is a settlement request: MPS sweeps the wallet's balance of `tokenAddress` on
+`chainId` and delivers it to the destination.
+
+```
+GET /swaps?limit=20&cursor=<ISO timestamp>
+```
+
+**Response**
+
+```json
+{
+  "items": [
+    {
+      "id": "uuid",
+      "status": "failed_swap",
+      "phase": "swap",
+      "category": "retrying",
+      "terminal": false,
+      "chainId": 6,
+      "tokenAddress": "0x...",
+      "amount": "1000000",
+      "swapTxHash": null,
+      "error": {
+        "code": "RPC_UNAVAILABLE",
+        "message": "Upstream RPC is temporarily unavailable.",
+        "retryable": true,
+        "details": { "reason": "fetch failed" }
+      },
+      "retryCount": 2,
+      "walletAddress": "0x...",
+      "userId": "0x...",
+      "destChain": "30",
+      "destWallet": "0x...",
+      "destToken": "0x...",
+      "createdAt": "2026-04-03T00:00:00.000Z",
+      "updatedAt": "2026-04-03T00:01:00.000Z"
+    }
+  ],
+  "nextCursor": "2026-04-02T23:59:00.000Z"
+}
+```
+
+- `chainId` is the **Wormhole chain ID** the funds are on; `tokenAddress` is the token being settled.
+- `amount` is a **best-effort snapshot** for display (raw smallest-unit string, or `null` for a
+  request-indexed settlement). The actual settled amount is the wallet's live balance at swap time.
+- `error` is `null` unless the item is failing/deferred — a non-null `error` never means success.
+- See [Swap Statuses](/payment-service/statuses) for `status`/`phase`/`category`/`terminal`, and
+  `swapTxHash` for the settlement transaction (view it on
+  [Mayan Explorer](https://explorer.mayan.finance/)).
+
+---
+
+## Request index
+
+Trigger settlement for a token the scanner doesn't auto-detect. Only [whitelisted tokens](/payment-service/overview#supported-tokens)
+(native + USDC on EVM; USDC/USDT/WETH on Solana) are detected automatically. For any other token, call
+this with one of **your deposit addresses** (an `mpsDepositAddress` from a quote), the token, and the
+chain — MPS queues a settlement and the worker sweeps the wallet's live balance. If a settlement for
+that wallet+token is already active, the call is deduped.
+
+```
+POST /request-index
+```
+
+**Request body**
+
+| Field          | Type   | Description |
+|----------------|--------|-------------|
+| `walletAddress`| string | one of your deposit addresses (an `mpsDepositAddress` from a quote) |
+| `tokenAddress` | string | the token to index — a contract/mint address, or `"native"` for the gas token |
+| `chain`        | number | the **Wormhole chain ID** the wallet holds the token on |
+
+**Example**
+
+```bash
+curl -X POST https://mps-api.mayan.finance/request-index \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $MAYAN_API_KEY" \
+  -d '{
+    "walletAddress": "0xff129358605c18388f527d97dbf20e30ea6ddaea",
+    "tokenAddress": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "chain": 6
+  }'
+```
+
+**Response**
+
+```json
+{
+  "chainId": 6,
+  "walletAddress": "0xff129358605c18388f527d97dbf20e30ea6ddaea",
+  "tokenAddress": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+  "queued": true,
+  "queueItemId": "uuid",
+  "reason": null
+}
+```
+
+- `queueItemId` is the settlement id (`null` when not queued) — track it via [`GET /swaps`](#list-swaps)
+  and `status_changed` events.
+- When `queued` is `false`, `reason` explains why: `"already_queued"` (a settlement for this
+  wallet+token is already active — the in-flight one will sweep the new balance too),
+  `"below_token_min"` (below the token's configured minimum), or `"below_min"` (below the chain's USD
+  floor).
+- Returns `404 NOT_FOUND` if `walletAddress` is not one of your registered deposit addresses.
+
+---
+
+## Chain info
+
+Supported chains with their block-explorer URLs. **No authentication required.**
+
+```
+GET /chains
+```
+
+**Response**
+
+```json
+[
+  { "chainId": 6, "name": "avalanche", "explorerTxUrl": "https://snowtrace.io/tx/", "kind": "evm" },
+  { "chainId": 1, "name": "solana", "explorerTxUrl": "https://solscan.io/tx/", "kind": "svm" }
+]
+```
+
+`kind` is `"evm"` or `"svm"`. This lists **every** chain (as a destination or explorer target); to
+discover which source chains and tokens the scanner actually **detects and settles**, use
+[`GET /source-config`](#source-config).
+
+---
+
+## Source config
+
+The **source chains and tokens the scanner auto-detects and settles**, with the minimum deposit
+advertised per token. **No authentication required.** Poll this instead of hardcoding a list — the
+minimums here are the same ones the deposit gate enforces, so they never drift. Any token *not* listed
+can still be settled on demand via [`POST /request-index`](#request-index).
+
+```
+GET /source-config
+```
+
+**Response**
+
+```json
+{
+  "chains": [
+    {
+      "chainId": 30,
+      "name": "base",
+      "kind": "evm",
+      "tokens": [
+        { "address": "0x0000000000000000000000000000000000000000", "symbol": "BASE", "standard": "native", "minDeposit": "0.0003", "decimals": 18 },
+        { "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", "symbol": "USDC", "standard": "erc20", "minDeposit": "1", "decimals": 6 }
+      ]
+    },
+    {
+      "chainId": 1,
+      "name": "solana",
+      "kind": "svm",
+      "tokens": [
+        { "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "symbol": "USDC", "standard": "spl", "minDeposit": "1", "decimals": 6 },
+        { "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "standard": "spl", "minDeposit": "1", "decimals": 6 },
+        { "address": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", "symbol": "WETH", "standard": "spl", "minDeposit": "0.0003", "decimals": 8 }
+      ]
+    }
+  ]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `chains[].chainId` | number | Source **Wormhole chain ID** |
+| `chains[].name` | string | Chain name |
+| `chains[].kind` | string | `"evm"` or `"svm"` |
+| `chains[].tokens[].address` | string | Contract/mint address; the native coin uses the zero address `0x0000…0000` |
+| `chains[].tokens[].symbol` | string? | Token symbol, when known (the native coin's symbol is the chain name uppercased) |
+| `chains[].tokens[].standard` | string | `"native"`, `"erc20"`, or `"spl"` |
+| `chains[].tokens[].minDeposit` | string? | Minimum deposit in the token's own units (human-readable, e.g. `"10"` USDC). Present only when a minimum is configured. |
+| `chains[].tokens[].decimals` | number? | Token decimals, paired with `minDeposit` to convert an on-chain (base-unit) balance for comparison. |
+
+<Info>
+  A deposit below the advertised minimum is detected but not settled — you still get a
+  `deposit_detected` event with `queued: false` and `ignoredReason: "below_token_min"` (or
+  `"below_min"` for the chain-level USD floor). See
+  [deposit_detected](/payment-service/events#deposit_detected).
+</Info>
+
+---
+
+## Event replay
+
+Fetch this integrator's events in chronological order — used to catch up after a WebSocket
+disconnect. Events are retained for 30 days.
+
+```
+GET /events?since=<ISO timestamp>&limit=50&type=status_changed
+```
+
+| Query param | Description |
+|-------------|-------------|
+| `since`     | Return events created strictly after this timestamp. Omit to start from the oldest retained event. |
+| `type`      | Optional filter: `deposit_detected` or `status_changed`. |
+| `limit`     | Page size. Default `50`, max `200`. |
+
+**Response** (ascending by time):
+
+```json
+{
+  "items": [
+    { "id": "uuid", "type": "status_changed", "data": { "...": "..." }, "timestamp": "2026-04-03T00:00:00.000Z" }
+  ],
+  "nextCursor": "2026-04-03T00:00:00.000Z"
+}
+```
+
+Page forward with `nextCursor` until it is `null`. See
+[Delivery & replay](/payment-service/events#delivery-and-replay) for the full pattern.
