@@ -54,7 +54,9 @@ export function watchSettlement(opts: {
   return new Promise((resolve, reject) => {
     const socket = io.connect(opts.mpsUrl, {
       transports: ["websocket"],
-      auth: { apiKey: opts.apiKey },
+      extraHeaders: {
+        'x-api-key': opts.apiKey,
+      }
     });
 
     socket.on("connect", () => console.log("WS connected"));
@@ -111,7 +113,7 @@ export async function getMpsDepositAddress(opts: {
       mpsDeposit: true,
       ...(opts.mpsUserId ? { mpsUserId: opts.mpsUserId } : {}),
       swift: true, mctp: true, fastMctp: true, monoChain: true, fullList: true,
-      sdkVersion: "15_0_0",
+      sdkVersion: "15_1_0",
     }),
   });
   if (!res.ok) throw new Error(`quote failed: ${res.status} ${await res.text()}`);
