@@ -149,5 +149,6 @@
       "light": "#111111",
       "dark": "#6C2A87"
     }
-  }
+  },
+  "integrations": { "mixpanel": { "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc" } }
 }
