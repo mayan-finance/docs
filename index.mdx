@@ -2,22 +2,62 @@
 title: "What Is Mayan?"
 ---
 
-Mayan is a cross-chain swap auction protocol designed to deliver optimal swap rates via a transparent, competitive bidding mechanism. To date, the Mayan team has implemented the protocol on SVM (Solana), EVM and Sui-Move, with additional implementations rolling out soon.
+Mayan is how crypto moves. Through a simple swap interface and a powerful set of developer tools, Mayan finds the best route across chains and liquidity and executes each swap behind the scenes, so people get fast, competitive swaps and teams can build cross-chain movement into their own products.
 
-Mayan uses three different methods to facilicate the cross-chain swaps. These methods are complementary and can offer different trade-offs between speed and price. All three methods are powered by Wormhole message passing.
+To date, Mayan has processed **\$19B\+ in volume** across **9M\+ swaps** for **3M\+ users**, moving assets between major chains including Solana, Ethereum, Monad, BNB Chain, Base, Arbitrum, Optimism, Sui, and HyperEVM.
 
-* [**WH Swap**](/architecture/wh-swap)<br/>This method uses Solana as the trading hub and Token Bridge as the value transfer protocol, this method transfers the assets to Solana and on Solana driver fulfills user's trade using Mayan Flash Swap program and then if the destination chain is not Solana relayers transfer the tokens to the destination chain.
+Mayan powers some of the biggest apps in crypto and fintech, including MetaMask, OKX Wallet, Phantom, MoonPay, SwapKit, LI.FI, and more.
 
-* [**MCTP**](/architecture/mctp)<br/>Mayan-Circle Transfer Protocol (MCTP) facilicas CCTP as the highway for transfering the value to the destination chain and on the destination chain the driver fullfills user's trade using Mayan Flash Swap smart contract/program and delivers the output tokens.
+## Instant money movement in any direction
 
-* [**Swift**](/architecture/swift)<br/>Swift is intent-centric and is the fastest method of bridging, in Swift user creates an order by locking the funds using Mayan contract on the source chain and specifying the details. The designated driver then fullfills user's order on the destination chain and brings back the proof to source chain to receive the locked funds.
+Mayan turns cross-chain movement into a single step, so money can go any direction your users need: any token to any token, and any chain to any chain. Every order runs through an onchain auction where drivers compete to fill it, so pricing moves in the user's favor and settlement lands in as little as one second. All of it is reachable through one integration, giving your product instant cross-chain movement without the infrastructure to build or maintain yourself.
 
-<Card color="#000000" title="GitHub - mayan-finance/swap-sdk: npm package for sending cross-chain swap transactions" icon="github" href="https://github.com/mayan-finance/swap-sdk" horizontal>
-  Github
-</Card>
+<Info>
+  **What this means:** you integrate once, and your users move any token across any chain, in seconds, without leaving your product.
+</Info>
 
-<Card color="#000000" title="GitHub - mayan-finance/swap-bridge: Contracts for publishing and verifying cross-chain swap messages using Wormhole message passing and token bridge" icon="github" href="https://github.com/mayan-finance/swap-bridge" horizontal>
-  Github
-</Card>
+## What you can do
 
-For users and integrators all the three methods are available under one unified interface.
+<CardGroup cols={3}>
+  <Card title="Swap" href="/use-cases/swap">
+    Trade any asset to any asset at the best available price.
+  </Card>
+
+  <Card title="Bridge" href="/use-cases/bridge">
+    Move any asset across chains in one flow.
+  </Card>
+
+  <Card title="Pay" href="/use-cases/pay">
+    Send stablecoins globally with the intended amount arriving.
+  </Card>
+
+  <Card title="Deposit" href="/use-cases/deposit">
+    Fund any onchain account from any asset in one transaction.
+  </Card>
+
+  <Card title="Withdraw" href="/use-cases/withdraw">
+    Exit to any chain in any asset.
+  </Card>
+
+  <Card title="Orchestrate" href="/use-cases/orchestrate">
+    Attach any onchain action to a single swap.
+  </Card>
+</CardGroup>
+
+Building a wallet, an app, a chain, or a commerce flow? See how teams like yours use Mayan in [Solutions](/solutions/wallets).
+
+## How it works
+
+Under the hood, every swap routes through one of three methods, Swift, MCTP, or Wormhole Swap, and the auction selects the one that best fits each order. You reach all of it through the Mayan SDK and API. Teams that want a ready-made interface can also drop in the Mayan widget, which is optional.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Your first cross-chain swap in about five minutes.
+  </Card>
+
+  <Card title="Why Mayan" icon="circle-check" href="/get-started/why-mayan">
+    The case for building on Mayan, for users and builders.
+  </Card>
+</CardGroup>
