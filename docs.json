@@ -50,7 +50,7 @@
         }
       ]
     },
-    "groups": [
+    "pages": [
       {
         "group": " ",
         "pages": [
@@ -108,7 +108,35 @@
           "link/github",
           "link/brand"
         ]
-      }
+      },
+      "get-started/why-mayan",
+      "get-started/api-keys-referrer",
+      "solutions/commerce",
+      "use-cases/swap",
+      "use-cases/deposit",
+      "use-cases/bridge",
+      "use-cases/pay",
+      "features/guaranteed-price",
+      "use-cases/withdraw",
+      "build/direct-route-linking",
+      "use-cases/orchestrate",
+      "solutions/wallets",
+      "solutions/applications",
+      "solutions/chains",
+      "build/integrate-swap-api",
+      "how-mayan-works/intent-based-swaps",
+      "resources/compliance",
+      "features/deposit-addresses",
+      "features/gasless-execution",
+      "get-started/quickstart",
+      "build/track-transactions",
+      "resources/chains-contracts",
+      "how-mayan-works/refunds",
+      "ai-agents/agents-md",
+      "build/sdk",
+      "ai-agents/llms-txt",
+      "build/fees-earning",
+      "resources/technical-faq"
     ]
   },
   "logo": {
