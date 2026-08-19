@@ -58,10 +58,7 @@
       {
         "group": "ARCHITECTURE",
         "pages": [
-          "architecture/swift-v2",
           "architecture/swift",
-          "architecture/auction",
-          "architecture/relayers",
           "architecture/mctp",
           "architecture/wh-swap"
         ]
@@ -69,11 +66,8 @@
       {
         "group": "INTEGRATION",
         "pages": [
-          "integration/quote-api",
-          "integration/explorer-api",
           "integration/forwarder-contract",
           "integration/custom-payload",
-          "integration/hyperliquid",
           "integration/referral",
           "integration/swap-widget",
           "link/swap"
@@ -82,7 +76,6 @@
       {
         "group": "PAYMENT SERVICE",
         "pages": [
-          "payment-service/overview",
           "payment-service/quickstart",
           "payment-service/api-reference",
           "payment-service/statuses",
@@ -93,19 +86,12 @@
       {
         "group": "APPLICATION",
         "pages": [
-          "application/user-manual",
-          "application/mayan-explorer",
-          "application/relayer-fees",
-          "application/gas-on-destination"
+          "application/relayer-fees"
         ]
       },
       {
         "group": "RESOURCES",
-        "pages": [
-          "resources/audits",
-          "link/github",
-          "link/brand"
-        ]
+        "pages": []
       },
       "use-cases/withdraw",
       {
@@ -131,7 +117,10 @@
         "pages": [
           "resources/chains-contracts",
           "resources/compliance",
-          "resources/technical-faq"
+          "resources/technical-faq",
+          "resources/audits",
+          "link/github",
+          "link/brand"
         ]
       },
       {
@@ -145,7 +134,10 @@
         "group": "How Mayan Works",
         "pages": [
           "how-mayan-works/intent-based-swaps",
-          "how-mayan-works/refunds"
+          "how-mayan-works/refunds",
+          "architecture/auction",
+          "architecture/relayers",
+          "architecture/swift-v2"
         ]
       },
       {
@@ -163,7 +155,10 @@
         "pages": [
           "features/guaranteed-price",
           "features/deposit-addresses",
-          "features/gasless-execution"
+          "features/gasless-execution",
+          "integration/hyperliquid",
+          "application/gas-on-destination",
+          "payment-service/overview"
         ]
       },
       {
@@ -173,12 +168,17 @@
           "build/integrate-swap-api",
           "build/track-transactions",
           "build/direct-route-linking",
-          "build/fees-earning"
+          "build/fees-earning",
+          "integration/quote-api",
+          "integration/explorer-api"
         ]
       },
       {
         "group": "Using Mayan",
-        "pages": []
+        "pages": [
+          "application/user-manual",
+          "application/mayan-explorer"
+        ]
       }
     ]
   },
