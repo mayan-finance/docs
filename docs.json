@@ -53,9 +53,7 @@
     "pages": [
       {
         "group": " ",
-        "pages": [
-          "index"
-        ]
+        "pages": []
       },
       {
         "group": "ARCHITECTURE",
@@ -109,34 +107,79 @@
           "link/brand"
         ]
       },
-      "get-started/why-mayan",
-      "get-started/api-keys-referrer",
-      "solutions/commerce",
-      "use-cases/swap",
-      "use-cases/deposit",
-      "use-cases/bridge",
-      "use-cases/pay",
-      "features/guaranteed-price",
       "use-cases/withdraw",
-      "build/direct-route-linking",
-      "use-cases/orchestrate",
-      "solutions/wallets",
-      "solutions/applications",
-      "solutions/chains",
-      "build/integrate-swap-api",
-      "how-mayan-works/intent-based-swaps",
-      "resources/compliance",
-      "features/deposit-addresses",
-      "features/gasless-execution",
-      "get-started/quickstart",
-      "build/track-transactions",
-      "resources/chains-contracts",
-      "how-mayan-works/refunds",
-      "ai-agents/agents-md",
-      "build/sdk",
-      "ai-agents/llms-txt",
-      "build/fees-earning",
-      "resources/technical-faq"
+      {
+        "group": "Solutions",
+        "pages": [
+          "solutions/wallets",
+          "solutions/commerce",
+          "solutions/applications",
+          "solutions/chains"
+        ]
+      },
+      {
+        "group": "Get Started",
+        "pages": [
+          "get-started/api-keys-referrer",
+          "get-started/quickstart",
+          "get-started/why-mayan",
+          "index"
+        ]
+      },
+      {
+        "group": "Resources",
+        "pages": [
+          "resources/chains-contracts",
+          "resources/compliance",
+          "resources/technical-faq"
+        ]
+      },
+      {
+        "group": "AI Agents",
+        "pages": [
+          "ai-agents/llms-txt",
+          "ai-agents/agents-md"
+        ]
+      },
+      {
+        "group": "How Mayan Works",
+        "pages": [
+          "how-mayan-works/intent-based-swaps",
+          "how-mayan-works/refunds"
+        ]
+      },
+      {
+        "group": "Use Cases",
+        "pages": [
+          "use-cases/swap",
+          "use-cases/orchestrate",
+          "use-cases/bridge",
+          "use-cases/deposit",
+          "use-cases/pay"
+        ]
+      },
+      {
+        "group": "Features",
+        "pages": [
+          "features/guaranteed-price",
+          "features/deposit-addresses",
+          "features/gasless-execution"
+        ]
+      },
+      {
+        "group": "Build",
+        "pages": [
+          "build/sdk",
+          "build/integrate-swap-api",
+          "build/track-transactions",
+          "build/direct-route-linking",
+          "build/fees-earning"
+        ]
+      },
+      {
+        "group": "Using Mayan",
+        "pages": []
+      }
     ]
   },
   "logo": {
