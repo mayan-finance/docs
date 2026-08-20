@@ -1,6 +1,7 @@
 ---
 title: "Relayer Fees"
 description: "Learn how relayer fees work and how transactions are processed by Mayan."
+hidden: true
 ---
 
 The relayer fee is paid to relayers who cover the gas costs and execute transactions on behalf of users during a cross-chain swap.
@@ -9,11 +10,8 @@ The relayer fee is paid to relayers who cover the gas costs and execute transact
 
 Performing a cross-chain swap involves three transactions:
 
-1. **Initial Swap Instruction:**\
-   The user initiates a transaction to send tokens, along with the necessary swap details, using the [**Swap Bridge**](https://www.perplexity.ai/architecture/wh-swap). The user pays the transaction fee in the native token of the source chain.
-2. **Swap Registration:**\
-   Relayers receive a signed message from Wormhole guardians and register the swap for auction on Solana. This transaction is carried out by the relayers on behalf of the user.
-3. **Redeem Transaction:**\
-   Relayers complete the process by sending the output tokens to the user’s wallet, finalizing the swap.
+1. **Initial Swap Instruction:**<br />The user initiates a transaction to send tokens, along with the necessary swap details, using the [**Swap Bridge**](https://www.perplexity.ai/architecture/wh-swap). The user pays the transaction fee in the native token of the source chain.
+2. **Swap Registration:**<br />Relayers receive a signed message from Wormhole guardians and register the swap for auction on Solana. This transaction is carried out by the relayers on behalf of the user.
+3. **Redeem Transaction:**<br />Relayers complete the process by sending the output tokens to the user’s wallet, finalizing the swap.
 
 Users pay relayer fees so that relayers can perform the registration and redeem transactions on their behalf. Without paying the relayer fee, these transactions need to be executed manually by the user.
