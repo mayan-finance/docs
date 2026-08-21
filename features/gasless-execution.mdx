@@ -10,3 +10,17 @@ It is scoped to specific flows rather than available on every route.
 ## Requesting it
 
 Pass `gasless: true` on the quote request. Eligible quotes come back with `gasless` set in the response, and you surface that to the user before they sign. See the [Quote API](/integration/quote-api).
+
+## Open questions
+
+<Warning>
+  **This page is incomplete.** The following need answers from engineering before it can be published.
+
+  - Which chains and routes support gasless swaps, beyond HyperCore withdrawals
+  - Whether it works on deposits and swaps, or only on withdrawals
+  - Who pays the gas, and whether a fee is deducted from the output
+  - Whether there is a minimum size, since a relayer covering gas on a small swap presumably has a floor
+  - What happens when gasless is requested but not available: silent fallback, or an error
+  - Whether EIP-712 signing applies on every chain, or only EVM
+  - Whether integrators need enabling for it, the way deposit-address API keys work
+</Warning>
