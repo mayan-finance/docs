@@ -3,43 +3,28 @@ title: "Swap"
 description: "Trade any asset to any asset at the best available price."
 ---
 
-Swapping on Mayan means a user trades one asset for another without thinking about routes, bridges, liquidity sources, or which chain anything lives on. They pick what they hold and what they want, and it arrives instantly.
+Users pick what they hold and what they want, and it arrives instantly. No routes to choose, no bridges to find, no thinking about which chain anything lives on.
 
-To date Mayan has settled **\$20B\+** across **9M\+ swaps** for **3M\+ users**, and it is the same execution running behind the swap experience in some of the most-used wallets and apps in crypto.
+Mayan has settled **\$20B\+** across **9M\+ swaps** for **3M\+ users**, running behind the swap experience in some of the most-used wallets and apps in crypto.
 
-## The market competes for every order
+## What you get
 
-- **The user sets the terms up front.** What they are sending, what they want to receive, and the minimum they are willing to accept.
-- **The swap only executes if those terms are met.** The minimum is part of the instruction, not a suggestion.
-- **Drivers bid to fill it.** Independent parties using their own capital compete for the order.
-- **The best bid wins.** The price comes from competition rather than from a single intermediary.
+- **Best price on every order.** Drivers compete in a live [auction](/architecture/auction), so the price is bid up rather than set.
+- **Settlement in seconds.**
+- **Any token with a contract address.** No whitelist, no listing process.
+- **Same-chain and cross-chain** through the same path.
+- **Non-custodial**, from signing to arrival.
 
-<Info>
-  **What this means:** every swap on Mayan is a live auction. The market competes to win your order, and that competition is what drives pricing in your favor.
-</Info>
+## How it works
 
-## Any token, not just the liquid ones
-
-- **Any token with a contract address.** No whitelist and no listing process.
-- **Long-tail assets included**, trading the same way the majors do.
-- **Asset to asset, chain to chain.** The same path covers a trade inside one chain and a trade across two.
+The user sets the terms up front: what they are sending, what they want back, and the minimum they will accept. That minimum is part of the instruction, so the swap only executes if it is met. Drivers then bid to fill the order using their own capital, and the best bid wins.
 
 ## How teams use it
 
-- **Wallets** add in-app trading without building routing.
-- **Aggregators and DEXs** widen asset coverage without adding integrations one by one.
-- **Trading apps** make every market reachable from one interface.
+- Wallets add in-app trading without building routing.
+- Aggregators and DEXs widen asset coverage without adding integrations one by one.
+- Trading apps make every market reachable from one interface.
 
 See [Solutions](/solutions/wallets) for how each of those teams sets it up.
 
-## Build it
-
-<CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
-    Your first cross-chain swap in about five minutes.
-  </Card>
-
-  <Card title="SDK" icon="cube" href="/build/sdk">
-    The primary integration path for cross-chain swaps.
-  </Card>
-</CardGroup>
+**Start building** → [Quickstart](/get-started/quickstart)

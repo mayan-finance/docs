@@ -3,4 +3,28 @@ title: "Orchestrate"
 description: "Attach any onchain action to a single swap."
 ---
 
-Bundle multi-step flows into one move, such as swap plus deposit or swap plus stake. Content in progress.
+Users want outcomes, not steps.
+
+Getting someone into a vault from another chain normally means moving funds, swapping, switching apps, then depositing. Orchestrate collapses that into one action.
+
+## What you get
+
+- **Deposit, stake, mint, or run your own logic** the moment funds arrive.
+- **One transaction** instead of four.
+- **Instructions travel with the funds**, like shipping a package with the instructions inside.
+- **Any onchain action at the destination**, including a sequence of calls.
+
+## How it works
+
+A small message rides along with the transfer and arrives with it. The user sets one intent covering the amount, the destination, and what should happen on arrival. Mayan moves the funds and the instruction together, and the action runs automatically as the funds land. Building it takes a custom relayer and a destination contract on your side, which is worth knowing before you scope it. See [Zaps](/integration/custom-payload).
+
+## How teams use it
+
+- DeFi protocols and vaults turn a multi-step entry into one click.
+- Yield apps put deposits to work the moment they land.
+- Trading apps fund a position and open it in the same action.
+- Consumer apps remove steps users currently do by hand.
+
+See [Solutions](/solutions/applications) for how each of those teams sets it up.
+
+**Start building** → [SDK](/build/sdk)

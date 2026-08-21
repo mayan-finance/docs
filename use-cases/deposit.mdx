@@ -6,66 +6,30 @@ sidebarTitle: "Deposit & Withdraw"
 
 Getting money into an app and getting it back out are the two moments that decide whether someone uses your product.
 
-On Mayan both are a single move. Users arrive with whatever they already hold, and they leave holding whatever they actually want.
+On Mayan both are a single move. Users arrive with whatever they already hold, and leave holding whatever they actually want.
 
-## One move in
+## What you get
 
-Funding an account used to mean working backwards from whatever the app accepted:
+- **One transaction in.** Any supported token on any supported chain, funds ready to use in seconds.
+- **One transaction out.** The user picks the chain and the token, funds go straight to their wallet.
+- **No manual conversion**, no switching between interfaces, no waiting in between.
+- **A permanent address for repeat funding.** See [Deposit Addresses](/features/deposit-addresses).
+- **Non-custodial** throughout.
 
-- Move funds to the chain the app supports
-- Swap into the asset it accepts
-- Then deposit
-- Across separate interfaces, with waiting in between
+## How it works
 
-On Mayan the user starts from any supported token on any supported chain, and the funds land ready to use in seconds.
-
-## One move out
-
-Leaving was the same problem with waiting added:
-
-- Convert into the one asset the venue holds
-- Withdraw
-- Wait
-- Swap again somewhere else
-
-On Mayan the user picks the chain and the token they want, and the funds move straight to their wallet.
-
-## The round trip
-
-A trader starts with SOL on Solana, deposits into a venue, trades, and leaves holding ETH on Ethereum, USDC on Base, or anything else they want.
-
-<Info>
-  **What this means:** any token, any chain in. Any token, any chain out.
-</Info>
-
-## It's just a send
-
-When the same user funds again and again, Mayan can give them an address that does not expire.
-
-They send to it like any other transfer, with no wallet connection, no signing, and no approvals, and your product receives the asset you configured. See [Deposit Addresses](/features/deposit-addresses).
+Funding used to mean working backwards from whatever an app accepted: move to the right chain, swap into the right asset, then deposit. Leaving meant the same in reverse with waiting added. Mayan collapses both into one move, so a trader can start with SOL on Solana, deposit into a venue, trade, and leave holding ETH on Ethereum. Any token any chain in, any token any chain out.
 
 ## How teams use it
 
-- **DEXs and trading venues** let users fund from the asset they already hold rather than the one the venue accepts.
-- **Exchanges and apps with internal balances** drop the conversion step users currently do by hand.
-- **Onramps and checkout flows** take whatever the user brings and settle in the asset the business runs on.
-- **Vaults and protocols** accept deposits in assets they do not otherwise support.
-- **Any product that pays users out** lets them receive in the asset and on the chain they want.
+- DEXs and trading venues let users fund from the asset they already hold.
+- Exchanges and apps with internal balances drop the conversion step users do by hand.
+- Onramps and checkout flows take whatever the user brings and settle in the asset the business runs on.
+- Vaults and protocols accept deposits in assets they do not otherwise support.
+- Any product that pays users out lets them receive in the asset and on the chain they want.
 
 See [Solutions](/solutions/applications) for how each of those teams sets it up.
 
-## See it in action
+**See it in action** → [Hyperliquid deposits and withdrawals](/integration/hyperliquid)
 
-- [Hyperliquid deposits and withdrawals](/integration/hyperliquid) — deposit from any token on any chain into a spot or perps balance, and withdraw back out to any chain.
-
-## Build it
-
-<CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
-    Your first cross-chain swap in about five minutes.
-  </Card>
-
-  <Card title="SDK" icon="cube" href="/build/sdk">
-    The primary integration path for cross-chain swaps.
-  </Card>
-</CardGroup>
+**Start building** → [Quickstart](/get-started/quickstart)
