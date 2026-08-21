@@ -54,9 +54,8 @@
       {
         "group": "Get Started",
         "pages": [
-          "get-started/quickstart",
           "index",
-          "get-started/api-keys-referrer"
+          "get-started/quickstart"
         ]
       },
       {

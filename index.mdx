@@ -47,6 +47,16 @@ Mayan turns cross-chain movement into a single step, so money can go any directi
 
 Building a wallet, an app, a chain, or a commerce flow? See how teams like yours use Mayan in [Solutions](/solutions/wallets).
 
+## Why teams build on Mayan
+
+**Pricing moves in the user's favor.** Every order runs through an [onchain auction](/architecture/auction) where drivers compete to fill it, so the user gets more than a fixed route would hand them.
+
+**The amount quoted is the amount received.** On [eligible routes](/features/guaranteed-price) Mayan settles exact-out, which means the number shown at signing is the number that lands.
+
+**Settlement in as little as one second.** [Swift](/architecture/swift-v2) fills orders against driver capital already sitting on the destination chain, so your users can act on their funds right away.
+
+**One integration covers every direction.** Swap, Bridge, Pay, Deposit, Withdraw, and Orchestrate all run through the same [SDK and API](/build/sdk), giving you the full surface without a second build.
+
 ## How it works
 
 Under the hood, every swap routes through one of three methods, Swift, MCTP, or Wormhole Swap, and the auction selects the one that best fits each order. You reach all of it through the Mayan SDK and API. Teams that want a ready-made interface can also drop in the Mayan widget, which is optional.
