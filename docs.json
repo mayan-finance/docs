@@ -113,8 +113,7 @@
           "integration/hyperliquid",
           "integration/custom-payload",
           "application/gas-on-destination",
-          "features/gasless-execution",
-          "payment-service/overview"
+          "features/gasless-execution"
         ]
       },
       {

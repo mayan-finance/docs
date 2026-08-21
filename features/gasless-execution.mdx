@@ -3,4 +3,10 @@ title: "Gasless Execution"
 description: "Let builders remove gas friction for their users on supported flows."
 ---
 
-A builder capability to abstract or sponsor gas on supported flows. Content in progress.
+Gasless execution lets a user start a move without holding the source chain's native token. Rather than sending a transaction, they sign a message, and a Mayan relayer submits the transaction on their behalf.
+
+It is scoped to specific flows rather than available on every route.
+
+## Requesting it
+
+Pass `gasless: true` on the quote request. Eligible quotes come back with `gasless` set in the response, and you surface that to the user before they sign. See the [Quote API](/integration/quote-api).

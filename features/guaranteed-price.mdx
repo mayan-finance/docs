@@ -3,4 +3,35 @@ title: "Guaranteed Price"
 description: "The amount quoted is the amount received, on eligible routes."
 ---
 
-Route-scoped exact-out on eligible USDC, USDT, and ETH routes. Content in progress.
+On most cross-chain swaps the quote is an estimate. Guaranteed Price replaces the estimate with a commitment: the output is locked before the swap executes, so the amount shown is the amount that arrives.
+
+It is available on same-asset transfers of USDC, USDT and ETH.
+
+## How it works
+
+When a swap is eligible, a driver commits to the exact output before execution begins. Mayan decides when a guaranteed quote is available, so there is nothing to configure and nothing to request.
+
+## Detecting it in a quote
+
+Guaranteed Price appears on Swift quotes. Read `swiftAuctionMode` on each quote in the response.
+
+| Value | Meaning |
+| --- | --- |
+| `2` | English auction. The user receives at least `minAmountOut`, typically close to `expectedAmountOut`. |
+| `3` | Exact-out. The user receives exactly `expectedAmountOut`. |
+
+A quote with `swiftAuctionMode: 3` is a Guaranteed Price quote. Surface it in your interface so the user knows the amount is locked before they confirm.
+
+## Eligible routes
+
+<Warning>
+  **Placeholder.** This section needs the per-chain route table from engineering.
+</Warning>
+
+Guaranteed Price covers same-asset transfers of USDC, USDT and ETH.
+
+## Building on it
+
+Any flow where the output has to be exact: payments, checkout, trading interfaces, and treasury.
+
+See [Pay](/use-cases/pay) and [Commerce](/solutions/commerce).
