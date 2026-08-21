@@ -91,8 +91,7 @@
               "architecture/mctp",
               "architecture/wh-swap"
             ]
-          },
-          "architecture/swift"
+          }
         ]
       },
       {
@@ -219,5 +218,16 @@
       "dark": "#6C2A87"
     }
   },
-  "integrations": { "mixpanel": { "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc" } }
+  "integrations": {
+    "mixpanel": {
+      "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/architecture/swift",
+      "destination": "/architecture/swift-v2",
+      "permanent": true
+    }
+  ]
 }

@@ -3,6 +3,20 @@ title: "Onchain Auction"
 description: "Discover how the Mayan onchain auction delivers the best swap rates for every user."
 ---
 
+<Warning>
+  **This page is out of date and needs engineering input before publishing.**
+
+  What needs confirming or correcting:
+
+  - **Is the auction still a 3-second English auction?** The duration below is unverified.
+  - **The page only describes one auction mode.** The Quote API now returns `swiftAuctionMode`, where `2` is an English auction and `3` is exact-out, which is what powers [Guaranteed Price](/features/guaranteed-price). Mode 3 is missing here entirely and needs explaining.
+  - **How does an order become eligible for exact-out?** Mayan decides rather than the integrator, but the criteria are not documented anywhere.
+  - **Is the auction still run on Solana for every route**, including MCTP and Wormhole Swap, or only for Swift?
+  - **How does the auction interact with route selection?** Whether the route is chosen before bidding opens or as part of it is not explained in any page.
+  - **Is the diagram below still accurate?** It predates Swift v2.
+  - **Is the driver application process still a Discord support ticket?**
+</Warning>
+
 **What it is:**<br />A transparent, on-chain auction on Solana where drivers compete to offer users the most favorable swap price for cross-chain transfers.
 
 **How it works:**

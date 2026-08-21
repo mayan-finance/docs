@@ -73,3 +73,30 @@ This model removes the need for users to route through bridges or supply destina
     | **Monad** | 48 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
   </Tab>
 </Tabs>
+
+## Swift v1
+
+<Warning>
+  Swift v1 will not be supported in the long term. New integrations should use Swift v2, and existing integrations are strongly encouraged to migrate.
+</Warning>
+
+Swift v1 is the original single-contract version of the protocol. It works the same way from a user's point of view: an onchain auction is triggered, drivers bid competitively, and the highest bidder fulfills the order on the destination chain from inventory they already hold, which settles in seconds. On fulfillment the winning driver receives a receipt that unlocks the assets on the source chain.
+
+The protocol fee is the same 3 basis points (0.03%).
+
+<Accordion title="Swift v1 contract addresses">
+  | Network | Wormhole Chain ID | Contract Address |
+  | --- | --- | --- |
+  | Solana | 1 | `BLZRi6frs4X4DNLw56V4EXai1b6QVESN1BhHBTYM9VcY` |
+  | Ethereum | 2 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | BSC | 4 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Polygon | 5 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Avalanche | 6 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Arbitrum | 23 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Optimism | 24 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Base | 30 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Linea | 38 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Unichain | 44 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | HyperEVM | 47 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Monad | 48 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+</Accordion>
