@@ -11,7 +11,9 @@ Mayan powers some of the biggest apps in crypto and fintech, including MetaMask,
 
 ## Instant money movement in any direction
 
-Mayan turns cross-chain movement into a single step, so money can go any direction your users need: any token to any token, and any chain to any chain. Every order runs through an onchain auction where drivers compete to fill it, so pricing moves in the user's favor and settlement lands in as little as one second. All of it is reachable through one integration, giving your product instant cross-chain movement without the infrastructure to build or maintain yourself.
+Mayan turns cross-chain movement into a single step, so money can go any direction your users need: any token to any token, and any chain to any chain.
+
+All of it is reachable through one integration, giving your product instant cross-chain movement without the infrastructure to build or maintain yourself.
 
 <Info>
   **What this means:** you integrate once, and your users move any token across any chain, in seconds, without leaving your product.
@@ -49,17 +51,39 @@ Building a wallet, an app, a chain, or a commerce flow? See how teams like yours
 
 ## Why teams build on Mayan
 
-**Instant settlement.** Swaps complete in seconds end to end, because [drivers](/architecture/swift-v2) hold capital on the destination chain and fill from it the moment your user signs, so users get the fill they wanted in the moment they wanted it.
+<CardGroup cols={2}>
+  <Card title="Instant settlement" icon="⚡">
+    Swaps complete in seconds, not minutes, so users can move the moment they want to.
+  </Card>
 
-**Competitive pricing.** Drivers compete in real-time [auctions](/architecture/auction) on every order, giving users consistently competitive fills without your team managing pool depth or liquidity.
+  <Card title="Competitive pricing" icon="💰">
+    Prices on Mayan are competed for, not just quoted. The market bids on every order in a [real-time auction](/architecture/auction), so users get the best price available, every time.
+  </Card>
 
-**Go direct.** Aggregators route to an execution provider, and Mayan is one of those providers, so integrating directly removes a hop and the fee layered on top of it. Your users get the price and the fill at the source, your team owns the execution relationship, and you [earn a fee](/build/fees-earning) on every swap you route.
+  <Card title="Any token, any chain" icon="🔗">
+    Any token with a contract address, across every chain Mayan supports. Nothing to whitelist, nothing to add token by token.
+  </Card>
 
-**Size moves like everything else.** Three methods sit behind every quote, Swift, MCTP, and [Wormhole Swap](/architecture/wh-swap), and the auction routes automatically as transaction size changes, so a million-dollar move takes the same single signature as a hundred-dollar one.
+  <Card title="One-click simplicity" icon="✨">
+    Cross-chain swaps feel the same as same-chain swaps to your users, because [everything else](/how-mayan-works/intent-based-swaps) happens behind the scenes.
+  </Card>
 
-**One click across chains.** Route selection, execution, and delivery on the destination chain all happen out of sight, so your users [move without leaving your product](/how-mayan-works/intent-based-swaps).
+  <Card title="Non-custodial" icon="🛡️">
+    Nobody takes custody of a user's assets at any point, so adding Mayan never means asking your users to give up control.
+  </Card>
 
-**Any token, any chain, one integration.** Swap, Bridge, Pay, Deposit, Withdraw, and Orchestrate all run through the same [SDK](/build/sdk), covering any token with a contract address and no preset whitelist across supported chains.
+  <Card title="Routes for every trade" icon="🧭">
+    Three swap methods sit behind Mayan, [Swift](/architecture/swift-v2), [MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap), so you can optimize for what a given move actually needs, whether that is low slippage on a large transfer or instant settlement on a fast one. Moving a million is as simple as moving a hundred.
+  </Card>
+
+  <Card title="One integration" icon="⚙️">
+    Wherever your users need to go, whatever token they need to hold, and whatever they need to do onchain once they arrive, it all runs through the [same integration](/build/sdk), so you can compose money movement around your product instead of building each path separately.
+  </Card>
+
+  <Card title="Direct execution" icon="🎯">
+    Aggregators route to someone else to do the execution, and Mayan is one of the providers they route to. Coming to us directly removes that middle layer, which means a better price for your users and a [fee you keep](/build/fees-earning) on every swap.
+  </Card>
+</CardGroup>
 
 ## How it works
 
