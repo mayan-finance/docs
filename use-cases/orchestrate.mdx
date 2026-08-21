@@ -3,20 +3,24 @@ title: "Orchestrate"
 description: "Attach any onchain action to a single swap."
 ---
 
-Users want outcomes, not steps.
+Users want outcomes, not steps. Getting someone into a vault from another chain normally means moving funds, swapping, switching apps, then depositing. Orchestrate collapses that into one action.
 
-Getting someone into a vault from another chain normally means moving funds, swapping, switching apps, then depositing. Orchestrate collapses that into one action.
+## Instructions travel with the funds
 
-## What you get
+A small message rides along with the transfer and arrives with it. Think of it as shipping a package with the instructions inside.
 
-- **Deposit, stake, mint, or run your own logic** the moment funds arrive.
-- **One transaction** instead of four.
-- **Instructions travel with the funds**, like shipping a package with the instructions inside.
-- **Any onchain action at the destination**, including a sequence of calls.
+The user sets one intent covering the amount, the destination, and what should happen on arrival. Mayan moves the funds and the instruction together, and the action runs automatically as the funds land.
 
-## How it works
+## What you can attach
 
-A small message rides along with the transfer and arrives with it. The user sets one intent covering the amount, the destination, and what should happen on arrival. Mayan moves the funds and the instruction together, and the action runs automatically as the funds land. Building it takes a custom relayer and a destination contract on your side, which is worth knowing before you scope it. See [Zaps](/integration/custom-payload).
+- **Deposit.** Funds arrive and go straight into a protocol or vault.
+- **Stake.** Assets are staked on arrival, so users start earning without a second step.
+- **Mint, join, or participate.** The transfer triggers it as the funds land.
+- **Your own logic.** Encoded contract calls, IDs, session data, or routing information your app needs.
+
+## What it takes
+
+Orchestrate needs a custom relayer and a destination contract on your side. It is the one part of Mayan that is not a drop-in, which is worth knowing before you scope it. See [Zaps](/integration/custom-payload).
 
 ## How teams use it
 

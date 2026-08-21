@@ -5,19 +5,23 @@ description: "Move any asset across chains in one flow."
 
 The user says where their assets are and where they need to be, and it arrives in seconds.
 
-Getting between chains used to be its own task: pick a route, wait minutes, land holding a wrapped asset, then find gas before you could use it. None of that applies here.
+## Moving between chains stops feeling like a step
 
-## What you get
+It used to be its own task: move to the chain the destination supported, wait, land holding a wrapped asset, then find gas before you could use it.
 
-- **Settlement in seconds**, not minutes.
-- **The asset they asked for**, with no wrapped placeholder to deal with.
-- **Gas handled on arrival**, through [Gas on Destination](/application/gas-on-destination) and [Gasless Execution](/features/gasless-execution).
-- **Size does not change the experience.** Transfers route up to \$10M.
-- **Secured by Wormhole's decentralized messaging network.** See [Security & Audits](/resources/audits).
+On Mayan the user lands holding the asset they actually asked for. [Gas on destination](/application/gas-on-destination) puts native gas in their wallet on arrival, and [gasless execution](/features/gasless-execution) can take the gas step off the front on supported routes. Transfers route up to \$10M, so size does not change the experience either.
 
-## How it works
+Most people never notice any of it. A large share of the moves Mayan settles happen without the user knowing Mayan was the route.
 
-Every cross-chain move depends on one chain being told, reliably, what happened on another. Wormhole's Guardian network attests each message, requiring 13 of 19 independent organizations to sign before it is valid. The driver delivers on the destination chain first and only unlocks the source funds once that delivery is verified, so the risk sits with them rather than the user. Mayan never takes custody at any point.
+## Secured by a decentralized messaging network
+
+Every cross-chain move depends on one chain being told, reliably, what happened on another.
+
+Wormhole's Guardian network attests each message, requiring 13 of 19 independent organizations to sign before it is valid. The driver delivers on the destination chain first and only unlocks the source funds once that delivery is verified, so the risk sits with them rather than the user.
+
+<Info>
+  **What this means:** the move runs through public, audited contracts rather than infrastructure you cannot inspect. See [Security & Audits](/resources/audits).
+</Info>
 
 ## How teams use it
 

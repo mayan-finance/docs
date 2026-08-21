@@ -3,21 +3,29 @@ title: "Pay"
 description: "Send stablecoins globally with the intended amount arriving."
 ---
 
-Stablecoins are Mayan's most moved asset, with over **\$8B** moved across chains to date.
+Stablecoins are Mayan's most moved asset, with over **\$8B** moved across chains to date. Mayan supports every major stablecoin, and Fast MCTP gives those transfers a route built for ultra-low slippage.
 
 A payment is not a trade. The number has to hold, and the money has to arrive now.
 
-## What you get
+## The amount you quote is the amount that lands
 
-- **The amount you quote is the amount that lands**, through [Guaranteed Price](/features/guaranteed-price) on USDC, USDT and ETH routes.
-- **Settlement in seconds.**
-- **Every major stablecoin**, with Fast MCTP built for ultra-low slippage.
-- **The payer uses whatever they hold**, and the recipient gets the asset they settle in.
-- **A permanent address for repeat payers.** See [Deposit Addresses](/features/deposit-addresses).
+Mayan has a feature called Guaranteed Price. On USDC, USDT and ETH routes the output is locked before the payment is confirmed, so what you bill and what the recipient receives are the same number.
 
-## How it works
+That is what makes a checkout possible. You display a price, and it holds. See [Guaranteed Price](/features/guaranteed-price).
 
-Guaranteed Price locks the output before the payment is confirmed, so what you bill and what the recipient receives are the same number. That is what makes a checkout possible: you display a price and it holds. The payer never sees a swap, and where a flow needs it they can pay by sending to a fixed address rather than signing anything at all.
+## The payer and the recipient never have to agree
+
+The person paying uses whatever they already hold, on whatever chain they hold it. The person receiving gets the asset they settle in.
+
+A merchant shows a price, a buyer pays with the token already in their wallet, and USDC lands in the merchant's account. The buyer never sees a swap.
+
+Where the same person pays again and again, they can pay by sending to a fixed address rather than signing anything at all. See [Deposit Addresses](/features/deposit-addresses).
+
+## Treasury moves the same way
+
+Institutions hold stablecoins across several networks at once, and rebalancing between them has meant leaving the place those assets are held.
+
+With Mayan that movement happens where the assets already sit. PrimeVault built it in so its users can rebalance reserves across ecosystems, or pay an Ethereum vendor from a Solana treasury, without anything leaving the vault.
 
 ## How teams use it
 
@@ -28,7 +36,5 @@ Guaranteed Price locks the output before the payment is confirmed, so what you b
 - Wallets adding payments let users send without picking a chain first.
 
 See [Solutions](/solutions/commerce) for how each of those teams sets it up.
-
-**See it in action** → PrimeVault, institutional treasury moving stablecoins across ecosystems without assets leaving the vault.
 
 **Start building** → [Quickstart](/get-started/quickstart)
