@@ -49,13 +49,17 @@ Building a wallet, an app, a chain, or a commerce flow? See how teams like yours
 
 ## Why teams build on Mayan
 
-**Pricing moves in the user's favor.** Every order runs through an [onchain auction](/architecture/auction) where drivers compete to fill it, so the user gets more than a fixed route would hand them.
+**Instant settlement.** Transfers land in as little as one second, because [drivers](/architecture/swift-v2) already hold capital on the destination chain and fill from it the moment your user signs.
 
-**The amount quoted is the amount received.** On [eligible routes](/features/guaranteed-price) Mayan settles exact-out, which means the number shown at signing is the number that lands.
+**Every price is competed for.** Every order goes to an [onchain auction](/architecture/auction) where drivers bid against each other to fill it, so pricing moves in the user's favor rather than being set by a single fixed route.
 
-**Settlement in as little as one second.** [Swift](/architecture/swift-v2) fills orders against driver capital already sitting on the destination chain, so your users can act on their funds right away.
+**Go direct.** Aggregators route to an execution provider, and Mayan is one of those providers, so coming to us directly removes a hop and the fee layered on top of it. Your users get the price and the fill at the source, and your team owns the execution relationship and [earns a referral fee](/build/fees-earning) on the swaps it routes.
 
-**One integration covers every direction.** Swap, Bridge, Pay, Deposit, Withdraw, and Orchestrate all run through the same [SDK and API](/build/sdk), giving you the full surface without a second build.
+**Size moves like everything else.** Three methods sit behind every quote, Swift, MCTP, and [Wormhole Swap](/architecture/wh-swap), and the auction picks the one that fits the order, so a large transfer routes for low slippage while a small one takes the quickest path. A million-dollar move takes the same single signature as a hundred-dollar one.
+
+**One click for your users.** Route selection, execution, and delivery on the destination chain all happen out of sight, which turns a multi-step onchain process into [one action](/how-mayan-works/intent-based-swaps) inside your product.
+
+**One integration, any token to any chain.** Swap, Bridge, Pay, Deposit, Withdraw, and Orchestrate all run through the same [SDK and API](/build/sdk), so you build once and get the whole surface.
 
 ## How it works
 
