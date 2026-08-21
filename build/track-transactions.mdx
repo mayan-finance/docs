@@ -3,4 +3,41 @@ title: "Track Transactions"
 description: "Follow swaps to completion."
 ---
 
-Poll the Explorer API or subscribe to events to follow swaps to a terminal state. Content in progress.
+Once a swap is signed, the [Explorer API](/integration/explorer-api) is how you know what happened to it.
+
+```bash
+curl 'https://explorer-api.mayan.finance/v3/swap/trx/{sourceTxHash}'
+```
+
+For a gasless swap, `swapFromEvm` returns an order hash instead of a transaction hash. Pass that to the same endpoint.
+
+## The three states
+
+Read `clientStatus`:
+
+| Value | Meaning | What to do |
+| --- | --- | --- |
+| `INPROGRESS` | The order is live and not yet filled. | Keep polling. |
+| `COMPLETED` | Delivered on the destination chain. | Show the final amount from `toAmount`. |
+| `REFUNDED` | Not filled before the deadline. The input went back. | Tell the user what they received, which may not be the token they sent. See [Refunds](/how-mayan-works/refunds). |
+
+`INPROGRESS` is the only non-terminal state. Treat the other two as final.
+
+## Useful fields on the response
+
+| Field | Use |
+| --- | --- |
+| `toAmount` | What actually arrived. Show this, not the quote. |
+| `completedAt` | Settlement time, for display or for measuring your own latency. |
+| `status` | The granular internal status. `clientStatus` is the one to build on. |
+| `sourceTxHash` / `destTxHash` | For linking out to block explorers. |
+
+<Warning>
+  **This page is incomplete.** It needs the following from engineering before it can tell anyone how to poll responsibly:
+
+  - **Rate limits.** What the per-IP limit is without an API key, and what it becomes with one. A polling guide without this is telling people to guess.
+  - **A recommended poll interval**, and whether backoff is expected.
+  - **Whether webhooks or a websocket exist** for swap status outside of deposit addresses, which have their own event stream. If not, that is worth saying plainly so nobody goes looking.
+  - **How long a swap can legitimately sit in `INPROGRESS`** before something is actually wrong, so integrators know when to surface a problem to the user.
+  - **The full list of granular `status` values** and which map to which `clientStatus`.
+</Warning>
