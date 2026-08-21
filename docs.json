@@ -56,7 +56,6 @@
         "pages": [
           "get-started/quickstart",
           "index",
-          "get-started/why-mayan",
           "get-started/api-keys-referrer"
         ]
       },
