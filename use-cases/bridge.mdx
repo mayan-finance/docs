@@ -3,4 +3,47 @@ title: "Bridge"
 description: "Move any asset across chains in one flow."
 ---
 
-A direct path from where assets are to where they need to be. Content in progress.
+Moving an asset from one chain to another on Mayan is a single action. The user says where their assets are and where they need to be, and it arrives in seconds.
+
+## Moving between chains stops feeling like a step
+
+It used to be its own task: pick a route, wait minutes, land holding a wrapped asset, then go find gas before you could use it. On Mayan:
+
+- **It finishes in seconds**, not minutes.
+- **The user lands in the asset they asked for**, with no wrapped placeholder to deal with afterwards.
+- **Gas is handled.** [Gas on destination](/application/gas-on-destination) puts native gas in the wallet on arrival, and [gasless execution](/features/gasless-execution) can take the gas step off the front on supported routes.
+- **Size does not change the experience.** Transfers up to \$10M route through Mayan, with execution quality holding as the amount grows.
+- **Most users never notice it happened.** A large share of the moves Mayan settles happen without the user knowing Mayan was the route.
+
+## Secured by a decentralized messaging network
+
+Every cross-chain move depends on one chain being told, reliably, what happened on another. That is the part worth understanding.
+
+- **19 independent organizations attest every message.** Wormhole's Guardian network requires 13 of them to sign before a cross-chain message is valid.
+- **The user is never the one carrying the risk.** The driver delivers on the destination chain first and can only unlock the funds on the source chain after that delivery has been verified, so the re-org risk sits with the driver.
+- **No hidden custody.** At no point in a swap does Mayan take custody of funds.
+- **Public contracts, public audits.** Audited by OtterSec and Sec3, with every transaction visible onchain and in [Mayan Explorer](/application/mayan-explorer).
+
+<Info>
+  **What this means:** the move runs through public, auditable contracts rather than infrastructure you cannot inspect. See [Security & Audits](/resources/audits).
+</Info>
+
+## How teams use it
+
+- **Wallets** let users move holdings between chains without leaving the app.
+- **Chains** become reachable from every major ecosystem on day one.
+- **Apps and aggregators** meet users wherever they already hold assets.
+
+See [Solutions](/solutions/chains) for how each of those teams sets it up.
+
+## Build it
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Your first cross-chain swap in about five minutes.
+  </Card>
+
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    The primary integration path for cross-chain swaps.
+  </Card>
+</CardGroup>
