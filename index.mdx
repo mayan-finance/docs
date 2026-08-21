@@ -49,17 +49,17 @@ Building a wallet, an app, a chain, or a commerce flow? See how teams like yours
 
 ## Why teams build on Mayan
 
-**Instant settlement.** Cross-chain swaps that feel like same-chain swaps, landing in seconds rather than minutes or hours, because [drivers](/architecture/swift-v2) already hold capital on the destination chain and fill from it the moment your user signs.
+**Instant settlement.** Swaps complete in seconds end to end, because [drivers](/architecture/swift-v2) hold capital on the destination chain and fill from it the moment your user signs, so users get the fill they wanted in the moment they wanted it.
 
-**Every price is competed for.** Every order goes to a real-time [onchain auction](/architecture/auction) where drivers bid against each other to fill it, so execution stays competitive without you configuring liquidity or maintaining a fixed route.
+**Competitive pricing.** Drivers compete in real-time [auctions](/architecture/auction) on every order, giving users consistently competitive fills without your team managing pool depth or liquidity.
 
-**Go direct.** Aggregators route to an execution provider, and Mayan is one of those providers, so coming to us directly removes a hop and the fee layered on top of it. Your users get the price and the fill at the source, and your team owns the execution relationship and [earns a partner fee](/build/fees-earning) on the swaps it routes.
+**Go direct.** Aggregators route to an execution provider, and Mayan is one of those providers, so integrating directly removes a hop and the fee layered on top of it. Your users get the price and the fill at the source, your team owns the execution relationship, and you [earn a fee](/build/fees-earning) on every swap you route.
 
-**Size moves like everything else.** Mayan is built for low-slippage execution, and three methods sit behind every quote, Swift, MCTP, and [Wormhole Swap](/architecture/wh-swap), with the auction picking the one that fits the order. A million-dollar move takes the same single signature as a hundred-dollar one.
+**Size moves like everything else.** Three methods sit behind every quote, Swift, MCTP, and [Wormhole Swap](/architecture/wh-swap), and the auction routes automatically as transaction size changes, so a million-dollar move takes the same single signature as a hundred-dollar one.
 
-**One click for your users.** Route selection, execution, and delivery on the destination chain all happen out of sight, which turns a multi-step onchain process into [one action](/how-mayan-works/intent-based-swaps) inside your product.
+**One click across chains.** Route selection, execution, and delivery on the destination chain all happen out of sight, so your users [move without leaving your product](/how-mayan-works/intent-based-swaps).
 
-**One integration, any token to any chain.** Swap, Bridge, Pay, Deposit, Withdraw, and Orchestrate all run through the same [SDK](/build/sdk), with broad token coverage across supported chains and flexible partner fees, so you build once and get the whole surface.
+**Any token, any chain, one integration.** Swap, Bridge, Pay, Deposit, Withdraw, and Orchestrate all run through the same [SDK](/build/sdk), covering any token with a contract address and no preset whitelist across supported chains.
 
 ## How it works
 
