@@ -1,6 +1,52 @@
 ---
-title: "Intent-Based Swaps"
-description: "How Mayan works, in human terms."
+title: "Intent-Based Execution"
+description: "How Mayan works underneath."
+sidebarTitle: "Intent-Based Execution"
 ---
 
-You state an intent and a driver network competes to deliver the best outcome. Content in progress.
+An intent is an order where the user states the outcome instead of the steps.
+
+The user says what they are sending, what they want to receive, where it should land, and the least they will accept. Mayan takes it from there, opening the order to a live auction where drivers compete to win it.
+
+That auction is the whole design. Price is not quoted by one route, it is bid up by everyone who wants the order.
+
+## The lifecycle
+
+<Steps>
+  <Step title="The user signs an intent">
+    The asset being sent, the destination chain, the token to receive, and the minimum they will accept. That minimum is part of the instruction, so the swap only executes if it is met.
+  </Step>
+  <Step title="Drivers compete for it">
+    The order opens to auction and drivers bid against each other. The best bid wins.
+  </Step>
+  <Step title="The winning driver delivers immediately">
+    They send the requested asset to the user from capital they already hold on the destination chain.
+  </Step>
+  <Step title="Delivery is verified across chains">
+    Wormhole's Guardian network attests the message, requiring 13 of 19 independent organizations to sign.
+  </Step>
+  <Step title="The driver is reimbursed">
+    From the source funds, once that verification lands.
+  </Step>
+</Steps>
+
+<Info>
+  **What this means:** the user is paid first and the driver waits. That ordering is why a swap finishes in seconds instead of waiting on the source chain to reach finality.
+</Info>
+
+## What competition produces
+
+Every order is contested, and the effects compound:
+
+- **Better prices**, because drivers win by offering more, not by being the only option available.
+- **Faster fills**, because a driver who is slow loses the next order.
+- **Wider coverage**, because any driver willing to hold a long-tail asset can win orders in it.
+- **No liquidity to configure**, because the capital belongs to the drivers rather than to a pool you have to seed.
+
+## Which route fills it
+
+Three methods sit underneath, and the auction selects between them per order: [Swift](/architecture/swift-v2), [MCTP and Fast MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap). Choosing between routes per order is what lets one integration serve a small trade and a large one equally well.
+
+## If an order is not filled
+
+An order that no driver takes before its deadline is refunded, and the input returns to the sender. Mayan does not take custody at any point in the process. See [Refunds](/how-mayan-works/refunds).
