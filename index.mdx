@@ -3,21 +3,15 @@ title: "What is Mayan?"
 sidebarTitle: "What is Mayan"
 ---
 
-Mayan is how crypto moves. Through a simple swap interface and a powerful set of developer tools, Mayan finds the best route across chains and liquidity and executes each swap behind the scenes, so people get fast, competitive swaps and teams can build cross-chain movement into their own products.
+Mayan is how crypto moves. Through a simple swap interface and a powerful set of developer tools, Mayan finds the best route across chains and liquidity and executes each swap behind the scenes, so users get fast, competitive swaps and teams can build cross-chain movement into their own products.
 
-To date, Mayan has processed **\$19B\+ in volume** across **9M\+ swaps** for **3M\+ users**, moving assets between major chains including Solana, Ethereum, Monad, BNB Chain, Base, Arbitrum, Optimism, Sui, and HyperEVM.
+To date, Mayan has processed **\$20B\+ in volume** across **9M\+ swaps** for **3M\+ users**, moving assets between major chains including Solana, Ethereum, Monad, BNB Smart Chain, Base, Arbitrum, Optimism, Sui, HyperEVM, and more.
 
 Mayan powers some of the biggest apps in crypto and fintech, including MetaMask, OKX Wallet, Phantom, MoonPay, SwapKit, LI.FI, and more.
 
 ## Instant money movement in any direction
 
 Mayan turns cross-chain movement into a single step, so money can go any direction your users need: any token to any token, and any chain to any chain.
-
-All of it is reachable through one integration, giving your product instant cross-chain movement without the infrastructure to build or maintain yourself.
-
-<Info>
-  **What this means:** you integrate once, and your users move any token across any chain, in seconds, without leaving your product.
-</Info>
 
 ## What you can do
 
@@ -52,51 +46,64 @@ Building a wallet, an app, a chain, or a commerce flow? See how teams like yours
 ## Why teams build on Mayan
 
 <CardGroup cols={2}>
-  <Card title="Instant settlement" icon="⚡">
+  <Card title="Instant settlement">
     Swaps complete in seconds, not minutes, so users can move the moment they want to.
   </Card>
 
-  <Card title="Competitive pricing" icon="💰">
+  <Card title="Competitive pricing">
     Prices on Mayan are competed for, not just quoted. The market bids on every order in a [real-time auction](/architecture/auction), so users get the best price available, every time.
   </Card>
 
-  <Card title="Any token, any chain" icon="🔗">
+  <Card title="Any token, any chain">
     Any token with a contract address, across every chain Mayan supports. Nothing to whitelist, nothing to add token by token.
   </Card>
 
-  <Card title="One-click simplicity" icon="✨">
-    Cross-chain swaps feel the same as same-chain swaps to your users, because [everything else](/how-mayan-works/intent-based-swaps) happens behind the scenes.
+  <Card title="One-click simplicity">
+    Cross-chain swaps feel the same as same-chain swaps to your users, because everything else happens behind the scenes.
   </Card>
 
-  <Card title="Non-custodial" icon="🛡️">
+  <Card title="Non-custodial">
     Nobody takes custody of a user's assets at any point, so adding Mayan never means asking your users to give up control.
   </Card>
 
-  <Card title="Routes for every trade" icon="🧭">
+  <Card title="Routes for every trade">
     Three swap methods sit behind Mayan, [Swift](/architecture/swift-v2), [MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap), so you can optimize for what a given move actually needs, whether that is low slippage on a large transfer or instant settlement on a fast one. Moving a million is as simple as moving a hundred.
   </Card>
 
-  <Card title="One integration" icon="⚙️">
+  <Card title="One integration">
     Wherever your users need to go, whatever token they need to hold, and whatever they need to do onchain once they arrive, it all runs through the [same integration](/build/sdk), so you can compose money movement around your product instead of building each path separately.
   </Card>
 
-  <Card title="Direct execution" icon="🎯">
+  <Card title="Direct execution">
     Aggregators route to someone else to do the execution, and Mayan is one of the providers they route to. Coming to us directly removes that middle layer, which means a better price for your users and a [fee you keep](/build/fees-earning) on every swap.
   </Card>
 </CardGroup>
 
 ## How it works
 
-Under the hood, every swap routes through one of three methods, Swift, MCTP, or Wormhole Swap, and the auction selects the one that best fits each order. You reach all of it through the Mayan SDK and API. Teams that want a ready-made interface can also drop in the Mayan widget, which is optional.
+Mayan runs on intents, which means your user says what they want and Mayan handles getting there.
 
-## Start here
+<Steps>
+  <Step title="The user states what they want">
+    A token to send, a token to receive, and where it should land.
+  </Step>
+  <Step title="Drivers compete for the order">
+    A real-time auction opens and drivers bid to fill it.
+  </Step>
+  <Step title="The best bid wins">
+    The winning driver fills the order automatically.
+  </Step>
+  <Step title="The funds arrive">
+    Assets land directly in the user's wallet on the destination chain.
+  </Step>
+</Steps>
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
-    Your first cross-chain swap in about five minutes.
+  <Card title="Intent-Based Swaps" icon="lightbulb" href="/how-mayan-works/intent-based-swaps">
+    How Mayan works, in human terms.
   </Card>
 
-  <Card title="Intent-Based Swaps" icon="circle-check" href="/how-mayan-works/intent-based-swaps">
-    What actually happens between the signature and the delivery.
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Your first cross-chain swap in about five minutes.
   </Card>
 </CardGroup>
