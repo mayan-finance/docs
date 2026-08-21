@@ -81,6 +81,24 @@
         ]
       },
       {
+        "group": "How Mayan Works",
+        "pages": [
+          "how-mayan-works/intent-based-swaps",
+          "architecture/auction",
+          "architecture/relayers",
+          "how-mayan-works/refunds",
+          {
+            "group": "Routes",
+            "pages": [
+              "architecture/swift-v2",
+              "architecture/mctp",
+              "architecture/wh-swap"
+            ]
+          },
+          "architecture/swift"
+        ]
+      },
+      {
         "group": "Features",
         "pages": [
           "features/guaranteed-price",
@@ -100,31 +118,6 @@
           "application/gas-on-destination",
           "features/gasless-execution",
           "payment-service/overview"
-        ]
-      },
-      {
-        "group": "How Mayan Works",
-        "pages": [
-          "how-mayan-works/intent-based-swaps",
-          "architecture/auction",
-          "architecture/relayers",
-          "how-mayan-works/refunds",
-          {
-            "group": "Routes",
-            "pages": [
-              "architecture/swift-v2",
-              "architecture/mctp",
-              "architecture/wh-swap"
-            ]
-          },
-          "architecture/swift"
-        ]
-      },
-      {
-        "group": "Using Mayan",
-        "pages": [
-          "application/user-manual",
-          "application/mayan-explorer"
         ]
       },
       {
@@ -162,6 +155,13 @@
           },
           "integration/referral",
           "application/relayer-fees"
+        ]
+      },
+      {
+        "group": "Using Mayan",
+        "pages": [
+          "application/user-manual",
+          "application/mayan-explorer"
         ]
       },
       {

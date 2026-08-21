@@ -1,6 +1,184 @@
 ---
 title: "Quickstart"
 description: "Your first cross-chain swap in about five minutes."
+sidebarTitle: "Quickstart"
 ---
 
-Get from zero to a working cross-chain swap. Content in progress.
+Install the SDK, request a quote, sign one transaction, and watch the funds land on the destination chain. This runs against production, so by the end you will have moved real value across chains.
+
+## Before you start
+
+- Node 18 or later.
+- A wallet holding the input token on the source chain, plus enough native gas for one transaction.
+- An [ethers v6](https://docs.ethers.org/v6/) provider and signer when the source chain is EVM, or a `@solana/web3.js` connection and signing callback when it is Solana.
+
+The example below moves **100 USDC on Arbitrum** into **SOL on Solana**. Any pair works, so substitute your own tokens and chains once the flow runs end to end.
+
+<Steps>
+  <Step title="Install the SDK">
+    ```bash
+    npm install --save @mayanfinance/swap-sdk
+    ```
+
+    The SDK wraps the [Quote API](/integration/quote-api) and builds the transaction for you, which is why it is the shortest path to a working swap.
+  </Step>
+  <Step title="Get a quote">
+    `fetchQuote` returns the routes available for the pair. By default it returns at most two, the quickest route first and the best-return route second, and when one route is both you get a single item.
+
+    ```typescript
+    import { fetchQuote } from "@mayanfinance/swap-sdk";
+    
+    const quotes = await fetchQuote({
+      amountIn64: "100000000",                                 // 100 USDC, 6 decimals
+      fromChain: "arbitrum",
+      fromToken: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC on Arbitrum
+      toChain: "solana",
+      toToken: "0x0000000000000000000000000000000000000000",   // native SOL
+      slippageBps: "auto",
+    });
+    
+    const quote = quotes[0];
+    ```
+
+    <Tip>
+      `slippageBps: "auto"` lets Mayan set a safe level for the pair. Pass a number in basis points instead, such as `300` for 3%, when you want to control it yourself.
+    </Tip>
+  </Step>
+  <Step title="Read the quote before you sign">
+    Show the user what they are agreeing to. These are the fields that matter in a confirmation screen.
+
+    | Field | What it tells you |
+    | --- | --- |
+    | `expectedAmountOut` | The amount the user should receive. |
+    | `minAmountOut` | The floor on that amount. |
+    | `etaSeconds` / `clientEta` | Estimated settlement time, in seconds and as a display string. |
+    | `gasDrop` | Native gas delivered on the destination chain alongside the output. |
+    | `type` | The route the order takes: `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. |
+
+    <Note>
+      On Swift quotes, `swiftAuctionMode` tells you how the output amount is determined. Mode `2` runs an English auction, where the user receives at least `minAmountOut` and typically lands near `expectedAmountOut`. Mode `3` is exact-out, which means the user receives exactly `expectedAmountOut`. See [Guaranteed Price](/features/guaranteed-price) for which routes support it.
+    </Note>
+  </Step>
+  <Step title="Execute the swap">
+    The destination address belongs to the destination chain, so this example takes a Solana address even though the funds leave from Arbitrum.
+
+    <Tabs>
+      <Tab title="From EVM">
+        ```typescript
+        import { swapFromEvm } from "@mayanfinance/swap-sdk";
+        
+        const tx = await swapFromEvm(
+          quote,
+          swapperAddress,      // wallet sending the funds
+          destinationAddress,  // recipient on the destination chain
+          referrerAddress,     // null until you set up a referrer
+          provider,
+          signer,
+        );
+        ```
+      </Tab>
+      <Tab title="From Solana">
+        ```typescript
+        import { swapFromSolana } from "@mayanfinance/swap-sdk";
+        
+        const tx = await swapFromSolana(
+          quote,
+          originWalletAddress,
+          destinationAddress,    // recipient on the destination chain
+          referrerAddresses,     // null until you set up a referrer
+          signSolanaTransaction,
+          connection,
+        );
+        ```
+      </Tab>
+    </Tabs>
+
+    The user signs once on the source chain. Everything after that, including delivery on the destination chain, happens without further action from them.
+  </Step>
+  <Step title="Track it to completion">
+    Pass the source transaction hash to the [Explorer API](/integration/explorer-api) and read `clientStatus`.
+
+    ```typescript
+    const res = await fetch(
+      `https://explorer-api.mayan.finance/v3/swap/trx/${txHash}`
+    );
+    const swap = await res.json();
+    
+    console.log(swap.clientStatus); // INPROGRESS, COMPLETED, or REFUNDED
+    ```
+
+    Poll until the status leaves `INPROGRESS`. Most swaps settle in seconds. `REFUNDED` means the order was not filled before its deadline and the input returned to the sender, which is covered in [Refunds](/how-mayan-works/refunds).
+  </Step>
+</Steps>
+
+## The whole thing
+
+```typescript
+import { fetchQuote, swapFromEvm } from "@mayanfinance/swap-sdk";
+
+const EXPLORER = "https://explorer-api.mayan.finance";
+
+export async function swapUsdcToSol(
+  provider,
+  signer,
+  swapperAddress: string,
+  destinationAddress: string, // a Solana address
+) {
+  const quotes = await fetchQuote({
+    amountIn64: "100000000",
+    fromChain: "arbitrum",
+    fromToken: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    toChain: "solana",
+    toToken: "0x0000000000000000000000000000000000000000",
+    slippageBps: "auto",
+  });
+
+  const quote = quotes[0];
+  if (!quote) throw new Error("No route available for this pair.");
+
+  console.log(
+    `Expecting ${quote.expectedAmountOut} SOL in about ${quote.clientEta} via ${quote.type}`
+  );
+
+  const tx = await swapFromEvm(
+    quote,
+    swapperAddress,
+    destinationAddress,
+    null,
+    provider,
+    signer,
+  );
+
+  // Poll until the swap reaches a terminal status.
+  while (true) {
+    const res = await fetch(`${EXPLORER}/v3/swap/trx/${tx.hash}`);
+    const swap = await res.json();
+
+    if (swap.clientStatus && swap.clientStatus !== "INPROGRESS") {
+      return { status: swap.clientStatus, toAmount: swap.toAmount };
+    }
+
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+}
+```
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    Every entry point, including Sui and custom payloads.
+  </Card>
+
+  <Card title="Track Transactions" icon="radar" href="/build/track-transactions">
+    Status handling, retries, and what each state means for your UI.
+  </Card>
+
+  <Card title="Fees & Earning" icon="coins" href="/build/fees-earning">
+    Set a referrer address and earn on every swap you route.
+  </Card>
+
+  <Card title="Intent-Based Swaps" icon="lightbulb" href="/how-mayan-works/intent-based-swaps">
+    What actually happens between the signature and the delivery.
+  </Card>
+</CardGroup>
