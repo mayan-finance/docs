@@ -1,38 +1,48 @@
 ---
 title: "Intents"
-description: "How Mayan works underneath."
+description: "What an intent is and how Mayan fills one."
 sidebarTitle: "Intents"
 ---
 
 An intent is an order where the user states the outcome instead of the steps.
 
-The user says what they are sending, what they want to receive, where it should land, and the least they will accept. Mayan takes it from there, opening the order to a live auction where drivers compete to win it.
+The user says what they are sending, what they want to receive, where it should land, and the least they will accept. Everything between those two points is Mayan's problem, not theirs.
 
-That auction is the whole design. Price is not quoted by one route, it is bid up by everyone who wants the order.
+## What the user does not do
 
-## The lifecycle
+A cross-chain move traditionally asks the user to make a series of decisions before anything happens. With an intent, none of them reach the user:
+
+- No route to choose, and no bridge to find.
+- No sequence of transactions to get right. One signature covers the whole move.
+- No wrapped asset to unwind on the other side.
+- No native gas on the destination chain before they can use what arrives.
+
+They sign once, and the funds show up.
+
+## How an order is filled
 
 <Steps>
   <Step title="The user signs an intent">
-    The asset being sent, the destination chain, the token to receive, and the minimum they will accept. That minimum is part of the instruction, so the swap only executes if it is met.
+    The asset being sent, the destination chain, the token to receive, and the minimum they will accept.
   </Step>
-  <Step title="Drivers compete for it">
-    The order opens to auction and drivers bid against each other. The best bid wins.
+  <Step title="The network competes to fill it">
+    The order opens to an auction and drivers bid against each other. The best bid wins. See [onchain auction](/architecture/auction).
   </Step>
-  <Step title="The winning driver delivers immediately">
-    They send the requested asset to the user from capital they already hold on the destination chain.
+  <Step title="The winning driver fills it from their own capital">
+    They pay the user on the destination chain from assets they already hold there, rather than waiting for the user's funds to cross.
   </Step>
-  <Step title="Delivery is verified across chains">
-    Wormhole's Guardian network attests the message, requiring 13 of 19 independent organizations to sign.
-  </Step>
-  <Step title="The driver is reimbursed">
-    From the source funds, once that verification lands.
+  <Step title="The user receives their funds">
+    Typically in seconds. The swap is finished from their side.
   </Step>
 </Steps>
 
-<Info>
-  **What this means:** the user is paid first and the driver waits. That ordering is why a swap finishes in seconds instead of waiting on the source chain to reach finality.
-</Info>
+Reimbursement happens afterwards: [Wormhole](https://wormhole.com) attests the source-chain deposit, and the driver reclaims the funds once that attestation lands. The user is not waiting on any of it.
+
+## Why it settles in seconds
+
+The slow part of a cross-chain transfer is waiting for the source chain to finalize and for a message to be verified on the other side.
+
+An intent moves that wait off the user. The driver fronts the delivery and absorbs the wait, because they are the one being reimbursed at the end.
 
 ## What competition produces
 
@@ -45,8 +55,8 @@ Every order is contested, and the effects compound:
 
 ## Which route fills it
 
-Three methods sit underneath, and the auction selects between them per order: [Swift](/architecture/swift-v2), [MCTP and Fast MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap). Choosing between routes per order is what lets one integration serve a small trade and a large one equally well.
+Three transfer methods sit underneath, and the order is matched to one of them: [Swift](/architecture/swift-v2), [MCTP and Fast MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap). Selecting per order is what lets one integration serve a small trade and a large one equally well.
 
 ## If an order is not filled
 
-An order that no driver takes before its deadline is refunded, and the input returns to the sender. Mayan does not take custody at any point in the process. See [Refunds](/how-mayan-works/refunds).
+The minimum the user signed is part of the instruction, so an order cannot fill below it. An order that no driver takes before its deadline is refunded and the input returns to the sender. Mayan does not take custody at any point. See [refunds](/how-mayan-works/refunds).
