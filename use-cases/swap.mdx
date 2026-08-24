@@ -1,34 +1,34 @@
 ---
 title: "Swap"
-description: "Trade any asset to any asset at the best available price."
+description: "Trade any asset to any asset at the best price."
 ---
 
-Users pick what they hold and what they want, and it arrives instantly. No routes to choose, no bridges to find, no thinking about which chain anything lives on.
+Users pick what they hold and what they want, and it arrives in seconds. A trade inside one chain and a trade across two run through the same path.
 
 Mayan has settled **\$20B\+** across **9M\+ swaps** for **3M\+ users**, running behind the swap experience in some of the most-used wallets and apps in crypto.
 
-## The market competes for every order
+## How it works
 
 The user sets the terms up front: what they are sending, what they want back, and the minimum they will accept. That minimum is part of the instruction, so the swap only executes if it is met.
 
-Drivers then bid to fill the order using their own capital, and the best bid wins.
+Drivers then bid to fill the order using their own capital, and the best bid wins. See [Onchain Auction](/architecture/auction).
 
-<Info>
-  **What this means:** every swap on Mayan is a live auction. The market competes to win your order, and that competition is what drives pricing in your favor.
-</Info>
+Any token with a contract address is tradable, with no whitelist and no listing process, so long-tail assets trade the same way the majors do.
 
-## Any token, not just the liquid ones
+## Examples
 
-Any token with a contract address is tradable, with no whitelist and no listing process.
+- A wallet adds in-app trading without building routing or maintaining a token list.
+- An aggregator widens asset coverage without adding integrations one chain at a time.
+- A trading app makes every market reachable from one interface.
 
-Long-tail assets trade the same way the majors do, and the same path covers a trade inside one chain and a trade across two.
+## Get started
 
-## How teams use it
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Build your first cross-chain swap in five minutes.
+  </Card>
 
-- Wallets add in-app trading without building routing.
-- Aggregators and DEXs widen asset coverage without adding integrations one by one.
-- Trading apps make every market reachable from one interface.
-
-See [Solutions](/solutions/wallets) for how each of those teams sets it up.
-
-**Start building** → [Quickstart](/get-started/quickstart)
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    The full surface: quotes, execution and every supported chain.
+  </Card>
+</CardGroup>

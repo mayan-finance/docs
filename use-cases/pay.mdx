@@ -1,40 +1,37 @@
 ---
 title: "Pay"
-description: "Send stablecoins globally with the intended amount arriving."
+description: "Send stablecoins globally, in any token, on any chain."
 ---
 
-Stablecoins are Mayan's most moved asset, with over **\$8B** moved across chains to date. Mayan supports every major stablecoin, and Fast MCTP gives those transfers a route built for ultra-low slippage.
+Stablecoins are Mayan's most moved asset, with over **\$8B** moved cross-chain. Mayan supports every major stablecoin, and Fast MCTP gives those transfers a route built for ultra-low slippage.
 
-A payment is not a trade. The number has to hold, and the money has to arrive now.
+## How it works
 
-## The amount you quote is the amount that lands
+The person paying uses whatever they already hold, on whatever chain they hold it. The person receiving gets the asset they settle in. A buyer pays 0.16 ETH on Ethereum, 250 USDC lands in the merchant's account, and the buyer never sees a swap.
 
-Mayan has a feature called Guaranteed Price. On USDC, USDT and ETH routes the output is locked before the payment is confirmed, so what you bill and what the recipient receives are the same number.
+On USDC, USDT and ETH routes, [Guaranteed Price](/features/guaranteed-price) locks the output before the payment is confirmed, so the amount you display is the amount that lands. That is what makes a checkout possible.
 
-That is what makes a checkout possible. You display a price, and it holds. See [Guaranteed Price](/features/guaranteed-price).
+Where the same payer sends repeatedly, they can pay to a fixed address instead of signing each time. See [Deposit Addresses](/features/deposit-addresses).
 
-## The payer and the recipient never have to agree
+## Examples
 
-The person paying uses whatever they already hold, on whatever chain they hold it. The person receiving gets the asset they settle in.
+- A fintech accepts many assets and settles in one.
+- A payroll or remittance app pays recipients in the asset and on the chain they want.
+- A merchant checkout displays a price and receives that exact amount.
+- A wallet adding payments lets users send without picking a chain first.
 
-A merchant shows a price, a buyer pays with the token already in their wallet, and USDC lands in the merchant's account. The buyer never sees a swap.
+## Case studies
 
-Where the same person pays again and again, they can pay by sending to a fixed address rather than signing anything at all. See [Deposit Addresses](/features/deposit-addresses).
+- **PrimeVault** rebalances stablecoin reserves across ecosystems and pays a vendor on one chain from a treasury on another, without assets leaving the vault.
 
-## Treasury moves the same way
+## Get started
 
-Institutions hold stablecoins across several networks at once, and rebalancing between them has meant leaving the place those assets are held.
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Build your first cross-chain swap in five minutes.
+  </Card>
 
-With Mayan that movement happens where the assets already sit. PrimeVault built it in so its users can rebalance reserves across ecosystems, or pay an Ethereum vendor from a Solana treasury, without anything leaving the vault.
-
-## How teams use it
-
-- Fintechs and payment companies accept many assets and settle in one.
-- Payroll and remittance apps pay recipients in the asset and on the chain they want.
-- Merchant checkout displays a price and receives that exact amount.
-- Treasury teams rebalance across chains from where their assets are already held.
-- Wallets adding payments let users send without picking a chain first.
-
-See [Solutions](/solutions/commerce) for how each of those teams sets it up.
-
-**Start building** → [Quickstart](/get-started/quickstart)
+  <Card title="Guaranteed Price" icon="lock" href="/features/guaranteed-price">
+    Lock the output amount before the payment is confirmed.
+  </Card>
+</CardGroup>

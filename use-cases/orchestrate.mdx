@@ -3,32 +3,37 @@ title: "Orchestrate"
 description: "Attach any onchain action to a single swap."
 ---
 
-Users want outcomes, not steps. Getting someone into a vault from another chain normally means moving funds, swapping, switching apps, then depositing. Orchestrate collapses that into one action.
+Getting a user into a vault from another chain normally means moving funds, swapping, switching apps, then depositing. Orchestrate collapses that into one action.
 
-## Instructions travel with the funds
+## How it works
 
-A small message rides along with the transfer and arrives with it. Think of it as shipping a package with the instructions inside.
+A small message travels with the transfer and arrives with it. The user sets one intent covering the amount, the destination, and what should happen on arrival. Mayan moves the funds and the instruction together, and the action runs as the funds land.
 
-The user sets one intent covering the amount, the destination, and what should happen on arrival. Mayan moves the funds and the instruction together, and the action runs automatically as the funds land.
-
-## What you can attach
+What you can attach:
 
 - **Deposit.** Funds arrive and go straight into a protocol or vault.
 - **Stake.** Assets are staked on arrival, so users start earning without a second step.
-- **Mint, join, or participate.** The transfer triggers it as the funds land.
+- **Mint, join or participate.** The transfer triggers it as the funds land.
 - **Your own logic.** Encoded contract calls, IDs, session data, or routing information your app needs.
 
-## What it takes
+## Requirements
 
 Orchestrate needs a custom relayer and a destination contract on your side. It is the one part of Mayan that is not a drop-in, which is worth knowing before you scope it. See [Zaps](/integration/custom-payload).
 
-## How teams use it
+## Examples
 
-- DeFi protocols and vaults turn a multi-step entry into one click.
-- Yield apps put deposits to work the moment they land.
-- Trading apps fund a position and open it in the same action.
-- Consumer apps remove steps users currently do by hand.
+- A vault turns a multi-step entry into one click.
+- A yield app puts deposits to work the moment they land.
+- A trading app funds a position and opens it in the same action.
 
-See [Solutions](/solutions/applications) for how each of those teams sets it up.
+## Get started
 
-**Start building** → [SDK](/build/sdk)
+<CardGroup cols={2}>
+  <Card title="Zaps" icon="bolt" href="/integration/custom-payload">
+    Custom payloads, relayer setup and destination contract requirements.
+  </Card>
+
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    The full surface: quotes, execution and every supported chain.
+  </Card>
+</CardGroup>

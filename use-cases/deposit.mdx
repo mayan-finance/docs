@@ -6,36 +6,40 @@ sidebarTitle: "Deposit & Withdraw"
 
 Getting money into an app and getting it back out are the two moments that decide whether someone uses your product.
 
-## One move in, one move out
+## How it works
 
 Funding used to mean working backwards from whatever the app accepted: move to the right chain, swap into the right asset, then deposit. Leaving meant the same in reverse, with waiting added.
 
 On Mayan the user starts from any supported token on any supported chain, and on the way out picks the chain and the token they want. Funds go straight to their wallet.
 
-## The round trip
+A trader holding SOL on Solana deposits into a venue, trades, and leaves holding ETH on Ethereum, USDC on Base, or anything else.
 
-A trader starts with SOL on Solana, deposits into a venue, trades, and leaves holding ETH on Ethereum, USDC on Base, or anything else they want.
+## Deposit addresses
 
-<Info>
-  **What this means:** any token, any chain in. Any token, any chain out.
-</Info>
+When the same user funds again and again, Mayan can issue them an address that does not expire.
 
-## It's just a send
+They send to it like any other transfer, with no wallet connection, no signing and no approvals, and your product receives the asset you configured. See [Deposit Addresses](/features/deposit-addresses).
 
-When the same user funds again and again, Mayan can give them an address that does not expire.
+## Examples
 
-They send to it like any other transfer, with no wallet connection, no signing, and no approvals, and your product receives the asset you configured. See [Deposit Addresses](/features/deposit-addresses).
+- A DEX lets users fund from the asset they already hold rather than the one it settles in.
+- An exchange with internal balances drops the conversion step users do by hand.
+- An onramp or checkout takes whatever the user brings and settles in the asset the business runs on.
+- A vault accepts deposits in assets it does not otherwise support.
+- A product that pays users out lets them receive in the asset and on the chain they want.
 
-## How teams use it
+## Case studies
 
-- DEXs and trading venues let users fund from the asset they already hold.
-- Exchanges and apps with internal balances drop the conversion step users do by hand.
-- Onramps and checkout flows take whatever the user brings and settle in the asset the business runs on.
-- Vaults and protocols accept deposits in assets they do not otherwise support.
-- Any product that pays users out lets them receive in the asset and on the chain they want.
+- **Hyperliquid.** Deposits and withdrawals in one move, from any chain and any asset. See [Hyperliquid](/integration/hyperliquid).
 
-See [Solutions](/solutions/applications) for how each of those teams sets it up.
+## Get started
 
-**See it in action** → [Hyperliquid deposits and withdrawals](/integration/hyperliquid)
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Build your first cross-chain swap in five minutes.
+  </Card>
 
-**Start building** → [Quickstart](/get-started/quickstart)
+  <Card title="Deposit Addresses" icon="inbox" href="/features/deposit-addresses">
+    Issue a permanent address that settles in the asset you configure.
+  </Card>
+</CardGroup>

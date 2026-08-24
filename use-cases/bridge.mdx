@@ -1,34 +1,38 @@
 ---
 title: "Bridge"
-description: "Move any asset across chains in one flow."
+description: "Move any asset cross-chain in one transaction."
 ---
 
 The user says where their assets are and where they need to be, and it arrives in seconds.
 
-## Moving between chains stops feeling like a step
+## How it works
 
-It used to be its own task: move to the chain the destination supported, wait, land holding a wrapped asset, then find gas before you could use it.
+A cross-chain move used to be its own task: bridge to the chain the destination supported, wait, land holding a wrapped asset, then find gas before you could use it.
 
-On Mayan the user lands holding the asset they actually asked for. [Gas on destination](/application/gas-on-destination) puts native gas in their wallet on arrival, and [gasless execution](/features/gasless-execution) can take the gas step off the front on supported routes. Transfers route up to \$10M, so size does not change the experience either.
+On Mayan the user lands holding the asset they asked for. [Gas on destination](/application/gas-on-destination) puts native gas in their wallet on arrival, and [gasless execution](/features/gasless-execution) removes the gas step at the start on supported routes. Transfers route up to \$10M, so size does not change the experience either.
 
-Most people never notice any of it. A large share of the moves Mayan settles happen without the user knowing Mayan was the route.
-
-## Secured by a decentralized messaging network
+## Connected by Wormhole
 
 Every cross-chain move depends on one chain being told, reliably, what happened on another.
 
-Wormhole's Guardian network attests each message, requiring 13 of 19 independent organizations to sign before it is valid. The driver delivers on the destination chain first and only unlocks the source funds once that delivery is verified, so the risk sits with them rather than the user.
+[Wormhole's](https://wormhole.com) Guardian network attests each message, requiring 13 of 19 independent organizations to sign before it is valid. The driver delivers on the destination chain first and only unlocks the source funds once that delivery is verified, so the risk sits with the driver rather than the user.
 
-<Info>
-  **What this means:** the move runs through public, audited contracts rather than infrastructure you cannot inspect. See [Security & Audits](/resources/audits).
-</Info>
+The contracts are public and audited. See [Security & Audits](/resources/audits).
 
-## How teams use it
+## Examples
 
-- Wallets let users move holdings between chains without leaving the app.
-- Chains become reachable from every major ecosystem on day one.
-- Apps and aggregators meet users wherever they already hold assets.
+- A wallet lets users move holdings between chains without leaving the app.
+- A new chain becomes reachable from every major ecosystem on day one.
+- An app meets users wherever they already hold their assets.
 
-See [Solutions](/solutions/chains) for how each of those teams sets it up.
+## Get started
 
-**Start building** → [Quickstart](/get-started/quickstart)
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Build your first cross-chain swap in five minutes.
+  </Card>
+
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    The full surface: quotes, execution and every supported chain.
+  </Card>
+</CardGroup>
