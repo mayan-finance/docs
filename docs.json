@@ -56,7 +56,8 @@
         "pages": [
           "index",
           "get-started/why-mayan",
-          "get-started/quickstart"
+          "get-started/quickstart",
+          "application/user-manual"
         ]
       },
       {
@@ -142,6 +143,7 @@
             "pages": [
               "build/integrate-swap-api",
               "build/track-transactions",
+              "application/mayan-explorer",
               "build/direct-route-linking"
             ]
           },
@@ -154,13 +156,6 @@
           },
           "integration/referral",
           "application/relayer-fees"
-        ]
-      },
-      {
-        "group": "Using Mayan",
-        "pages": [
-          "application/user-manual",
-          "application/mayan-explorer"
         ]
       },
       {
