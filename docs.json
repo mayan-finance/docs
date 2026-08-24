@@ -55,6 +55,7 @@
         "group": "Get Started",
         "pages": [
           "index",
+          "get-started/why-mayan",
           "get-started/quickstart"
         ]
       },
@@ -119,13 +120,16 @@
         "group": "Build",
         "pages": [
           {
-            "group": "SDK & Widget",
+            "group": "SDK",
             "pages": [
               "build/sdk",
-              "integration/swap-widget",
+              "build/sdk/fetching-quotes",
+              "build/sdk/executing-swaps",
+              "build/sdk/advanced",
               "link/swap"
             ]
           },
+          "integration/swap-widget",
           {
             "group": "APIs",
             "pages": [
