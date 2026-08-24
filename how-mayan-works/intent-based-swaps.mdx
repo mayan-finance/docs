@@ -8,16 +8,14 @@ An intent is an order where the user states the outcome instead of the steps.
 
 The user says what they are sending, what they want to receive, where it should land, and the least they will accept. Everything between those two points is Mayan's problem, not theirs.
 
-## What one signature covers
+## What Mayan handles
 
-A cross-chain move is normally a series of decisions the user makes before anything happens. An intent settles all of them in one instruction:
+The user states the outcome. Everything needed to produce it happens on Mayan's side:
 
-- **The route.** Mayan finds it across chains and liquidity.
-- **The sequence.** One signature covers the whole move, source chain to destination.
-- **The asset that arrives.** The user receives the token they asked for, ready to use.
-- **Gas on arrival.** Native gas can be delivered alongside the output, so they can transact the moment they land.
-
-They sign once, and the funds show up.
+- **Finding the route.** Which chains, which liquidity, which transfer method.
+- **Executing the move.** The user approves it once, at the start, and there is nothing to come back to.
+- **Delivering the right asset.** The token they asked for, on the chain they asked for, ready to use.
+- **Gas to use it.** Native gas can be delivered alongside the output, so they can transact as soon as it lands.
 
 ## How an order is filled
 
