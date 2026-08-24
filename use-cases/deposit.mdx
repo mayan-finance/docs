@@ -4,9 +4,11 @@ description: "Fund any account from any asset, and exit in any token on any chai
 sidebarTitle: "Deposit & Withdraw"
 ---
 
-A deposit is a swap that ends in an account inside your app. A withdrawal is the same call in reverse: funds leave your app, and the user picks the chain and token they receive.
+A deposit funds an account inside your app. A withdrawal sends funds back out. On Mayan both are a single cross-chain transfer with the conversion built in.
 
-Users do not need to hold the asset your app settles in, or be on your chain before they start.
+On the way in, a user funds from any supported token on any supported chain, and your app receives the asset it settles in. On the way out, they choose the chain and the token they receive, and it goes straight to their wallet.
+
+Neither direction asks the user to acquire your settlement asset or move to your chain first.
 
 ## How it works
 

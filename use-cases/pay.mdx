@@ -1,23 +1,23 @@
 ---
 title: "Pay"
-description: "Send stablecoins globally, in any token, on any chain."
+description: "Pay from any asset, settle in stablecoins, on any chain."
 ---
 
-A payment on Mayan is a swap that settles in the asset the receiver runs on. The payer sends whatever they hold, on whatever chain they hold it, and the payment lands in seconds.
+An onchain payment has two requirements a trade does not. The amount has to be exact, because a business cannot bill one number and receive another. And it has to arrive now, because nobody waits at a checkout.
 
-Stablecoins are Mayan's most moved asset, with over **\$8B** moved cross-chain. Fast MCTP routes those transfers over Circle's CCTP for ultra-low slippage.
+Mayan covers both. Stablecoins are its most moved asset, with over **\$8B** moved cross-chain, and Fast MCTP routes those transfers over Circle's CCTP for ultra-low slippage.
 
 ## How it works
 
-A buyer pays 0.16 ETH on Ethereum, and 250 USDC arrives in the merchant's account. The buyer signs one transaction and never interacts with a swap interface.
+The payer sends from the asset and chain they already hold. The payment settles in the stablecoin the business runs on, on the chain it runs on. A buyer pays 0.16 ETH on Ethereum, and 250 USDC arrives in the merchant's account.
 
-The destination chain, token and address are set by whoever is receiving, and none of them have to match what the payer holds.
+The buyer signs one transaction and never interacts with a swap interface.
 
 ## Guaranteed price
 
-An ordinary swap quotes an expected output and a minimum, then settles between them. A payment usually needs one exact number.
+An ordinary swap quotes an expected output and a minimum, then settles somewhere between them. That range is fine for a trade and unusable for a payment.
 
-On USDC, USDT and ETH routes Mayan can settle exact-out instead, so the recipient receives exactly `expectedAmountOut` and the amount you display is the amount that lands. See [guaranteed price](/features/guaranteed-price).
+On USDC, USDT and ETH routes Mayan settles exact-out instead: the recipient receives exactly `expectedAmountOut`, so the amount you display is the amount that lands. See [guaranteed price](/features/guaranteed-price).
 
 ## Repeat payers
 
