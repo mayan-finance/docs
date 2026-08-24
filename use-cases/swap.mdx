@@ -3,16 +3,16 @@ title: "Swap"
 description: "Trade any asset to any asset at the best price."
 ---
 
-A swap on Mayan exchanges one token for another, on the same chain or across two. The user signs once and the output arrives in seconds.
+A swap on Mayan exchanges one token for another, on the same chain or across two. The user signs once and the output arrives instantly.
 
 Over **\$20B** has moved through Mayan, across **9M\+ swaps** and **3M\+ users**.
 
 ## How it works
 
-1. **Quote.** You request a route for a pair and an amount. Mayan returns the expected output, the minimum output, an ETA, and which transfer method the order will use.
+1. **Quote.** You request a route for a pair and an amount. Mayan returns the routes available, each with an expected output, a minimum output, an ETA, and the transfer method it uses.
 2. **Sign.** The user signs one transaction on the source chain. `minAmountOut` is part of what they sign, so the order cannot fill below it.
 3. **Auction.** Drivers bid to fill the order with their own capital, and the best bid wins. See [onchain auction](/architecture/auction).
-4. **Settle.** The winning driver pays the user on the destination chain, then reclaims the source funds.
+4. **Settle.** The winning driver pays the user, then reclaims the source funds afterwards.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -25,11 +25,19 @@ const quotes = await fetchQuote({
 });
 ```
 
-Single swaps route up to \$10M, so size does not change the flow.
+## Instant settlement
+
+The driver pays the user from capital they already hold on the destination chain, so nobody waits for the source chain to finalize first. Verification and reimbursement happen after the user already has their funds. See [intents](/how-mayan-works/intent-based-swaps).
 
 ## Token coverage
 
-Any token with a contract address is tradable. There is no whitelist and no listing process, so a long-tail asset routes the same way a major does.
+Any token with a contract address is tradable. There is no whitelist and no listing process, so a long-tail asset routes the same way a major does, and adding an asset is never an integration change.
+
+## Any size
+
+Mayan is built to carry size. Three transfer methods sit underneath a swap, each suited to a different profile of trade, so a large order routes through the path that keeps its slippage down rather than through the same path as a small one.
+
+Single swaps route up to \$10M. Moving \$1M feels the same to the user as moving \$100.
 
 ## Examples
 

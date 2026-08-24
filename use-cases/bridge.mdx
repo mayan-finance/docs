@@ -22,13 +22,13 @@ const quotes = await fetchQuote({
 });
 ```
 
-Mayan selects the transfer method for the pair and returns it as `type`:
+`fetchQuote` returns the routes available for the pair, and each one is tagged with the transfer method it uses as `type`. You choose which route to execute:
 
 - **Swift** for speed. See [Swift](/architecture/swift-v2).
 - **MCTP** for high-value stablecoin transfers, routed over Circle's CCTP. See [MCTP](/architecture/mctp).
 - **Wormhole Swap** for low-slippage transfers of assets such as SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
 
-Single transfers route up to \$10M, so size does not change the flow.
+Single transfers route up to \$10M. Moving \$1M feels the same to the user as moving \$100.
 
 ## Gas on the destination chain
 
