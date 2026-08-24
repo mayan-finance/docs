@@ -1,18 +1,20 @@
 ---
 title: "Quickstart"
-description: "Your first cross-chain swap in about five minutes."
+description: "Your first cross-chain swap in five minutes."
 sidebarTitle: "Quickstart"
 ---
 
-Install the SDK, request a quote, sign one transaction, and watch the funds land on the destination chain. This runs against production, so by the end you will have moved real value across chains.
+Install the SDK, request a quote, sign one transaction, and track it to completion.
 
-## Before you start
+## Requirements
 
 - Node 18 or later.
 - A wallet holding the input token on the source chain, plus enough native gas for one transaction.
 - An [ethers v6](https://docs.ethers.org/v6/) provider and signer when the source chain is EVM, or a `@solana/web3.js` connection and signing callback when it is Solana.
 
-The example below moves **100 USDC on Arbitrum** into **SOL on Solana**. Any pair works, so substitute your own tokens and chains once the flow runs end to end.
+## Sample transaction
+
+The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair works, so substitute your own tokens and chains once the flow runs end to end.
 
 <Steps>
   <Step title="Install the SDK">
@@ -111,7 +113,7 @@ The example below moves **100 USDC on Arbitrum** into **SOL on Solana**. Any pai
   </Step>
 </Steps>
 
-## The whole thing
+## Complete example
 
 ```typescript
 import { fetchQuote, swapFromEvm } from "@mayanfinance/swap-sdk";
@@ -163,7 +165,7 @@ export async function swapUsdcToSol(
 }
 ```
 
-## Where to go next
+## Get started
 
 <CardGroup cols={2}>
   <Card title="SDK" icon="cube" href="/build/sdk">
@@ -171,14 +173,14 @@ export async function swapUsdcToSol(
   </Card>
 
   <Card title="Track Transactions" icon="radar" href="/build/track-transactions">
-    Status handling, retries, and what each state means for your UI.
+    Status handling and what each state means for your interface.
   </Card>
 
   <Card title="Fees & Earning" icon="coins" href="/build/fees-earning">
     Set a referrer address and earn on every swap you route.
   </Card>
 
-  <Card title="Intent-Based Execution" icon="lightbulb" href="/how-mayan-works/intent-based-swaps">
-    What actually happens between the signature and the delivery.
+  <Card title="Intents" icon="lightbulb" href="/how-mayan-works/intent-based-swaps">
+    What happens between the signature and the delivery.
   </Card>
 </CardGroup>
