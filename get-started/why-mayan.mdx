@@ -1,18 +1,31 @@
 ---
 title: "Why Mayan"
-description: "What Mayan gives you that a fixed route does not."
+description: "What sets Mayan apart on speed, price and coverage."
 ---
 
-Any asset to any chain instantly, through one integration.
+## Speed
 
-- **Instant settlement.** Swaps complete in seconds, not minutes. Whether someone is swapping on swap.mayan.finance or inside a wallet running on Mayan, the money moves when they ask for it.
-- **Competitive pricing.** Prices are competed for rather than quoted. The market bids on every order in a [real-time auction](/architecture/auction), so the price is the best the market can produce at that moment.
-- **One-click simplicity.** A cross-chain swap feels the same as a same-chain swap. One signature, and everything else happens underneath.
-- **Any token, any chain.** Any token with a contract address, across every chain Mayan supports. Nothing to whitelist, nothing to add token by token.
-- **Built for size.** Three swap methods sit behind Mayan, [Swift](/architecture/swift-v2), [MCTP](/architecture/mctp) and [Wormhole Swap](/architecture/wh-swap), so moving $$1M is as straightforward as moving $$100. High-value transfers run up to \$10M in a single transaction.
-- **Go direct.** Mayan is the execution layer itself, not a router sitting on top of one. Fewer hops, fewer middlemen, and the [fee](/build/fees-earning) on every swap is yours.
-- **One integration.** Wherever a user needs to go, whatever token they need to hold, and whatever they need to do onchain once they arrive, it runs through the same [SDK and API](/build/sdk).
-- **Non-custodial.** Nobody takes custody of a user's assets at any point.
+Swaps complete in seconds, not minutes.
+
+[Swift](/architecture/swift-v2) fills orders against capital drivers already hold on the destination chain, so funds land while the user is still looking at the screen. Whether someone is swapping on swap.mayan.finance or inside a wallet running on Mayan, the money moves when they ask for it.
+
+## Price
+
+Prices are competed for, not quoted.
+
+Every order goes to a [real-time onchain auction](/architecture/auction) where drivers bid to fill it, so the user gets the best the market can produce at that moment. And because Mayan executes rather than routes, there is no aggregation layer taking a cut on the way through: fewer hops, fewer middlemen, and the [fee](/build/fees-earning) on every swap is yours.
+
+## Coverage
+
+Any token with a contract address, across every chain Mayan supports.
+
+Nothing to whitelist, nothing to add token by token. Three swap methods sit behind that surface, [Swift](/architecture/swift-v2), [MCTP](/architecture/mctp) and [Wormhole Swap](/architecture/wh-swap), each suited to a different kind of move, which is why sending \$1M is as straightforward as sending \$100. High-value transfers run up to \$10M in a single transaction.
+
+## One integration
+
+One signature for the user, one integration for you.
+
+A cross-chain swap feels the same as a same-chain swap: the user signs once and everything else happens underneath. Wherever they need to go, whatever token they need to hold, and whatever they need to do onchain once they arrive, it runs through the same [SDK and API](/build/sdk). Nobody takes custody of their assets at any point.
 
 ## Start integrating
 
