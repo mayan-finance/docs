@@ -3,13 +3,13 @@ title: "Orchestrate"
 description: "Attach any onchain action to a single swap."
 ---
 
-Getting a user into a vault from another chain normally means moving funds, swapping, switching apps, then depositing. Orchestrate collapses that into one action.
+Orchestrate is a swap with an instruction attached. The funds and a payload travel together, and the payload executes on the destination chain as the funds land.
+
+Without it, entering a protocol from another chain is four user actions: move funds, swap, switch apps, deposit. With it, one.
 
 ## How it works
 
-A small message travels with the transfer and arrives with it. The user sets one intent covering the amount, the destination, and what should happen on arrival. Mayan moves the funds and the instruction together, and the action runs as the funds land.
-
-What you can attach:
+You encode a payload on the quote request. Mayan delivers the funds and the payload to your destination contract in the same transaction, and your contract acts on them.
 
 - **Deposit.** Funds arrive and go straight into a protocol or vault.
 - **Stake.** Assets are staked on arrival, so users start earning without a second step.
@@ -18,7 +18,12 @@ What you can attach:
 
 ## Requirements
 
-Orchestrate needs a custom relayer and a destination contract on your side. It is the one part of Mayan that is not a drop-in, which is worth knowing before you scope it. See [Zaps](/integration/custom-payload).
+Orchestrate is the one part of Mayan that is not a drop-in. It needs two things on your side:
+
+- A **destination contract** that can receive the funds and decode your payload.
+- A **custom relayer** to deliver the order on the destination chain.
+
+See [Zaps](/integration/custom-payload) for the payload format and relayer setup.
 
 ## Examples
 
@@ -30,10 +35,10 @@ Orchestrate needs a custom relayer and a destination contract on your side. It i
 
 <CardGroup cols={2}>
   <Card title="Zaps" icon="bolt" href="/integration/custom-payload">
-    Custom payloads, relayer setup and destination contract requirements.
+    Payload format, relayer setup and destination contract requirements.
   </Card>
 
   <Card title="SDK" icon="cube" href="/build/sdk">
-    The full surface: quotes, execution and every supported chain.
+    Quote parameters, execution and every supported chain.
   </Card>
 </CardGroup>

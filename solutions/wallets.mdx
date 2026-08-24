@@ -1,19 +1,25 @@
 ---
 title: "Wallets"
-description: "Add cross-chain swaps to your wallet and earn on every one."
+description: "Add cross-chain swaps to your wallet and earn on every swap."
 ---
 
-Mayan is the movement layer inside wallets. Wallets including MetaMask, Phantom, OKX Wallet and Backpack run their swap experience on Mayan: the interface is theirs, and the routing and execution underneath is Mayan.
+Wallets integrate Mayan to give their users in-app swapping across chains. MetaMask, Phantom, OKX Wallet and Backpack all run their swap experience this way: the interface belongs to the wallet, and routing and execution run underneath it.
 
-Your users already move between chains. Today most of them leave your wallet to do it.
+## What the integration covers
 
-## Earn on every swap
+- Any-to-any swaps, same-chain and cross-chain, from one API.
+- No token list to maintain. Any token with a contract address is routable.
+- Native gas delivered on the destination chain, so users can transact when they arrive.
 
-You set a referrer address and a fee in basis points, and it is collected onchain automatically on every swap your users make. No invoicing and nothing to reconcile. See [Fees & Earning](/build/fees-earning).
+Most wallets integrate through the [SDK](/build/sdk). The [widget](/integration/swap-widget) is a drop-in alternative if you would rather not build the interface.
 
-## Non-custodial end to end
+## Fees
 
-Mayan is non-custodial from signing to arrival, so adding cross-chain does not change your wallet's security model. Users keep control the whole way through.
+You set a referrer address and a fee in basis points on the quote request. The fee is collected onchain on every swap routed through your integration, with no invoicing and nothing to reconcile. See [fees & earning](/build/fees-earning).
+
+## Custody
+
+The integration is non-custodial end to end. The user signs on the source chain, and funds move between their own address and the destination address they chose. No part of the flow takes custody, so a wallet's security model is unchanged.
 
 ## Use cases
 

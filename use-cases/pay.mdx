@@ -3,15 +3,25 @@ title: "Pay"
 description: "Send stablecoins globally, in any token, on any chain."
 ---
 
-Stablecoins are Mayan's most moved asset, with over **\$8B** moved cross-chain. Mayan supports every major stablecoin, and Fast MCTP gives those transfers a route built for ultra-low slippage.
+A payment is a swap where the recipient is someone other than the sender, and where the output amount usually has to be exact.
+
+Stablecoins are Mayan's most moved asset, with over **\$8B** moved cross-chain. Fast MCTP routes those transfers over Circle's CCTP for ultra-low slippage.
 
 ## How it works
 
-The person paying uses whatever they already hold, on whatever chain they hold it. The person receiving gets the asset they settle in. A buyer pays 0.16 ETH on Ethereum, 250 USDC lands in the merchant's account, and the buyer never sees a swap.
+`destinationAddress` is the recipient rather than the payer. The payer's token and chain are the inputs, the recipient's token and chain are the outputs, and neither side has to match the other.
 
-On USDC, USDT and ETH routes, [Guaranteed Price](/features/guaranteed-price) locks the output before the payment is confirmed, so the amount you display is the amount that lands. That is what makes a checkout possible.
+A buyer pays 0.16 ETH on Ethereum; 250 USDC arrives in the merchant's account. The buyer signs one transaction and never interacts with a swap interface.
 
-Where the same payer sends repeatedly, they can pay to a fixed address instead of signing each time. See [Deposit Addresses](/features/deposit-addresses).
+## Fixing the output amount
+
+An ordinary swap quotes an expected output and a minimum, and settles somewhere between them. A payment usually needs an exact number.
+
+On USDC, USDT and ETH routes, Mayan supports exact-out settlement. Request `swiftAuctionMode: 3` and the recipient receives exactly `expectedAmountOut`; drivers bid on how much input they need rather than how much output they deliver. See [guaranteed price](/features/guaranteed-price).
+
+## Repeat payers
+
+Where the same payer sends again and again, they can pay to a fixed address instead of signing each time. See [deposit addresses](/features/deposit-addresses).
 
 ## Examples
 
@@ -32,6 +42,6 @@ Where the same payer sends repeatedly, they can pay to a fixed address instead o
   </Card>
 
   <Card title="Guaranteed Price" icon="lock" href="/features/guaranteed-price">
-    Lock the output amount before the payment is confirmed.
+    Exact-out settlement and the routes that support it.
   </Card>
 </CardGroup>

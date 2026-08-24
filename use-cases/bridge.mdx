@@ -3,27 +3,53 @@ title: "Bridge"
 description: "Move any asset cross-chain in one transaction."
 ---
 
-The user says where their assets are and where they need to be, and it arrives in seconds.
+Bridging on Mayan is a swap where the input and the output are the same asset on different chains. It uses the same quote and the same call as any other swap; only the chain parameters differ.
+
+The user receives the real asset on the destination chain, not a wrapped representation of it, because the driver pays them from capital already held there.
 
 ## How it works
 
-A cross-chain move used to be its own task: bridge to the chain the destination supported, wait, land holding a wrapped asset, then find gas before you could use it.
+```typescript
+const quotes = await fetchQuote({
+  amountIn64: "1000000000",
+  fromChain: "ethereum",
+  fromToken: USDC_ETHEREUM,
+  toChain: "base",
+  toToken: USDC_BASE,        // same asset, different chain
+  slippageBps: "auto",
+});
+```
 
-On Mayan the user lands holding the asset they asked for. [Gas on destination](/application/gas-on-destination) puts native gas in their wallet on arrival, and [gasless execution](/features/gasless-execution) removes the gas step at the start on supported routes. Transfers route up to \$10M, so size does not change the experience either.
+Mayan selects the transfer method for the pair and returns it as `type`:
 
-## Connected by Wormhole
+- **Swift** for speed. The driver fills from capital already on the destination chain. See [Swift](/architecture/swift-v2).
+- **MCTP** for high-value stablecoin transfers, routed over Circle's CCTP. See [MCTP](/architecture/mctp).
+- **Wormhole Swap** for low-slippage transfers of assets such as BTC, SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
 
-Every cross-chain move depends on one chain being told, reliably, what happened on another.
+Transfers route up to \$10M in a single transaction.
 
-[Wormhole's](https://wormhole.com) Guardian network attests each message, requiring 13 of 19 independent organizations to sign before it is valid. The driver delivers on the destination chain first and only unlocks the source funds once that delivery is verified, so the risk sits with the driver rather than the user.
+## Gas on the destination chain
 
-The contracts are public and audited. See [Security & Audits](/resources/audits).
+A user arriving on a chain they have not used holds none of its native token, so they cannot transact once they land. Two features address this:
+
+- [Gas on destination](/application/gas-on-destination) delivers native gas alongside the output, so the user can transact immediately on arrival. The amount is returned as `gasDrop` on the quote.
+- [Gasless execution](/features/gasless-execution) removes the gas requirement on the source chain. On supported routes the user signs a message rather than a transaction, and the fee is taken from the input amount.
+
+## How cross-chain messages are verified
+
+A cross-chain transfer requires the destination chain to know, reliably, what happened on the source chain.
+
+Mayan uses [Wormhole](https://wormhole.com) for that. Wormhole's Guardian network observes source-chain events and produces a signed attestation; 13 of 19 independent Guardian organizations must sign it before it is valid.
+
+The order of operations is what limits user risk. The driver delivers to the user on the destination chain first, and is only reimbursed from the source funds once the attestation confirms the original deposit. If the attestation never arrives, the driver is out of pocket, not the user.
+
+Contracts are public and audited. See [security & audits](/resources/audits).
 
 ## Examples
 
 - A wallet lets users move holdings between chains without leaving the app.
 - A new chain becomes reachable from every major ecosystem on day one.
-- An app meets users wherever they already hold their assets.
+- An app accepts users who hold assets in a different ecosystem.
 
 ## Get started
 
@@ -33,6 +59,6 @@ The contracts are public and audited. See [Security & Audits](/resources/audits)
   </Card>
 
   <Card title="SDK" icon="cube" href="/build/sdk">
-    The full surface: quotes, execution and every supported chain.
+    Quote parameters, execution and every supported chain.
   </Card>
 </CardGroup>

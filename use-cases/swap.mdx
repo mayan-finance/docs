@@ -3,17 +3,33 @@ title: "Swap"
 description: "Trade any asset to any asset at the best price."
 ---
 
-Users pick what they hold and what they want, and it arrives in seconds. A trade inside one chain and a trade across two run through the same path.
+A swap on Mayan exchanges one token for another. Both tokens can sit on the same chain or on two different chains: the request is identical either way, and so is the user's experience. One signature, funds in seconds.
 
-Mayan has settled **\$20B\+** across **9M\+ swaps** for **3M\+ users**, running behind the swap experience in some of the most-used wallets and apps in crypto.
+Mayan has settled **\$20B\+** across **9M\+ swaps** for **3M\+ users**.
 
 ## How it works
 
-The user sets the terms up front: what they are sending, what they want back, and the minimum they will accept. That minimum is part of the instruction, so the swap only executes if it is met.
+1. **Quote.** You request a route for a pair and an amount. Mayan returns the expected output, the minimum output, an ETA, and which transfer method the order will use.
+2. **Sign.** The user signs one transaction on the source chain. `minAmountOut` is part of what they sign, so the order cannot fill below it.
+3. **Auction.** Drivers bid to fill the order with their own capital, and the best bid wins. See [onchain auction](/architecture/auction).
+4. **Settle.** The winning driver pays the user on the destination chain, then reclaims the source funds. The user is paid before the driver is.
 
-Drivers then bid to fill the order using their own capital, and the best bid wins. See [Onchain Auction](/architecture/auction).
+```typescript
+const quotes = await fetchQuote({
+  amountIn64: "100000000",   // 100 USDC
+  fromChain: "arbitrum",
+  fromToken: USDC_ARBITRUM,
+  toChain: "solana",
+  toToken: SOL,              // native SOL
+  slippageBps: "auto",
+});
+```
 
-Any token with a contract address is tradable, with no whitelist and no listing process, so long-tail assets trade the same way the majors do.
+The same call covers a same-chain trade: set `fromChain` and `toChain` to the same value.
+
+## Token coverage
+
+Any token with a contract address is tradable. There is no whitelist and no listing process, so a long-tail asset routes the same way a major does.
 
 ## Examples
 
@@ -21,14 +37,22 @@ Any token with a contract address is tradable, with no whitelist and no listing 
 - An aggregator widens asset coverage without adding integrations one chain at a time.
 - A trading app makes every market reachable from one interface.
 
+## Case studies
+
+- [SwapKit](https://mayan.finance/blog/mayan-unlocks-instant-cross-chain-swaps-on-swapkit) — instant cross-chain swaps across SwapKit's routing.
+
 ## Get started
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
     Build your first cross-chain swap in five minutes.
   </Card>
 
   <Card title="SDK" icon="cube" href="/build/sdk">
-    The full surface: quotes, execution and every supported chain.
+    Quote parameters, execution and every supported chain.
+  </Card>
+
+  <Card title="Mayan app" icon="bolt" href="https://swap.mayan.finance">
+    Try a swap yourself at swap.mayan.finance.
   </Card>
 </CardGroup>

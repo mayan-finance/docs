@@ -4,21 +4,19 @@ description: "Accept payment in any asset and settle in the one your books run o
 sidebarTitle: "Merchants"
 ---
 
-Mayan sits underneath payment and commerce flows, converting what the buyer holds into what the business settles in. Neither side handles a swap.
+Payment and commerce products integrate Mayan so a buyer can pay in whatever asset they hold while the business settles in one asset. The conversion happens in transit, and neither side interacts with a swap.
 
-The person paying and the business getting paid rarely hold the same thing.
+## What the integration covers
 
-## Accept anything, settle in one asset
+- The buyer's token and chain are the inputs, your settlement asset is the output, and neither has to match. A customer pays 0.16 ETH on Ethereum, and you receive 250 USDC.
+- **Exact-out settlement** on USDC, USDT and ETH routes, so the price you display is the amount that arrives. See [guaranteed price](/features/guaranteed-price).
+- **Fixed deposit addresses** for repeat payers, who send funds like an ordinary transfer without connecting a wallet or signing. See [deposit addresses](/features/deposit-addresses).
 
-A customer pays 0.16 ETH on Ethereum, and you receive 250 USDC. They never see a swap, and you never handle a token you did not ask for.
+## Why the amount has to be exact
 
-## A price that holds
+An ordinary swap settles between an expected output and a minimum. A checkout cannot work that way: the number shown to the customer has to be the number that lands.
 
-On USDC, USDT and ETH routes, [Guaranteed Price](/features/guaranteed-price) locks the output before the payment is confirmed, so the amount you display is the amount that lands. That is what a checkout needs.
-
-## Repeat payers do not have to sign
-
-For a customer who pays again and again, Mayan can issue a fixed address. They send to it like any other transfer, and you receive the asset you configured. See [Deposit Addresses](/features/deposit-addresses).
+On supported routes Mayan settles exact-out, with drivers bidding on how much input they require rather than how much output they deliver.
 
 ## Use cases
 

@@ -3,23 +3,25 @@ title: "Applications"
 description: "One integration gives your app any chain and any asset."
 ---
 
-Mayan is embedded as the movement rails inside trading apps, aggregators and DeFi products. Teams including LI.FI, Jumper, Bungee and SwapKit route through it. Users see the app's own interface; Mayan handles routing and execution underneath.
+Trading apps, aggregators and DeFi products integrate Mayan as their cross-chain movement layer. LI.FI, Jumper, Bungee and SwapKit route through it. The user sees the app's own interface; routing and execution run underneath.
 
-Your users are spread across ecosystems, and the assets they hold are somewhere else again.
+## What the integration covers
 
-## Every ecosystem, without adding them one by one
+- Every supported chain and any token with a contract address, from one integration. Adding a chain or an asset is not new engineering work.
+- Users can enter your app from the ecosystem where they already hold assets, without bridging first.
+- Actions on arrival. [Orchestrate](/use-cases/orchestrate) attaches a contract call to the transfer, so a cross-chain entry into your protocol is a single user action.
 
-Supporting a new chain or a new asset is not a new integration. Any token with a contract address is reachable, with no whitelist and no listing process, so your coverage grows without your engineering work growing with it.
+Most apps integrate through the [SDK](/build/sdk). The [swap API](/build/integrate-swap-api) is available if you would rather call it directly.
 
-## Meet users where their assets already are
+## Fees
 
-Someone holding on Ethereum can enter your app on Solana without leaving to bridge first. The move happens inside your product, which is where you want them to stay.
+You set a referrer address and a fee in basis points on the quote request, collected onchain on every swap routed through your integration. See [fees & earning](/build/fees-earning).
 
 ## Use cases
 
 - [Swap](/use-cases/swap) — any-to-any trading inside the app
-- [Bridge](/use-cases/bridge) — bring users in from other ecosystems
-- [Orchestrate](/use-cases/orchestrate) — turn a multi-step entry into one action
+- [Bridge](/use-cases/bridge) — users arrive from other ecosystems
+- [Orchestrate](/use-cases/orchestrate) — a multi-step entry becomes one action
 
 ## Case studies
 
@@ -35,6 +37,6 @@ Someone holding on Ethereum can enter your app on Solana without leaving to brid
   </Card>
 
   <Card title="SDK" icon="cube" href="/build/sdk">
-    The full surface: quotes, execution and every supported chain.
+    Quote parameters, execution and every supported chain.
   </Card>
 </CardGroup>
