@@ -3,21 +3,21 @@ title: "Pay"
 description: "Send stablecoins globally, in any token, on any chain."
 ---
 
-A payment is a swap where the recipient is someone other than the sender, and where the output amount usually has to be exact.
+A payment on Mayan is a swap that settles in the asset the receiver runs on. The payer sends whatever they hold, on whatever chain they hold it, and the payment lands in seconds.
 
 Stablecoins are Mayan's most moved asset, with over **\$8B** moved cross-chain. Fast MCTP routes those transfers over Circle's CCTP for ultra-low slippage.
 
 ## How it works
 
-`destinationAddress` is the recipient rather than the payer. The payer's token and chain are the inputs, the recipient's token and chain are the outputs, and neither side has to match the other.
+A buyer pays 0.16 ETH on Ethereum, and 250 USDC arrives in the merchant's account. The buyer signs one transaction and never interacts with a swap interface.
 
-A buyer pays 0.16 ETH on Ethereum; 250 USDC arrives in the merchant's account. The buyer signs one transaction and never interacts with a swap interface.
+The destination chain, token and address are set by whoever is receiving, and none of them have to match what the payer holds.
 
-## Fixing the output amount
+## Guaranteed price
 
-An ordinary swap quotes an expected output and a minimum, and settles somewhere between them. A payment usually needs an exact number.
+An ordinary swap quotes an expected output and a minimum, then settles between them. A payment usually needs one exact number.
 
-On USDC, USDT and ETH routes, Mayan supports exact-out settlement. Request `swiftAuctionMode: 3` and the recipient receives exactly `expectedAmountOut`; drivers bid on how much input they need rather than how much output they deliver. See [guaranteed price](/features/guaranteed-price).
+On USDC, USDT and ETH routes Mayan can settle exact-out instead, so the recipient receives exactly `expectedAmountOut` and the amount you display is the amount that lands. See [guaranteed price](/features/guaranteed-price).
 
 ## Repeat payers
 
@@ -26,7 +26,7 @@ Where the same payer sends again and again, they can pay to a fixed address inst
 ## Examples
 
 - A fintech accepts many assets and settles in one.
-- A payroll or remittance app pays recipients in the asset and on the chain they want.
+- A payroll or remittance app pays recipients in the asset and on the chain they choose.
 - A merchant checkout displays a price and receives that exact amount.
 - A wallet adding payments lets users send without picking a chain first.
 

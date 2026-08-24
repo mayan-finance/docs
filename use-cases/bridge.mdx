@@ -3,11 +3,13 @@ title: "Bridge"
 description: "Move any asset cross-chain in one transaction."
 ---
 
-Bridging on Mayan is a swap where the input and the output are the same asset on different chains. It uses the same quote and the same call as any other swap; only the chain parameters differ.
+Bridging means moving an asset from one chain to another. It used to be its own task: find a bridge, wait for it to clear, then swap into the asset you actually wanted once you arrived.
 
-The user receives the real asset on the destination chain, not a wrapped representation of it, because the driver pays them from capital already held there.
+On Mayan it feels like a swap. The user names where their assets are and where they need to be, signs once, and the asset arrives on the other side in seconds.
 
 ## How it works
+
+A bridge transfer is a quote with the same asset on both sides and different chains.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -22,26 +24,22 @@ const quotes = await fetchQuote({
 
 Mayan selects the transfer method for the pair and returns it as `type`:
 
-- **Swift** for speed. The driver fills from capital already on the destination chain. See [Swift](/architecture/swift-v2).
+- **Swift** for speed. See [Swift](/architecture/swift-v2).
 - **MCTP** for high-value stablecoin transfers, routed over Circle's CCTP. See [MCTP](/architecture/mctp).
-- **Wormhole Swap** for low-slippage transfers of assets such as BTC, SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
+- **Wormhole Swap** for low-slippage transfers of assets such as SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
 
-Transfers route up to \$10M in a single transaction.
+Single transfers route up to \$10M, so size does not change the flow.
 
 ## Gas on the destination chain
 
 A user arriving on a chain they have not used holds none of its native token, so they cannot transact once they land. Two features address this:
 
-- [Gas on destination](/application/gas-on-destination) delivers native gas alongside the output, so the user can transact immediately on arrival. The amount is returned as `gasDrop` on the quote.
-- [Gasless execution](/features/gasless-execution) removes the gas requirement on the source chain. On supported routes the user signs a message rather than a transaction, and the fee is taken from the input amount.
+- [Gas on destination](/application/gas-on-destination) delivers native gas alongside the output. The amount is returned as `gasDrop` on the quote.
+- [Gasless execution](/features/gasless-execution) removes the gas requirement on the source chain. On supported routes the user signs a message rather than a transaction, and the fee comes out of the input amount.
 
-## How cross-chain messages are verified
+## Message verification
 
-A cross-chain transfer requires the destination chain to know, reliably, what happened on the source chain.
-
-Mayan uses [Wormhole](https://wormhole.com) for that. Wormhole's Guardian network observes source-chain events and produces a signed attestation; 13 of 19 independent Guardian organizations must sign it before it is valid.
-
-The order of operations is what limits user risk. The driver delivers to the user on the destination chain first, and is only reimbursed from the source funds once the attestation confirms the original deposit. If the attestation never arrives, the driver is out of pocket, not the user.
+A cross-chain transfer requires the destination chain to know what happened on the source chain. Mayan uses [Wormhole](https://wormhole.com) for that: its Guardian network attests each message, with 13 of 19 independent organizations signing before it is valid.
 
 Contracts are public and audited. See [security & audits](/resources/audits).
 

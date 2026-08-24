@@ -3,16 +3,16 @@ title: "Swap"
 description: "Trade any asset to any asset at the best price."
 ---
 
-A swap on Mayan exchanges one token for another. Both tokens can sit on the same chain or on two different chains: the request is identical either way, and so is the user's experience. One signature, funds in seconds.
+A swap on Mayan exchanges one token for another, on the same chain or across two. The user signs once and the output arrives in seconds.
 
-Mayan has settled **\$20B\+** across **9M\+ swaps** for **3M\+ users**.
+Over **\$20B** has moved through Mayan, across **9M\+ swaps** and **3M\+ users**.
 
 ## How it works
 
 1. **Quote.** You request a route for a pair and an amount. Mayan returns the expected output, the minimum output, an ETA, and which transfer method the order will use.
 2. **Sign.** The user signs one transaction on the source chain. `minAmountOut` is part of what they sign, so the order cannot fill below it.
 3. **Auction.** Drivers bid to fill the order with their own capital, and the best bid wins. See [onchain auction](/architecture/auction).
-4. **Settle.** The winning driver pays the user on the destination chain, then reclaims the source funds. The user is paid before the driver is.
+4. **Settle.** The winning driver pays the user on the destination chain, then reclaims the source funds.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -25,7 +25,7 @@ const quotes = await fetchQuote({
 });
 ```
 
-The same call covers a same-chain trade: set `fromChain` and `toChain` to the same value.
+Single swaps route up to \$10M, so size does not change the flow.
 
 ## Token coverage
 

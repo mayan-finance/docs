@@ -3,13 +3,40 @@ title: "Orchestrate"
 description: "Attach any onchain action to a single swap."
 ---
 
-Orchestrate is a swap with an instruction attached. The funds and a payload travel together, and the payload executes on the destination chain as the funds land.
+Orchestrate is a swap with an instruction attached. The funds and a payload travel together, and your destination logic acts on the payload once the funds arrive.
 
 Without it, entering a protocol from another chain is four user actions: move funds, swap, switch apps, deposit. With it, one.
 
 ## How it works
 
-You encode a payload on the quote request. Mayan delivers the funds and the payload to your destination contract in the same transaction, and your contract acts on them.
+Request a quote that supports payloads, then pass the bytes to the swap call. Mayan forwards them verbatim; decoding them is your destination logic's job.
+
+```typescript
+const quotes = await fetchQuote({
+  amountIn64: "100000000",
+  fromChain: "arbitrum",
+  fromToken: USDC_ARBITRUM,
+  toChain: "base",
+  toToken: USDC_BASE,
+  slippageBps: "auto",
+  quoteOptions: { payload: "true" },   // only routes that carry payloads
+});
+
+const customPayload = Buffer.from("hello-world");
+
+const tx = await swapFromEvm(
+  quotes[0],
+  fromAddress,
+  destAddr,
+  null,        // referrer
+  signer,
+  undefined,   // permit
+  undefined,   // overrides
+  customPayload,
+);
+```
+
+What you can attach:
 
 - **Deposit.** Funds arrive and go straight into a protocol or vault.
 - **Stake.** Assets are staked on arrival, so users start earning without a second step.
@@ -18,12 +45,13 @@ You encode a payload on the quote request. Mayan delivers the funds and the payl
 
 ## Requirements
 
-Orchestrate is the one part of Mayan that is not a drop-in. It needs two things on your side:
+Orchestrate is the one part of Mayan that is not a drop-in:
 
-- A **destination contract** that can receive the funds and decode your payload.
-- A **custom relayer** to deliver the order on the destination chain.
+- Destination logic that can receive the funds and decode your payload.
+- A route that carries payloads. Not every route does, which is why the quote request has to ask for one.
+- Small payloads. Each chain and route has its own message-size limit.
 
-See [Zaps](/integration/custom-payload) for the payload format and relayer setup.
+See [Zaps](/integration/custom-payload) for the payload format and per-chain behavior.
 
 ## Examples
 
@@ -35,7 +63,7 @@ See [Zaps](/integration/custom-payload) for the payload format and relayer setup
 
 <CardGroup cols={2}>
   <Card title="Zaps" icon="bolt" href="/integration/custom-payload">
-    Payload format, relayer setup and destination contract requirements.
+    Payload format and per-chain SDK behavior.
   </Card>
 
   <Card title="SDK" icon="cube" href="/build/sdk">

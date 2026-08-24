@@ -1,16 +1,16 @@
 ---
 title: "Deposit & Withdraw"
-description: "Fund any account from any asset, and leave holding whatever you want."
+description: "Fund any account from any asset, and exit in any token on any chain."
 sidebarTitle: "Deposit & Withdraw"
 ---
 
-A deposit is a swap whose destination address is an account inside your app. A withdrawal is the same call in reverse: funds leave your app, and the user picks the chain and token they receive.
+A deposit is a swap that ends in an account inside your app. A withdrawal is the same call in reverse: funds leave your app, and the user picks the chain and token they receive.
 
-The user does not need to hold the asset your app settles in, and does not need to be on your chain before they start.
+Users do not need to hold the asset your app settles in, or be on your chain before they start.
 
 ## How it works
 
-Pass your app's deposit address as `destinationAddress` and the asset your app accepts as `toToken`. Whatever the user holds is converted on the way in, and arrives as one transfer.
+Pass your app's address as `destinationAddress` and the asset your app accepts as `toToken`. Whatever the user holds is converted in transit and arrives as one transfer.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -25,11 +25,10 @@ const quotes = await fetchQuote({
 
 Withdrawals invert it: your app is the source, and the user supplies the destination chain and token.
 
-## Deposit addresses
+## Two ways to take deposits
 
-For users who fund repeatedly, Mayan can issue a permanent address instead of a per-transfer quote. The user sends to it like any ordinary transfer, with no wallet connection, no signature and no approval, and your app receives the asset you configured.
-
-Set `mpsDeposit: true` alongside your `destinationAddress` on the quote request, and the response returns an `mpsDepositAddress`. See [deposit addresses](/features/deposit-addresses).
+- **Per-transfer.** The standard flow above. The user requests a quote and signs once for each deposit.
+- **Permanent address.** For users who fund repeatedly, Mayan can issue an address that does not expire. They send to it like an ordinary transfer, with no wallet connection, signature or approval. Set `mpsDeposit: true` alongside your `destinationAddress` on the quote request, and the response returns an `mpsDepositAddress`. See [deposit addresses](/features/deposit-addresses).
 
 ## Examples
 
@@ -37,7 +36,7 @@ Set `mpsDeposit: true` alongside your `destinationAddress` on the quote request,
 - An exchange with internal balances removes the conversion step users otherwise do by hand.
 - An onramp or checkout accepts whatever the user brings and settles in one asset.
 - A vault accepts deposits in assets it does not otherwise support.
-- A product that pays users out lets them receive in the asset and on the chain they want.
+- A product that pays users out lets them receive in the asset and on the chain they choose.
 
 ## Case studies
 
