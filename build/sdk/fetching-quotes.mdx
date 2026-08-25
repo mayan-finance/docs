@@ -3,4 +3,78 @@ title: "Fetching Quotes"
 description: "Request routes for a pair and read the response."
 ---
 
-Content in progress.
+`fetchQuote` returns an array of routes for a pair. By default at most two: the quickest first, then the best return. When one route is both, you get a single item.
+
+```typescript
+import { fetchQuote } from "@mayanfinance/swap-sdk";
+
+const quotes = await fetchQuote({
+  amountIn64: "250000000",         // base units, so 250 USDC at 6 decimals
+  fromToken: fromToken.contract,
+  toToken: toToken.contract,
+  fromChain: "avalanche",
+  toChain: "solana",
+  slippageBps: "auto",
+  gasDrop: 0.04,                   // optional
+  referrer: "YOUR_SOLANA_ADDRESS", // optional
+  referrerBps: 5,                  // optional
+  apiKey: "YOUR_API_KEY",          // optional
+});
+```
+
+## Parameters
+
+| Param | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `amountIn64` | `string` | Yes | Base units. `amountIn` accepts a human-readable number instead. |
+| `fromChain` / `toChain` | `string` | Yes | Chain name, not chain ID. |
+| `fromToken` / `toToken` | `string` | Yes | Contract address. Use the zero address for native tokens. |
+| `slippageBps` | `number \| "auto"` | Yes | `"auto"` lets Mayan pick a safe level for the pair. A number is basis points, so `300` is 3%. The response always returns a number. |
+| `gasDrop` | `number` | No | Native gas to deliver on the destination chain. See the ceilings below. |
+| `referrer` | `string` | No | Wallet address that receives the referrer fee. |
+| `referrerBps` | `number` | No | Your share in basis points. |
+| `apiKey` | `string` | No | Raises the per-IP rate limit. |
+| `destinationAddress` | `string` | No | Improves quote accuracy, for example by checking whether a Solana ATA exists. |
+
+As of v15, `fetchQuote` uses HTTP `POST` by default. The `GET` endpoint still works, but some options are POST-only, including `extraInstructions` and multi-wallet `referrers`.
+
+## Reading the response
+
+These are the fields that matter in a confirmation screen.
+
+| Field | What it tells you |
+| --- | --- |
+| `expectedAmountOut` | The amount the user should receive. |
+| `minAmountOut` | The floor on that amount. Part of what the user signs, so the order cannot fill below it. |
+| `etaSeconds` / `clientEta` | Estimated settlement time, in seconds and as a display string. |
+| `gasDrop` | Native gas delivered on the destination chain alongside the output. |
+| `type` | The transfer method the route uses: `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. |
+| `swiftAuctionMode` | On Swift quotes, how the output is determined. `2` is an English auction, `3` is exact-out. See [guaranteed price](/features/guaranteed-price). |
+| `gasless` | Whether the user signs a message instead of a transaction. Changes what `swapFromEvm` returns. See [gasless execution](/features/gasless-execution). |
+| `deadline64` | The timestamp after which the order becomes refundable rather than fillable. See [refunds](/how-mayan-works/refunds). |
+| `protocolBps` | The live protocol fee for this quote. Read it rather than hardcoding. |
+
+## Gas on destination ceilings
+
+| Chain | Max `gasDrop` |
+| --- | --- |
+| Ethereum | 0.05 ETH |
+| BSC | 0.02 BNB |
+| Polygon | 0.2 POL |
+| Avalanche | 0.2 AVAX |
+| Solana | 0.2 SOL |
+| Arbitrum, Optimism, Base, Unichain | 0.01 ETH |
+
+See [gas on destination](/application/gas-on-destination).
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Executing Swaps" icon="paper-plane" href="/build/sdk/executing-swaps">
+    Build and send the transaction on EVM, Solana and Sui.
+  </Card>
+
+  <Card title="Quote API" icon="code" href="/integration/quote-api">
+    The underlying endpoint, if you would rather call it directly.
+  </Card>
+</CardGroup>

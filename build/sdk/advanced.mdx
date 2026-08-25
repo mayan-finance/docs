@@ -3,4 +3,57 @@ title: "Advanced"
 description: "Manual transaction building, custom refund addresses, and contract-level integration."
 ---
 
-Content in progress.
+Everything here is optional. A standard integration does not need any of it.
+
+## Splitting the referrer fee
+
+To split the fee across several wallets, pass a `referrers` object as the second argument to `fetchQuote` instead of `referrer` and `referrerBps`, then pass the same object as `referrerAddresses` at swap time.
+
+```typescript
+const referrers = {
+  evm:    [{ address: "FIRST_EVM_WALLET", bps: 10 }, { address: "SECOND_EVM_WALLET", bps: 5 }],
+  solana: [{ address: "FIRST_SOL_WALLET", bps: 10 }, { address: "SECOND_SOL_WALLET", bps: 5 }],
+};
+
+const quotes = await fetchQuote({ /* ... */ }, { referrers });
+```
+
+The SDK throws if you set `referrer` or `referrerBps` alongside `referrers`, and throws again at swap time if the object you pass does not match the one the quote was fetched with. POST flow only.
+
+See [fees & earning](/build/fees-earning).
+
+## Custom refund address
+
+On Swift quotes only, `swiftRefundAddress` sends a refund to a different source-chain address than the wallet that signed.
+
+```typescript
+const tx = await swapFromEvm(
+  quote, swapperAddress, destinationWalletAddress, referrerAddresses,
+  signer, permit, overrides, payload,
+  { swiftRefundAddress: "REFUND_WALLET_ON_SOURCE_CHAIN" },
+);
+```
+
+- Request the quote with `gasless: false`. Gasless Swift orders require the refund address to match the signer, and the SDK throws otherwise.
+- Other quote types ignore it and refund to the swapper wallet. Filter on `quote.type === "SWIFT"` if this matters to your flow.
+- The address must be a valid wallet on the source chain. Zero addresses are rejected.
+
+See [refunds](/how-mayan-works/refunds).
+
+## Building the transaction yourself
+
+- `getSwapFromEvmTxPayload` returns the EVM transaction payload for you to send.
+- `createSwapFromSolanaInstructions` returns Solana instructions rather than sending a transaction.
+- For contract-level integration, the `_forwarder` object returned by `getSwapFromEvmTxPayload` contains the method name and parameters for a direct contract call. See [forwarder contract](/integration/forwarder-contract).
+
+## Fitting your own Solana instructions
+
+On Solana, `extraInstructions` on `fetchQuote` tells the quoter to size the route so your own instructions fit in the same v0 transaction.
+
+It is a sizing hint only. You still append your instructions yourself. POST flow only.
+
+## Attaching a payload
+
+A payload travels with the transfer and is delivered to your destination logic. Request a quote with `quoteOptions: { payload: "true" }`, then pass the bytes to the swap call.
+
+Mayan forwards the bytes verbatim; decoding them is your destination logic's job. See [Zaps](/integration/custom-payload) and [orchestrate](/use-cases/orchestrate).
