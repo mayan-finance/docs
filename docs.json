@@ -57,8 +57,7 @@
           "index",
           "get-started/quickstart",
           "get-started/why-mayan",
-          "application/user-manual",
-          "application/mayan-explorer"
+          "application/user-manual"
         ]
       },
       {
@@ -162,6 +161,7 @@
       {
         "group": "Resources",
         "pages": [
+          "application/mayan-explorer",
           "resources/chains-contracts",
           "resources/audits",
           "resources/compliance",
