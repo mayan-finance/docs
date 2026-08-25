@@ -3,34 +3,40 @@ title: "Refunds"
 description: "What happens when a swap cannot be filled, and how fast refunds work."
 ---
 
-Every order carries a deadline. If no driver fills it before that deadline passes, the order is refunded and the input returns to the sender.
+Every order carries a deadline. If no driver fills it before that deadline passes, the order is refunded and the input returns to the sender. Mayan does not take custody of funds at any point, in either case.
 
-Refunds are the exception rather than a normal part of the flow, and Mayan does not take custody of funds at any point in either case.
+## When does a swap get refunded?
 
-## What the user gets back
+When no driver takes the order before its deadline. The order can no longer be filled after that point, and the input goes back to the sender.
 
-On Swift, the input may be converted into the primary locked asset on the source chain before the order opens, typically USDC or ETH.
+## What does the user get back?
 
-If that order is later refunded, the user receives the converted asset rather than the token they started with. This is worth surfacing in your interface, because a user who sent one token and got a different one back will otherwise raise a support ticket.
+On Swift, the input may be converted into the primary locked asset on the source chain before the order opens, typically USDC or ETH. If that order is later refunded, the user receives the converted asset rather than the token they started with.
 
-## The deadline
+Surface this in your interface. A user who sent one token and got a different one back will otherwise open a support ticket.
 
-Each quote carries a `deadline64` value. That is the point after which the order can no longer be filled and becomes refundable.
+## Where is the deadline?
 
-## Fees in a refund
+Each quote carries a `deadline64` value. That is the timestamp after which the order becomes refundable rather than fillable.
 
-A refund is an onchain action and carries its own relayer fee, returned in the quote before the user signs:
+## Does a refund cost anything?
 
-- `refundRelayerFee` and `refundRelayerFee64`, the fee itself
-- `clientRelayerFeeRefund`, the total dollar value of relayer fees in the refund scenario
+Yes. A refund is an onchain action and carries its own relayer fee, which is returned in the quote before the user signs:
 
-Both are available at quote time, so you can show a user what a refund would cost them before they commit.
+- `refundRelayerFee` and `refundRelayerFee64` — the fee itself
+- `clientRelayerFeeRefund` — the total dollar value of relayer fees in the refund scenario
 
-## Tracking a refund
+Both are available at quote time, so you can show a user what a refund would cost before they commit.
+
+## How do I know a swap was refunded?
 
 Poll the [Explorer API](/integration/explorer-api) with the source transaction hash and read `clientStatus`. A refunded order reports `REFUNDED` rather than `COMPLETED`.
 
-See [Track Transactions](/build/track-transactions) for handling terminal states in your interface.
+See [track transactions](/build/track-transactions) for handling terminal states in your interface.
+
+## Can a swap fill below the quoted minimum?
+
+No. The `minAmountOut` the user signs is part of the instruction. An order that cannot be filled at or above it is not filled at all, and is refunded instead.
 
 <Warning>
   **This page is incomplete.** The following need answers from engineering.
