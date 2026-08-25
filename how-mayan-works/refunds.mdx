@@ -39,13 +39,5 @@ See [track transactions](/build/track-transactions) for handling terminal states
 No. The `minAmountOut` the user signs is part of the instruction. An order that cannot be filled at or above it is not filled at all, and is refunded instead.
 
 <Warning>
-  **This page is incomplete.** The following need answers from engineering.
-
-  - How long a refund takes once the deadline passes, and whether it is automatic or requires an action
-  - Whether the deadline is the same across Swift, MCTP, Fast MCTP and Wormhole Swap, or varies by route
-  - What the typical deadline actually is, since `deadline64` is a timestamp rather than a documented window
-  - Whether refunds behave differently on MCTP and Wormhole Swap, where there may be no primary locked asset conversion
-  - What happens to a payload-enabled swap that is refunded, given the staging and settle step in Swift v2
-  - Whether there are failure modes other than an unfilled deadline that end in a refund
-  - How often refunds actually happen, if there is a publishable figure
+  **Needs engineering input.** How long a refund takes and whether it is automatic. Whether the deadline window is the same across all four routes, and what it typically is. Whether MCTP and Wormhole Swap refund differently, given there may be no locked-asset conversion. What happens to a refunded payload swap. Whether anything other than a missed deadline triggers a refund, and how often refunds happen.
 </Warning>
