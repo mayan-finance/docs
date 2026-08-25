@@ -143,7 +143,6 @@
             "pages": [
               "build/integrate-swap-api",
               "build/track-transactions",
-              "application/mayan-explorer",
               "build/transaction-builder",
               "build/direct-route-linking"
             ]
@@ -162,6 +161,7 @@
       {
         "group": "Resources",
         "pages": [
+          "application/mayan-explorer",
           "resources/chains-contracts",
           "resources/audits",
           "resources/compliance",
