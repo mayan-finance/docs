@@ -33,11 +33,5 @@ Read `clientStatus`:
 | `sourceTxHash` / `destTxHash` | For linking out to block explorers. |
 
 <Warning>
-  **This page is incomplete.** It needs the following from engineering before it can tell anyone how to poll responsibly:
-
-  - **Rate limits.** What the per-IP limit is without an API key, and what it becomes with one. A polling guide without this is telling people to guess.
-  - **A recommended poll interval**, and whether backoff is expected.
-  - **Whether webhooks or a websocket exist** for swap status outside of deposit addresses, which have their own event stream. If not, that is worth saying plainly so nobody goes looking.
-  - **How long a swap can legitimately sit in `INPROGRESS`** before something is actually wrong, so integrators know when to surface a problem to the user.
-  - **The full list of granular `status` values** and which map to which `clientStatus`.
+  **Needs engineering input.** Rate limits with and without an API key, a recommended poll interval, and whether backoff is expected. Whether webhooks or a websocket exist for swap status outside deposit addresses. How long `INPROGRESS` is normal before something is wrong. The full list of granular `status` values and how they map to `clientStatus`.
 </Warning>

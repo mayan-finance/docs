@@ -144,6 +144,7 @@
               "build/integrate-swap-api",
               "build/track-transactions",
               "application/mayan-explorer",
+              "build/transaction-builder",
               "build/direct-route-linking"
             ]
           },
