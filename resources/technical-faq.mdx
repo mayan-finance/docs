@@ -1,6 +1,102 @@
 ---
 title: "Technical FAQ"
-description: "Straight answers to common integration questions, with code."
+description: "Straight answers to common integration questions."
 ---
 
-Direct answers to common integration questions, written to be found in search. Content in progress.
+## Getting started
+
+### Do I need an API key?
+
+No. The SDK and the Quote API work without one. An `apiKey` on the quote request raises the per-IP rate limit, which matters at production volume. See [SDK](/build/sdk).
+
+### Which tokens and chains are supported?
+
+Any token with a contract address, across every chain Mayan supports. There is no whitelist and no listing process, so adding an asset is never an integration change. See [chains & contracts](/resources/chains-contracts).
+
+### Do I choose the route?
+
+`fetchQuote` returns the routes available for a pair, each tagged with its transfer method as `type`. You choose which one to execute. By default you get at most two: the quickest first, then the best return.
+
+### What is the difference between Swift, MCTP and Wormhole Swap?
+
+Swift is the fastest path and covers most swaps. MCTP routes over Circle's CCTP and suits high-value stablecoin transfers. Wormhole Swap uses the Wormhole Token Bridge for low-slippage transfers of assets like SOL and ETH. See [Swift](/architecture/swift-v2), [MCTP](/architecture/mctp) and [Wormhole Swap](/architecture/wh-swap).
+
+### How large a swap can Mayan handle?
+
+Single transfers route up to \$10M.
+
+---
+
+## Amounts and pricing
+
+### What happens if the price moves while the swap is in flight?
+
+`minAmountOut` is part of what the user signs, so the order cannot fill below it. If no driver will fill it at or above that floor before the deadline, the order is refunded rather than filled at a worse rate.
+
+### Can I guarantee the exact output amount?
+
+On same-asset transfers of USDC, USDT and ETH, yes. Those quotes come back with `swiftAuctionMode: 3` and settle exact-out, so the recipient receives exactly `expectedAmountOut`. See [guaranteed price](/features/guaranteed-price).
+
+### How do I earn on swaps I route?
+
+Set a `referrer` address and `referrerBps` on the quote, then pass the matching `referrerAddresses` at swap time. The fee is collected onchain automatically. See [fees & earning](/build/fees-earning).
+
+---
+
+## Execution
+
+### Do I need to approve a token before swapping?
+
+On EVM, yes, for ERC20 inputs. Approve the Mayan Forwarder contract, available as `addresses.MAYAN_FORWARDER_CONTRACT`. If the token supports [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) you can pass a permit instead. See [executing swaps](/build/sdk/executing-swaps).
+
+### Does the user need gas on the destination chain?
+
+Not if you request it. `gasDrop` delivers native gas alongside the output, so a user arriving on a chain they have not used can transact immediately. See [gas on destination](/application/gas-on-destination).
+
+### Can a user swap without holding native gas on the source chain?
+
+On supported routes, yes. The user signs a message rather than a transaction and a relayer submits it. Request it with `gasless: true`. See [gasless execution](/features/gasless-execution).
+
+### Why did `swapFromEvm` return a string instead of a transaction?
+
+The quote was gasless. On a gasless quote `swapFromEvm` returns an **order hash**, which you pass to the Explorer API exactly as you would a transaction hash.
+
+### Can I run an action on the destination chain when the funds land?
+
+Yes. Attach a payload to the swap and your destination logic acts on it as the funds arrive. Request a quote with `quoteOptions: { payload: "true" }`. See [Zaps](/integration/custom-payload).
+
+---
+
+## After the swap
+
+### How do I know when a swap is done?
+
+Poll the [Explorer API](/integration/explorer-api) with the source transaction hash and read `clientStatus`. `INPROGRESS` is the only non-terminal state; `COMPLETED` and `REFUNDED` are final. See [track transactions](/build/track-transactions).
+
+### Why did my user get back a different token than they sent?
+
+The order was refunded. On Swift, the input may be converted into the primary locked asset on the source chain, typically USDC or ETH, before the order opens. A refund returns the converted asset. Surface this in your interface. See [refunds](/how-mayan-works/refunds).
+
+### Can a refund go to a different address than the one that signed?
+
+On Swift quotes only, using `swiftRefundAddress`. Request the quote with `gasless: false`, since gasless Swift orders require the refund address to match the signer. See [advanced](/build/sdk/advanced).
+
+### Does Mayan ever hold user funds?
+
+No. The contracts are trustless and permissionless, and no party can freeze or move user assets. See [security & audits](/resources/audits).
+
+---
+
+## Troubleshooting
+
+### `require()` throws `ERR_REQUIRE_ESM`
+
+The SDK loads ESM-only dependencies at import time. Use Node 20.19 or later, or 22.12 or later, if you consume the package with `require()`. Importing as ESM works on any modern runtime.
+
+### Sui throws `core.listCoins is not a function`
+
+SDK v15 requires `@mysten/sui` v2 and a Core API client. A v1 `SuiClient` fails. `SuiGrpcClient` is recommended.
+
+### The SDK fails to bundle in React Native
+
+Metro and some other bundlers cannot `require()` an ES module. Import the SDK as ESM. A [scaffold project](https://github.com/mayan-finance/react-native-scaffold) is available.
