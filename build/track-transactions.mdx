@@ -11,6 +11,12 @@ curl 'https://explorer-api.mayan.finance/v3/swap/trx/{sourceTxHash}'
 
 For a gasless swap, `swapFromEvm` returns an order hash instead of a transaction hash. Pass that to the same endpoint.
 
+## How often to poll
+
+Poll every 2 seconds. Most swaps settle in seconds, so a slower interval makes your interface look laggy when the swap is already done.
+
+Without an API key you are rate limited per IP, which is fine for development and for moderate production volume. If you are polling at scale, request a key from [support@mayan.finance](mailto:support@mayan.finance) and pass it as `apiKey`.
+
 ## Swap statuses
 
 Read `clientStatus`:

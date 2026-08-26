@@ -135,14 +135,14 @@
           {
             "group": "APIs",
             "pages": [
+              "build/integrate-swap-api",
               "integration/quote-api",
               "integration/explorer-api"
             ]
           },
           {
-            "group": "Developer Guides",
+            "group": "Guides",
             "pages": [
-              "build/integrate-swap-api",
               "build/track-transactions",
               "build/direct-route-linking"
             ]
