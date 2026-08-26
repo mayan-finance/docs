@@ -1,6 +1,53 @@
 ---
 title: "llms.txt & Markdown"
-description: "Machine-readable docs, live today."
+description: "Machine-readable versions of these docs for AI assistants and agents."
 ---
 
-An llms.txt index and a Markdown version of every page for AI assistants. Content in progress.
+Every page in these docs is available as plain Markdown, and the whole site is indexed in a format built for language models. If you are pointing an assistant at Mayan, or building an agent that needs to read the docs at runtime, use these rather than scraping the rendered pages.
+
+## The index files
+
+| File | What it contains |
+| --- | --- |
+| [`/llms.txt`](https://docs.mayan.finance/llms.txt) | An index of every page with its title, description and URL. Small enough to drop into a prompt whole. |
+| [`/llms-full.txt`](https://docs.mayan.finance/llms-full.txt) | The full text of every page in one file. Use it when the assistant needs the content, not just the map. |
+
+Start with `llms.txt` when the model can fetch pages on demand, and `llms-full.txt` when it cannot.
+
+## Markdown for any page
+
+Append `.md` to any docs URL to get the raw Markdown for that page.
+
+```text
+https://docs.mayan.finance/build/sdk/fetching-quotes
+https://docs.mayan.finance/build/sdk/fetching-quotes.md
+```
+
+The Markdown is the source the page was built from, so code samples and tables come through intact and there is no navigation or styling to strip out.
+
+## Fetching a page in an agent
+
+```typescript
+const res = await fetch(
+  "https://docs.mayan.finance/build/sdk/fetching-quotes.md"
+);
+const markdown = await res.text();
+```
+
+## Using them well
+
+- **Point at the index, not the site.** Giving an assistant `llms.txt` up front means it knows which page answers which question before it fetches anything.
+- **Fetch the `.md`, not the HTML.** Same content, none of the chrome, and far fewer tokens.
+- **Re-fetch rather than cache for long.** These docs change, and a stale copy is how an assistant ends up recommending a parameter that no longer exists.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="AGENTS.md" icon="robot" href="/ai-agents/agents-md">
+    A drop-in file that teaches a coding assistant how to integrate Mayan.
+  </Card>
+
+  <Card title="Technical FAQ" icon="circle-question" href="/resources/technical-faq">
+    The questions integrators ask most, with direct answers.
+  </Card>
+</CardGroup>

@@ -1,6 +1,85 @@
 ---
 title: "AGENTS.md"
-description: "A template for Mayan integrations."
+description: "A drop-in file that teaches a coding assistant how to integrate Mayan."
 ---
 
-A drop-in AGENTS.md that primes coding assistants for Mayan. Content in progress.
+Coding assistants work from whatever context is in the repository. [AGENTS.md](https://agents.md) is the convention for giving them that context: a Markdown file at the root of your project that tools read before they write code.
+
+If your team uses an assistant to build against Mayan, drop the file below into your repo. It stops the model inventing parameters, and it front-loads the two or three things that otherwise cause a broken first integration.
+
+## The file
+
+Save this as `AGENTS.md` at the root of your project.
+
+````markdown
+# Mayan integration
+
+This project uses Mayan for cross-chain swaps via `@mayanfinance/swap-sdk`.
+
+Docs: https://docs.mayan.finance
+Index for AI tools: https://docs.mayan.finance/llms.txt
+Any page as Markdown: append `.md` to its URL.
+
+## The shape of an integration
+
+1. `fetchQuote` returns the routes available for a pair.
+2. `swapFromEvm`, `swapFromSolana`, or `createSwapFromSuiMoveCalls` builds and sends the transaction.
+3. Poll the Explorer API for `clientStatus` until it leaves `INPROGRESS`.
+
+```typescript
+import { fetchQuote, swapFromEvm } from "@mayanfinance/swap-sdk";
+
+const quotes = await fetchQuote({
+  amountIn64: "100000000",   // base units
+  fromChain: "arbitrum",
+  fromToken: USDC_ARBITRUM,
+  toChain: "solana",
+  toToken: SOL,
+  slippageBps: "auto",
+});
+
+const tx = await swapFromEvm(
+  quotes[0], swapperAddress, destinationAddress, null, provider, signer,
+);
+```
+
+## Rules
+
+- **Chain identifiers are Wormhole chain IDs, not EVM chain IDs.** Base is `30`, not `8453`.
+- **Chains are named, not numbered, in quote requests.** Use `"arbitrum"`, not `42161`.
+- **Amounts are base units.** `amountIn64` is a string. `amountIn` takes a human-readable number instead.
+- **Do not assume every quote in the array is the same route type.** Check `type` on the quote you selected before building anything.
+- **On a gasless quote, `swapFromEvm` returns an order hash string, not a transaction.** Branch on `quote.gasless`.
+- **ERC20 inputs need an allowance against the Mayan Forwarder**, available as `addresses.MAYAN_FORWARDER_CONTRACT`, or an EIP-2612 permit.
+- **Read `protocolBps` off the quote rather than hardcoding a fee.**
+- **Import the SDK as ESM.** It loads ESM-only dependencies at import time, so `require()` needs Node 20.19+ or 22.12+.
+- **Never invent a parameter.** If it is not in the docs, fetch the page and check.
+
+## Displaying a quote to a user
+
+- `expectedAmountOut` is what the user should receive.
+- `minAmountOut` is the floor, and is part of what they sign.
+- On Swift quotes, `swiftAuctionMode: 3` means exact-out: the user receives exactly `expectedAmountOut`, so show that number alone.
+
+## Terminal states
+
+`clientStatus` is `INPROGRESS`, `COMPLETED`, or `REFUNDED`. Poll every 2 seconds.
+
+A refunded Swift order may return a different token than the user sent, because the input can be converted to the primary locked asset before the order opens. Surface this in the UI.
+````
+
+## Keeping it current
+
+Point the file at [`llms.txt`](/ai-agents/llms-txt) rather than pasting large sections of the docs into it. The assistant fetches what it needs at the time it needs it, and you avoid a copy that quietly goes stale.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="llms.txt & Markdown" icon="file-lines" href="/ai-agents/llms-txt">
+    The machine-readable index and per-page Markdown.
+  </Card>
+
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    Every call the file above refers to.
+  </Card>
+</CardGroup>
