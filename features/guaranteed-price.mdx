@@ -42,21 +42,25 @@ Handle both. A pair that returns a guaranteed quote on one order may return an E
 
 ## Supported assets
 
-Guaranteed Price is available on **same-asset transfers of USDC, USDT and ETH**. The input and the output have to be the same one of those three.
+| Transfer | Guaranteed Price |
+| --- | --- |
+| USDC to USDC | Yes |
+| USDT to USDT | Yes |
+| ETH to ETH | Yes |
+| Any other same-asset transfer | No |
+| Any cross-asset swap | No |
 
-It is not restricted by chain. Any pair of supported chains qualifies as long as the asset matches on both sides, so USDC on Arbitrum to USDC on Solana is eligible in the same way as USDC on Base to USDC on Ethereum.
+Eligibility is not restricted by chain. Any pair of supported chains qualifies as long as the asset matches on both sides, so USDC on Arbitrum to USDC on Solana works the same way as USDC on Base to USDC on Ethereum.
 
-Other assets and cross-asset swaps route through the English auction and settle between the expected and minimum amounts.
+Everything else routes through the English auction and settles between the expected and minimum amounts.
 
 ## Building with it
 
 The guarantee matters wherever a number is quoted to someone before the money moves.
 
-**Checkout and payments.** A merchant displays a price and receives that exact amount, so the invoice, the confirmation screen and the settlement all carry the same figure. Nothing has to be reconciled afterwards, and no order arrives short. See [Pay](/use-cases/pay).
-
-**Payouts and payroll.** When a business is sending rather than receiving, an exact amount means a recipient is paid what they were promised, not what the market allowed at the moment of settlement.
-
-**Trading and treasury interfaces.** Showing a user a fixed number removes the caveat that usually sits next to a cross-chain quote. The interface can commit to the figure it displays.
+- **Checkout and payments.** The invoice, the confirmation screen and the settlement all carry the same figure, so nothing has to be reconciled afterwards. See [Pay](/use-cases/pay).
+- **Payouts and payroll.** A recipient is paid what they were promised, rather than what the market allowed at the moment of settlement.
+- **Trading and treasury interfaces.** The interface can commit to the number it displays, without the caveat that usually sits next to a cross-chain quote.
 
 ## Next steps
 

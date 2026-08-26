@@ -144,7 +144,6 @@
             "pages": [
               "build/integrate-swap-api",
               "build/track-transactions",
-              "build/transaction-builder",
               "build/direct-route-linking"
             ]
           },
