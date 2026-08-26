@@ -5,7 +5,7 @@ description: "The amount quoted is the amount received, on eligible routes."
 
 On most cross-chain swaps the quote is an estimate. Guaranteed Price replaces the estimate with a commitment: the output is locked before the swap executes, so the amount shown is the amount that arrives.
 
-It is available on same-asset transfers of USDC, USDT and ETH.
+It is available on same-asset transfers of USDC, USDT and ETH. It is not restricted by chain: any pair where the input and the output are the same one of those three assets is eligible.
 
 ## How it works
 
@@ -21,14 +21,6 @@ Guaranteed Price appears on Swift quotes. Read `swiftAuctionMode` on each quote 
 | `3` | Exact-out. The user receives exactly `expectedAmountOut`. |
 
 A quote with `swiftAuctionMode: 3` is a Guaranteed Price quote. Surface it in your interface so the user knows the amount is locked before they confirm.
-
-## Eligible routes
-
-<Warning>
-  **Needs engineering input.** The per-chain route table.
-</Warning>
-
-Guaranteed Price covers same-asset transfers of USDC, USDT and ETH.
 
 ## Building on it
 

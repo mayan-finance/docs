@@ -46,5 +46,5 @@ const quotes = await fetchQuote({
 Pass a `referrers` object to `fetchQuote` instead, with a bps share per wallet, then pass the same object at swap time. The SDK throws if it does not match the quote. See [SDK](/build/sdk).
 
 <Warning>
-  **Needs engineering and BD input.** The ceiling on `referrerBps` and what happens above it. Which chain the referrer fee pays out on and when, since Swift v2 moved it from the destination output to the locked source assets. Whether `referrerBps` is additive to the protocol fee or taken from the same pool. Whether fees are charged on refunds. Payout mechanics and any minimum. Whether the referrer program carries terms an integrator has to accept.
+  **Needs engineering input.** Which chain the referrer fee pays out on, and whether `referrerBps` sits on top of the protocol fee or comes out of it.
 </Warning>

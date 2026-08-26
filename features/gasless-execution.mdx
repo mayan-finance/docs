@@ -5,12 +5,12 @@ description: "Let builders remove gas friction for their users on supported flow
 
 Gasless execution lets a user start a move without holding the source chain's native token. Rather than sending a transaction, they sign a message, and a Mayan relayer submits the transaction on their behalf.
 
-It is scoped to specific flows rather than available on every route.
+It covers swaps as well as withdrawals, on the routes that support it.
 
 ## Requesting it
 
 Pass `gasless: true` on the quote request. Eligible quotes come back with `gasless` set in the response, and you surface that to the user before they sign. See the [Quote API](/integration/quote-api).
 
 <Warning>
-  **Needs engineering input.** Which chains and routes support gasless beyond HyperCore withdrawals, and whether deposits and swaps qualify. Who pays the gas and whether a fee comes out of the output. Whether there is a minimum size. What happens when gasless is requested but unavailable. Whether EIP-712 signing applies outside EVM, and whether integrators need enabling.
+  **Needs engineering input.** Which chains and routes support gasless, and whether the relayer's gas cost comes out of the output.
 </Warning>
