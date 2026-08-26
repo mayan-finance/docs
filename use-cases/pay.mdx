@@ -9,17 +9,15 @@ Mayan covers both. Stablecoins are its most moved asset, with over **\$8B** move
 
 ## How it works
 
-The payer sends from the asset and chain they already hold. The payment settles in the stablecoin the business runs on, on the chain it runs on. A buyer pays 0.16 ETH on Ethereum, and 250 USDC arrives in the merchant's account.
+Stablecoins move across chains on Mayan the way any asset does: one signature, and settlement in seconds. Three things make them work as payments rather than trades.
 
-The buyer signs one transaction and never interacts with a swap interface.
+**The amount holds.** On USDC, USDT and ETH routes Mayan settles exact-out, so the amount sent is the amount received. A quote range works for a trade and does not work for an invoice. See [guaranteed price](/features/guaranteed-price).
 
-## Guaranteed price
+**The cost stays low at size.** Fast MCTP routes stablecoin transfers over Circle's CCTP, built for ultra-low slippage. A large payment does not get worse the larger it gets.
 
-An ordinary swap quotes an expected output and a minimum, then settles somewhere between them. That range is fine for a trade and unusable for a payment.
+**Neither side has to match.** The sender pays from the asset and chain they already hold, and the recipient is paid in the stablecoin they settle in. The conversion happens in transit and neither party interacts with a swap.
 
-On USDC, USDT and ETH routes Mayan settles exact-out instead: the recipient receives exactly `expectedAmountOut`, so the amount you display is the amount that lands. See [guaranteed price](/features/guaranteed-price).
-
-## Repeat payers
+## Repeat payments
 
 Where the same payer sends again and again, they can pay to a fixed address instead of signing each time. See [deposit addresses](/features/deposit-addresses).
 

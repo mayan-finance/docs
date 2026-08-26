@@ -32,7 +32,7 @@ Gasless execution removes that requirement. Instead of sending a transaction, th
 - **A signature, not a transaction.** This is the whole mechanism. The user authorises the order off-chain and the relayer bears the cost of putting it onchain.
 - **The return value changes.** On a normal quote `swapFromEvm` returns a transaction. On a gasless quote it returns an order hash string. Code that assumes a transaction object will break, so branch on `quote.gasless`.
 - **Not every route supports it.** Requesting `gasless: true` narrows the routes the quoter will return. If nothing comes back for a pair, that pair cannot be executed gaslessly.
-- **Refunds go back to the signer.** A gasless Swift order requires the refund address to match the wallet that signed. `swiftRefundAddress` is rejected on a gasless quote, so request `gasless: false` if you need a refund to land somewhere else. See [advanced](/build/sdk/advanced).
+- **Refunds go back to the signer.** A gasless Swift order requires the refund address to match the wallet that signed. `swiftRefundAddress` is rejected on a gasless quote, so request `gasless: false` if you need a refund to land somewhere else. See [executing swaps](/build/sdk/executing-swaps).
 
 ## Requesting it
 

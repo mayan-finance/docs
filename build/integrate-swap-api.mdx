@@ -7,16 +7,14 @@ Most integrations should use the [SDK](/build/sdk), which builds the transaction
 
 Go directly to the API when you are working in a language the SDK does not cover, running quotes on a backend that never touches a wallet, or building the transaction yourself for another reason. This page covers the API surface and what you are responsible for once you skip the SDK.
 
-## What you take on
+## What you implement yourself
 
-The SDK handles four things you now own:
+Four things the SDK would otherwise handle:
 
 - Building the transaction for each source chain, including Solana instructions and Sui Move calls
 - ERC20 allowance against the Forwarder contract, or an EIP-2612 permit
 - Encoding the referrer addresses and verifying they match the quote
-- Reading route-specific fields off the quote and behaving differently per `type`
-
-If none of those are a problem, read on.
+- Reading route-specific fields off the quote and branching on `type`
 
 ## Get a quote
 
@@ -92,9 +90,5 @@ curl 'https://explorer-api.mayan.finance/v3/swap/trx/{sourceTxHash}'
 - `GET https://price-api.mayan.finance/v3/tokens?chain=solana` returns the whitelisted token list. Drop `chain` for all chains. Any token with a contract address is routable, whitelisted or not, given liquidity.
 
 <Warning>
-  **This page is incomplete.** It needs the following from engineering:
-
-  - The error model for the Quote API. `QuoteError` in the SDK carries a `code` and `data`, but the codes are not documented anywhere and a direct API integrator cannot handle failures without them.
-  - Per-route calldata construction, or a decision that we deliberately do not document it and point people at the SDK instead.
-  - Whether `shuttle` and `monoChain`, which appear in the SDK's quote options, are supported, internal, or deprecated.
+  **Needs engineering input.** The Quote API error codes, which a direct integrator cannot handle failures without.
 </Warning>

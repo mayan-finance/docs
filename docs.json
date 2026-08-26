@@ -126,7 +126,8 @@
               "build/sdk",
               "build/sdk/fetching-quotes",
               "build/sdk/executing-swaps",
-              "build/sdk/advanced",
+              "build/sdk/manual-transactions",
+              "build/sdk/fee-splitting",
               "link/swap"
             ]
           },

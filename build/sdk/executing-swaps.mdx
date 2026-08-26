@@ -85,6 +85,24 @@ Hand a quote to the function for its source chain. The user signs once, and deli
 
 Pass `null` until you set one up. See [fees & earning](/build/fees-earning).
 
+## Custom refund address
+
+On Swift quotes only, `swiftRefundAddress` sends a refund to a different source-chain address than the wallet that signed.
+
+```typescript
+const tx = await swapFromEvm(
+  quote, swapperAddress, destinationWalletAddress, referrerAddresses,
+  signer, permit, overrides, payload,
+  { swiftRefundAddress: "REFUND_WALLET_ON_SOURCE_CHAIN" },
+);
+```
+
+- Request the quote with `gasless: false`. Gasless Swift orders require the refund address to match the signer, and the SDK throws otherwise.
+- Other quote types ignore it and refund to the swapper wallet. Filter on `quote.type === "SWIFT"` if this matters to your flow.
+- The address must be a valid wallet on the source chain. Zero addresses are rejected.
+
+See [refunds](/how-mayan-works/refunds).
+
 ## Gasless swaps
 
 When the selected quote has `gasless: true`, `swapFromEvm` returns an **order hash string** rather than a transaction. Query it on the Explorer API exactly as you would a transaction hash.
@@ -125,7 +143,7 @@ A [scaffold project](https://github.com/mayan-finance/react-native-scaffold) is 
     Follow the swap to a terminal status.
   </Card>
 
-  <Card title="Advanced" icon="wrench" href="/build/sdk/advanced">
-    Manual transaction building, custom refund addresses, fee splitting.
+  <Card title="Manual Transaction Building" icon="wrench" href="/build/sdk/manual-transactions">
+    Get the payload or instructions and send the transaction yourself.
   </Card>
 </CardGroup>

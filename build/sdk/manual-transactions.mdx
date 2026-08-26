@@ -1,0 +1,38 @@
+---
+title: "Manual Transaction Building"
+description: "Get the payload or instructions and send the transaction yourself."
+---
+
+The swap functions build a transaction and send it. When you need to own that step, whether to batch instructions, control gas, or call the contract directly, the SDK will hand you the pieces instead.
+
+## EVM
+
+`getSwapFromEvmTxPayload` returns the transaction payload without sending it.
+
+For a contract-level integration, the `_forwarder` object on that payload carries the method name and parameters for calling the [Forwarder contract](/integration/forwarder-contract) directly.
+
+## Solana
+
+`createSwapFromSolanaInstructions` returns the instructions rather than sending a transaction, so you can compose them into a transaction of your own.
+
+### Fitting your own instructions
+
+A v0 transaction has a size limit, and a swap uses most of it. `extraInstructions` on `fetchQuote` tells the quoter to size the route so your instructions fit alongside it.
+
+It is a sizing hint only. You still append your instructions yourself. POST flow only.
+
+## Sui
+
+`createSwapFromSuiMoveCalls` already returns a Transaction rather than sending one, so manual control is the default on Sui. See [executing swaps](/build/sdk/executing-swaps).
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Forwarder Contract" icon="diagram-project" href="/integration/forwarder-contract">
+    The unified entry point for EVM swaps.
+  </Card>
+
+  <Card title="Integrate the Swap API" icon="code" href="/build/integrate-swap-api">
+    Skipping the SDK entirely and calling the API directly.
+  </Card>
+</CardGroup>

@@ -11,6 +11,10 @@ Common questions from teams integrating Mayan.
 
 No. The SDK and the Quote API work without one. An `apiKey` on the quote request raises the per-IP rate limit, which matters at production volume. See [SDK](/build/sdk).
 
+### How do I get an API key?
+
+Email [support@mayan.finance](mailto:support@mayan.finance) or reach the team in [Discord](https://discord.com/invite/MayanFinance).
+
 ### Which tokens and chains are supported?
 
 Any token with a contract address, across every chain Mayan supports. There is no whitelist and no listing process, so adding an asset is never an integration change. See [chains & contracts](/resources/chains-contracts).
@@ -81,7 +85,7 @@ The order was refunded. On Swift, the input may be converted into the primary lo
 
 ### Can a refund go to a different address than the one that signed?
 
-On Swift quotes only, using `swiftRefundAddress`. Request the quote with `gasless: false`, since gasless Swift orders require the refund address to match the signer. See [advanced](/build/sdk/advanced).
+On Swift quotes only, using `swiftRefundAddress`. Request the quote with `gasless: false`, since gasless Swift orders require the refund address to match the signer. See [executing swaps](/build/sdk/executing-swaps).
 
 ### Does Mayan ever hold user funds?
 

@@ -11,7 +11,7 @@ curl 'https://explorer-api.mayan.finance/v3/swap/trx/{sourceTxHash}'
 
 For a gasless swap, `swapFromEvm` returns an order hash instead of a transaction hash. Pass that to the same endpoint.
 
-## The three states
+## Swap statuses
 
 Read `clientStatus`:
 
@@ -23,7 +23,7 @@ Read `clientStatus`:
 
 `INPROGRESS` is the only non-terminal state. Treat the other two as final.
 
-## Useful fields on the response
+## Other response fields
 
 | Field | Use |
 | --- | --- |
