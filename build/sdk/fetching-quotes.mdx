@@ -37,7 +37,6 @@ const quotes = await fetchQuote(
 | `gasDrop` | `number` | No | Native gas to deliver on the destination chain. See the ceilings below. |
 | `referrer` | `string` | No | Wallet address that receives the referrer fee. |
 | `referrerBps` | `number` | No | Your share in basis points. |
-| `apiKey` | `string` | No | Raises the per-IP rate limit. |
 | `destinationAddress` | `string` | No | Improves quote accuracy, for example by checking whether a Solana ATA exists. |
 
 As of v15, `fetchQuote` uses HTTP `POST` by default. The `GET` endpoint still works, but some options are POST-only, including `extraInstructions` and multi-wallet `referrers`.
