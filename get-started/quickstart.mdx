@@ -71,13 +71,13 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
         
         const tx = await swapFromEvm(
           quote,
-          swapperAddress,      // wallet sending the funds
+          swapperAddress,      // wallet sending the funds; must equal signer's address
           destinationAddress,  // recipient on the destination chain
-          referrerAddress,     // null until you set up a referrer
-          signer,
-          null,               // permit (optional)
-          null,               // overrides (optional)
-          null,               // payload (optional)
+          null,                // referrerAddresses, null until you set up a referrer
+          signer,              // ethers v6 Signer with a provider attached
+          null,                // permit (EIP-2612), optional
+          null,                // overrides (gas settings), optional
+          null,                // payload, optional
         );
         ```
       </Tab>
