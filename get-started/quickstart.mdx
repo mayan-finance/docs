@@ -146,8 +146,11 @@ export async function swapUsdcToSol(
     quote,
     swapperAddress,
     destinationAddress,
-    null,
+    null,   // referrerAddresses
     signer,
+    null,   // permit
+    null,   // overrides
+    null,   // payload
   );
 
   // Poll until the swap reaches a terminal status.
