@@ -69,7 +69,7 @@ The quote was gasless. On a gasless quote `swapFromEvm` returns an **order hash*
 
 ### Can I run an action on the destination chain when the funds land?
 
-Yes. Attach a payload to the swap and your destination logic acts on it as the funds arrive. Request a quote with `quoteOptions: { payload: "true" }`. See [Zaps](/integration/custom-payload).
+Yes. Attach a payload to the swap and your destination logic acts on it as the funds arrive. Pass `{ payload: "true" }` as the second argument of `fetchQuote` so only payload-capable routes are returned. See [Zaps](/integration/custom-payload).
 
 ---
 
