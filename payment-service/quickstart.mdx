@@ -9,6 +9,8 @@ let a user deposit, and get notified when funds are delivered.
 ## Prerequisites
 
 - An **API key** (UUID) from the Mayan team — see [Getting access](/payment-service/overview#getting-access).
+  You need it for the [MPS panel](https://mps.mayan.finance) and for the tracking endpoints below;
+  **getting a deposit address from a quote works without it**.
 - The base URL: `https://mps-api.mayan.finance`.
 
 All authenticated requests send your key in the `x-api-key` header.
@@ -18,8 +20,8 @@ All authenticated requests send your key in the `x-api-key` header.
 Request a [Mayan quote](/integration/quote-api#mps-deposit-address-mpsdeposit) with `mpsDeposit: true`
 and a `destinationAddress` (where the funds settle), then read `mpsDepositAddress` from an eligible
 quote. It's a deterministic address on the quote's **source** chain — in the example below the payer
-funds on Arbitrum and the merchant receives USDC on Base. The address is minted under your API key, so
-MPS must be enabled for it.
+funds on Arbitrum and the merchant receives USDC on Base. No API key is required for this call — the
+`solanaProgram` and `forwarderAddress` parameters route the quote through MPS.
 
 <CodeGroup>
 
@@ -27,7 +29,7 @@ MPS must be enabled for it.
 curl -X POST "https://price-api.mayan.finance/v3/quote?apiKey=$MAYAN_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "amountIn64": "2000000",
+    "amountIn64": "5000000",
     "fromChain": "arbitrum",
     "fromToken": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     "toChain": "base",
@@ -35,6 +37,8 @@ curl -X POST "https://price-api.mayan.finance/v3/quote?apiKey=$MAYAN_API_KEY" \
     "slippageBps": "auto",
     "destinationAddress": "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f",
     "mpsDeposit": true,
+    "solanaProgram": "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
+    "forwarderAddress": "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
     "swift": true, "mctp": true, "fastMctp": true, "monoChain": true, "fullList": true,
     "sdkVersion": "15_0_0"
   }'
@@ -48,7 +52,7 @@ const res = await fetch(`${PRICE_URL}/v3/quote?apiKey=${API_KEY}`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    amountIn64: "2000000", // ~2 USDC (6 decimals)
+    amountIn64: "5000000", // ~5 USDC (6 decimals)
     fromChain: "arbitrum",
     fromToken: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC on Arbitrum (source)
     toChain: "base",
@@ -56,6 +60,8 @@ const res = await fetch(`${PRICE_URL}/v3/quote?apiKey=${API_KEY}`, {
     slippageBps: "auto",
     destinationAddress: "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f",
     mpsDeposit: true,
+    solanaProgram: "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
+    forwarderAddress: "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
     swift: true, mctp: true, fastMctp: true, monoChain: true, fullList: true,
     sdkVersion: "15_0_0",
   }),
@@ -77,7 +83,7 @@ res = requests.post(
     f"{PRICE_URL}/v3/quote",
     params={"apiKey": API_KEY},
     json={
-        "amountIn64": "2000000",  # ~2 USDC (6 decimals)
+        "amountIn64": "5000000",  # ~5 USDC (6 decimals)
         "fromChain": "arbitrum",
         "fromToken": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",  # USDC on Arbitrum (source)
         "toChain": "base",
@@ -85,6 +91,8 @@ res = requests.post(
         "slippageBps": "auto",
         "destinationAddress": "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f",
         "mpsDeposit": True,
+        "solanaProgram": "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
+        "forwarderAddress": "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
         "swift": True, "mctp": True, "fastMctp": True, "monoChain": True, "fullList": True,
         "sdkVersion": "15_0_0",
     },
@@ -106,7 +114,7 @@ print(deposit_address)  # address on Arbitrum (the source chain)
       "mpsDepositAddress": "0xafb7e27de13e435a7f1d1a21d33b26edff17bc8b",
       "mpsIntegratorId": "12",
       "mpsUserId": "0x3a1f…",
-      "expectedAmountOut": 1.999
+      "expectedAmountOut": 4.999
     }
   ]
 }
@@ -117,8 +125,8 @@ they all share the same address. Quotes that aren't eligible return `mpsDepositA
 
 <Info>
   The address is deterministic and permanent for a given recipient + `mpsUserId` — requesting another
-  quote returns the same address, so it's safe to call on every checkout. It's `null` unless MPS is
-  enabled for your key, `destinationAddress` is set, and the amount clears the token's
+  quote returns the same address, so it's safe to call on every checkout. It's `null` unless
+  `destinationAddress` is set and the amount clears the token's
   [minimum](/payment-service/api-reference#source-config).
 </Info>
 
@@ -129,10 +137,11 @@ Show `mpsDepositAddress` to your user and have them send the input token on the 
 automatically — no signature, no transaction to build.
 
 - A quote from an **EVM** source chain returns an EVM address (valid on that chain).
-- A quote from **Solana** returns a Solana vault for SPL / Token-2022 deposits (USDC, USDT, WETH).
+- A quote from **Solana** returns a Solana vault for native SOL and SPL / Token-2022 deposits
+  (SOL, USDC, USDT, WETH, WSOL).
 
 <Note>
-  Whitelisted tokens — the native coin and **USDC** on EVM, and **USDC / USDT / WETH** on Solana
+  Whitelisted tokens — the native coin and **USDC** on EVM, and **SOL / USDC / USDT / WETH / WSOL** on Solana
   — are detected automatically. For any other token, trigger indexing yourself with
   [`POST /request-index`](/payment-service/api-reference#request-index). See
   [Supported tokens](/payment-service/overview#supported-tokens).
@@ -202,7 +211,7 @@ export async function createPaymentAddress(orderId: string, merchantWallet: stri
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      amountIn64: "2000000", // ~2 USDC
+      amountIn64: "5000000", // ~5 USDC
       fromChain: "arbitrum",
       fromToken: USDC_ARB,
       toChain: "base",
@@ -211,13 +220,15 @@ export async function createPaymentAddress(orderId: string, merchantWallet: stri
       destinationAddress: merchantWallet,
       mpsDeposit: true,
       mpsUserId: orderIdToUserId(orderId),
+      solanaProgram: "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
+      forwarderAddress: "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
       swift: true, mctp: true, fastMctp: true, monoChain: true, fullList: true,
       sdkVersion: "15_0_0",
     }),
   });
   const { quotes } = await res.json();
   const depositAddress = quotes.map((q: any) => q.mpsDepositAddress).find(Boolean);
-  if (!depositAddress) throw new Error("MPS deposit address unavailable — enable MPS on your key and check the token minimum.");
+  if (!depositAddress) throw new Error("MPS deposit address unavailable — is the amount above the token's minimum deposit?");
   return { depositAddress };
 }
 ```
@@ -239,7 +250,7 @@ def create_payment_address(order_id: str, merchant_wallet: str):
         f"{PRICE_URL}/v3/quote",
         params={"apiKey": API_KEY},
         json={
-            "amountIn64": "2000000",  # ~2 USDC
+            "amountIn64": "5000000",  # ~5 USDC
             "fromChain": "arbitrum",
             "fromToken": USDC_ARB,
             "toChain": "base",
@@ -248,6 +259,8 @@ def create_payment_address(order_id: str, merchant_wallet: str):
             "destinationAddress": merchant_wallet,
             "mpsDeposit": True,
             "mpsUserId": order_id_to_user_id(order_id),
+            "solanaProgram": "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
+            "forwarderAddress": "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
             "swift": True, "mctp": True, "fastMctp": True, "monoChain": True, "fullList": True,
             "sdkVersion": "15_0_0",
         },
@@ -261,7 +274,7 @@ def create_payment_address(order_id: str, merchant_wallet: str):
 
 </CodeGroup>
 
-Show the deposit address to the customer. They send ~2 USDC on Arbitrum; the merchant receives USDC on
+Show the deposit address to the customer. They send ~5 USDC on Arbitrum; the merchant receives USDC on
 Base, and you get a `status_changed` → `completed` event to fulfil the order.
 
 <Note>
@@ -340,6 +353,6 @@ print("✅" if result["status"] == "completed" else "❌", result["status"], res
 </CodeGroup>
 
 <Tip>
-  Full runnable examples (deposit **~2 USDC** on Base or Solana → receive USDC on Arbitrum) are on the
+  Full runnable examples (deposit **~5 USDC** on Base or Solana → receive USDC on Arbitrum) are on the
   [Examples](/payment-service/examples) page.
 </Tip>
