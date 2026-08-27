@@ -8,18 +8,22 @@ description: "Request routes for a pair and read the response."
 ```typescript
 import { fetchQuote } from "@mayanfinance/swap-sdk";
 
-const quotes = await fetchQuote({
-  amountIn64: "250000000",         // base units, so 250 USDC at 6 decimals
-  fromToken: fromToken.contract,
-  toToken: toToken.contract,
-  fromChain: "avalanche",
-  toChain: "solana",
-  slippageBps: "auto",
-  gasDrop: 0.04,                   // optional
-  referrer: "YOUR_SOLANA_ADDRESS", // optional
-  referrerBps: 5,                  // optional
-  apiKey: "YOUR_API_KEY",          // optional
-});
+const quotes = await fetchQuote(
+  {
+    amountIn64: "250000000",         // base units, so 250 USDC at 6 decimals
+    fromToken: fromToken.contract,
+    toToken: toToken.contract,
+    fromChain: "avalanche",
+    toChain: "solana",
+    slippageBps: "auto",
+    gasDrop: 0.04,                   // optional
+    referrer: "YOUR_SOLANA_ADDRESS", // optional
+    referrerBps: 5,                  // optional
+  },
+  {
+    apiKey: "YOUR_API_KEY",          // optional, second argument
+  },
+);
 ```
 
 ## Parameters
