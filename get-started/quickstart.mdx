@@ -123,8 +123,7 @@ import { fetchQuote, swapFromEvm } from "@mayanfinance/swap-sdk";
 const EXPLORER = "https://explorer-api.mayan.finance";
 
 export async function swapUsdcToSol(
-  signer,
-  swapperAddress: string,
+  signer, 		// connected to a provider; its address is the swapper
   destinationAddress: string, // a Solana address
 ) {
   const quotes = await fetchQuote({
