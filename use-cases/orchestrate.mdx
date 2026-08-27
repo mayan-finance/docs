@@ -12,15 +12,18 @@ Without it, entering a protocol from another chain is four user actions: move fu
 Request a quote that supports payloads, then pass the bytes to the swap call. Mayan forwards them verbatim; decoding them is your destination logic's job.
 
 ```typescript
-const quotes = await fetchQuote({
-  amountIn64: "100000000",
-  fromChain: "arbitrum",
-  fromToken: USDC_ARBITRUM,
-  toChain: "base",
-  toToken: USDC_BASE,
-  slippageBps: "auto",
-  quoteOptions: { payload: "true" },   // only routes that carry payloads
-});
+const quotes = await fetchQuote(
+  {
+	  amountIn64: "100000000",
+	  fromChain: "arbitrum",
+	  fromToken: USDC_ARBITRUM,
+	  toChain: "base",
+	  toToken: USDC_BASE,
+	  slippageBps: "auto",
+	  quoteOptions: { payload: "true" },   // only routes that carry payloads
+  },
+  { payload: "true" },   // second argument: only routes that carry payloads
+);
 
 const customPayload = Buffer.from("hello-world");
 
