@@ -74,8 +74,10 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
           swapperAddress,      // wallet sending the funds
           destinationAddress,  // recipient on the destination chain
           referrerAddress,     // null until you set up a referrer
-          provider,
           signer,
+          null,               // permit (optional)
+          null,               // overrides (optional)
+          null,               // payload (optional)
         );
         ```
       </Tab>
