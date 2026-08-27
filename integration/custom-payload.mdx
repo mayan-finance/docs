@@ -57,7 +57,7 @@ On EVM, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/s
 import { swapFromEvm } from '@mayanfinance/swap-sdk';
 
 const customPayload = Buffer.from('hello-world');
-
+const quotes = await fetchQuote(params, { payload: 'true' });
 const tx = await swapFromEvm(
   quote,
   fromAddress,
