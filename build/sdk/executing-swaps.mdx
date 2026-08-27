@@ -12,12 +12,14 @@ Hand a quote to the function for its source chain. The user signs once, and deli
     
     const tx = await swapFromEvm(
       quotes[0],
-      swapperAddress,
+      swapperAddress,            // must match signer.getAddress()
       destinationWalletAddress,
-      referrerAddresses,
-      provider,
-      signer,
-      permit,           // optional
+      referrerAddresses,         // { evm, solana, sui } or null
+      signer,                    // ethers v6 Signer with provider
+      permit,                    // Erc20Permit or null
+      overrides,                 // ethers Overrides or null
+      payload,                   // Buffer | Uint8Array or null
+      options,                   // { swiftRefundAddress?, apiKey? }, optional
     );
     ```
 

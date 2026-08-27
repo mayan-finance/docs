@@ -39,8 +39,13 @@ const quotes = await fetchQuote({
 });
 
 const tx = await swapFromEvm(
-  quotes[0], swapperAddress, destinationAddress, null, provider, signer,
-);
+    quotes[0], swapperAddress, destinationAddress,
+    null,    // referrerAddresses
+    signer,  // ethers v6 Signer with provider; swapperAddress must be its address
+    null,    // permit
+    null,    // overrides
+    null,    // payload
+  );
 ```
 
 ## Rules
