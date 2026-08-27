@@ -43,21 +43,20 @@ Payloads should stay small. Each chain and route has its own message-size limits
 
 To receive only routes that carry a custom payload, pass `payload: 'true'` in the second argument (`quoteOptions`) of `fetchQuote` or `generateFetchQuoteUrl`.
 
-```text ts
-  import { fetchQuote } from '@mayanfinance/swap-sdk';
+```typescript ts
+import { fetchQuote } from '@mayanfinance/swap-sdk';
 
-  const quotes = await fetchQuote(
-    {
-      amountIn64: '100000000',
-      fromChain: 'arbitrum',
-      fromToken: USDC_ARBITRUM,
-      toChain: 'base',
-      toToken: USDC_BASE,
-      slippageBps: 'auto',
-    },
-    { payload: 'true' },
-  );
-  
+const quotes = await fetchQuote(
+  {
+    amountIn64: '100000000',
+    fromChain: 'arbitrum',
+    fromToken: USDC_ARBITRUM,
+    toChain: 'base',
+    toToken: USDC_BASE,
+    slippageBps: 'auto',
+  },
+  { payload: 'true' },
+);
 ```
 
 > **Important**
