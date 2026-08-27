@@ -119,13 +119,16 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
 
 ```typescript
 import { fetchQuote, swapFromEvm } from "@mayanfinance/swap-sdk";
+import type { Signer, TransactionResponse } from "ethers";
 
 const EXPLORER = "https://explorer-api.mayan.finance";
 
 export async function swapUsdcToSol(
-  signer, 		// connected to a provider; its address is the swapper
+  signer: Signer,             // ethers v6 Signer connected to a provider
   destinationAddress: string, // a Solana address
 ) {
+  const swapperAddress = await signer.getAddress();
+
   const quotes = await fetchQuote({
     amountIn64: "100000000",
     fromChain: "arbitrum",
@@ -142,7 +145,7 @@ export async function swapUsdcToSol(
     `Expecting ${quote.expectedAmountOut} SOL in about ${quote.clientEta} via ${quote.type}`
   );
 
-  const tx = await swapFromEvm(
+  const tx = (await swapFromEvm(
     quote,
     swapperAddress,
     destinationAddress,
@@ -151,7 +154,7 @@ export async function swapUsdcToSol(
     null,   // permit
     null,   // overrides
     null,   // payload
-  );
+  )) as TransactionResponse;
 
   // Poll until the swap reaches a terminal status.
   while (true) {
