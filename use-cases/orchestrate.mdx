@@ -20,9 +20,8 @@ const quotes = await fetchQuote(
 	  toChain: "base",
 	  toToken: USDC_BASE,
 	  slippageBps: "auto",
-	  quoteOptions: { payload: "true" },   // only routes that carry payloads
   },
-  { payload: "true" },   // second argument: only routes that carry payloads
+  { payload: "true" },   // only routes that carry payloads
 );
 
 const customPayload = Buffer.from("hello-world");
