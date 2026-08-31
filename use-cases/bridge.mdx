@@ -28,7 +28,7 @@ const quotes = await fetchQuote({
 - **MCTP** for high-value stablecoin transfers, routed over Circle's CCTP. See [MCTP](/architecture/mctp).
 - **Wormhole Swap** for low-slippage transfers of assets such as SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
 
-Single transfers route up to \$10M. Moving \$1M feels the same to the user as moving \$100.
+Swift carries single transfers up to around \$1M depending on the chain, and MCTP and Fast MCTP up to around \$10M. Moving \$1M feels the same to the user as moving \$100.
 
 ## Gas on the destination chain
 

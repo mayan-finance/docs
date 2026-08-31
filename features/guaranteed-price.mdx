@@ -13,7 +13,7 @@ It does not work for a payment. A merchant cannot display one number and receive
   <Step title="Request a quote as normal">
     There is no flag to set and nothing to enable. Mayan determines whether an order is eligible and returns the guarantee on the quote when it is.
   </Step>
-  <Step title="Check the auction mode">
+  <Step title="Check the settlement mode">
     Read `swiftAuctionMode` on each quote in the response. A value of `3` is a Guaranteed Price quote.
   </Step>
   <Step title="Show the locked amount">
@@ -26,19 +26,19 @@ It does not work for a payment. A merchant cannot display one number and receive
 
 ## Key concepts
 
-- **Two auction modes, one field.** Swift quotes come back tagged with `swiftAuctionMode`. Mode `2` is an English auction: the user receives at least `minAmountOut` and typically lands near `expectedAmountOut`. Mode `3` is exact-out: `expectedAmountOut` is what arrives.
-- **Mayan decides eligibility, not the integrator.** There is no parameter to pass and no allowlist to join. If a quote comes back as mode `3`, the guarantee is available on that order.
-- **`minAmountOut` stops mattering.** On an English auction quote it is the floor that protects the user. On an exact-out quote the output is already fixed, so the number to display is `expectedAmountOut`.
+- **Two settlement modes, one field.** Swift quotes come back tagged with `swiftAuctionMode`. On mode `2` the user receives at least `minAmountOut` and typically lands near `expectedAmountOut`. Mode `3` is exact-out: `expectedAmountOut` is what arrives.
+- **Mayan decides eligibility, not the integrator.** There is no parameter to pass and no allowlist to join. If a quote comes back as mode `3`, Guaranteed Price is available on that order.
+- **`minAmountOut` stops mattering.** On a mode `2` quote it is the floor that protects the user. On an exact-out quote the output is already fixed, so the number to display is `expectedAmountOut`.
 - **The guarantee covers the amount, not the timing.** An exact-out order still has a deadline, and an order that no driver fills before it is refunded rather than settled short. See [refunds](/how-mayan-works/refunds).
 
 ## Detecting it in a quote
 
 | `swiftAuctionMode` | Behaviour | What to display |
 | --- | --- | --- |
-| `2` | English auction. Drivers compete and the user receives at least `minAmountOut`. | Both `expectedAmountOut` and `minAmountOut`. |
+| `2` | Drivers compete and the user receives at least `minAmountOut`. | Both `expectedAmountOut` and `minAmountOut`. |
 | `3` | Exact-out. The user receives exactly `expectedAmountOut`. | `expectedAmountOut` alone, presented as a fixed amount. |
 
-Handle both. A pair that returns a guaranteed quote on one order may return an English auction quote on another, so branch on the field rather than assuming a route always behaves one way.
+Handle both. A pair that returns a Guaranteed Price quote on one order may return a mode `2` quote on another, so branch on the field rather than assuming a route always behaves one way.
 
 ## Supported assets
 
@@ -52,7 +52,7 @@ Handle both. A pair that returns a guaranteed quote on one order may return an E
 
 Eligibility is not restricted by chain. Any pair of supported chains qualifies as long as the asset matches on both sides, so USDC on Arbitrum to USDC on Solana works the same way as USDC on Base to USDC on Ethereum.
 
-Everything else routes through the English auction and settles between the expected and minimum amounts.
+Everything else settles between the expected and minimum amounts.
 
 ## Building with it
 

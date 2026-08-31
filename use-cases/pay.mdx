@@ -11,9 +11,9 @@ Mayan covers both. Stablecoins are its most moved asset, with over **\$8B** move
 
 Stablecoins move across chains on Mayan the way any asset does: one signature, and settlement in seconds. Three things make them work as payments rather than trades.
 
-**The amount holds.** On USDC, USDT and ETH routes Mayan settles exact-out, so the amount sent is the amount received. A quote range works for a trade and does not work for an invoice. See [guaranteed price](/features/guaranteed-price).
+**The amount holds.** On USDC, USDT and ETH routes Mayan settles exact-out, so the amount sent is the amount received. A quote range works for a trade and does not work for an invoice. See [Guaranteed Price](/features/guaranteed-price).
 
-**The cost stays low at size.** Fast MCTP routes stablecoin transfers over Circle's CCTP, built for ultra-low slippage. A large payment does not get worse the larger it gets.
+**The cost stays low at size.** Fast MCTP routes stablecoin transfers over Circle's CCTP, built for ultra-low slippage, and carries up to around \$10M in a single transaction. Large payments stay economical.
 
 **Neither side has to match.** The sender pays from the asset and chain they already hold, and the recipient is paid in the stablecoin they settle in. The conversion happens in transit, in the same move.
 
@@ -40,6 +40,6 @@ Where the same payer sends again and again, they can pay to a fixed address inst
   </Card>
 
   <Card title="Guaranteed Price" icon="lock" href="/features/guaranteed-price">
-    Exact-out settlement and the routes that support it.
+    Exact-out settlement and the assets that support it.
   </Card>
 </CardGroup>

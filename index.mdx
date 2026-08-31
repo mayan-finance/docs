@@ -37,7 +37,7 @@ Mayan powers some of the biggest apps in crypto and fintech, including MetaMask,
 ## Key features
 
 - **One place, three swap methods.** Swift, MCTP and Wormhole Swap cover everything from pennies to millions, balancing speed and price on every order.
-- **Best rates, always.** Every order runs through an [onchain auction](/architecture/auction), so pricing is competed for rather than fixed.
+- **Best rates, always.** Every order is filled competitively, so pricing moves in the user's favour rather than being fixed at quote time.
 - **Blazing speed.** Swaps settle in seconds, not minutes or hours.
 - **Developer-friendly.** An [SDK](/build/sdk), an [API](/build/integrate-swap-api) and a drop-in [widget](/integration/swap-widget), with flexible fee options.
 - **Secure and trustworthy.** Trustless, permissionless smart contracts, audited regularly.
@@ -46,15 +46,15 @@ Mayan powers some of the biggest apps in crypto and fintech, including MetaMask,
 
 | Method | What it uses | Best for |
 | --- | --- | --- |
-| [Swift](/architecture/swift-v2) | Intent-based fills from driver capital already sitting on the destination chain, priced by a competitive auction. | The fastest, newest path. Most swaps. |
-| [MCTP](/architecture/mctp) | Circle's CCTP as the highway, with the Mayan auction on top. | High-value and stablecoin transfers. |
+| [Swift](/architecture/swift-v2) | Intent-based fills from driver capital already sitting on the destination chain. | The fastest path. Most swaps, up to around \$1M. |
+| [MCTP](/architecture/mctp) | Circle's CCTP as the highway. | High-value and stablecoin transfers, up to around \$10M. |
 | [Wormhole Swap](/architecture/wh-swap) | The Wormhole Token Bridge. | Low-slippage, high-value BTC, SOL and ETH. |
 
 ## The Mayan product suite
 
 - **Mayan app.** A simple, intuitive interface at [swap.mayan.finance](https://swap.mayan.finance), open to anyone.
 - **Mayan API.** The [SDK](/build/sdk), [API](/build/integrate-swap-api) and [widget](/integration/swap-widget) that embed cross-chain movement in your own product.
-- **Mayan Protocol.** The smart contracts and auction mechanisms underneath both.
+- **Mayan Protocol.** The smart contracts and execution logic underneath both.
 
 ## Get started
 

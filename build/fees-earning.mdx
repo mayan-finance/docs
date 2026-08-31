@@ -3,11 +3,13 @@ title: "Fees & Earning"
 description: "Protocol fees and how integrators earn."
 ---
 
-Two things happen on a swap: Mayan takes a protocol fee, and if you set a referrer address, you take one too.
+Two things can happen on a swap: Mayan may take a protocol fee, and if you set a referrer address, you take one too.
 
 ## Protocol fee
 
-Swift charges **3 basis points (0.03%)**. The live value for any quote is returned as `protocolBps` in the quote response, so read it rather than hardcoding it. It can change at the guardian's discretion.
+**Swift has no protocol fee.** Orders filled through Swift, which is most swaps, carry zero.
+
+Other methods do charge one, and the rate can change. The live value for any quote is returned as `protocolBps` in the quote response, so read it rather than hardcoding it.
 
 ## Relayer fees
 

@@ -11,7 +11,7 @@ Over **\$20B** has moved through Mayan, across **9M\+ swaps** and **3M\+ users**
 
 1. **Quote.** You request a route for a pair and an amount. Mayan returns the routes available, each with an expected output, a minimum output, an ETA, and the transfer method it uses.
 2. **Sign.** The user signs one transaction on the source chain. `minAmountOut` is part of what they sign, so the order cannot fill below it.
-3. **Auction.** Drivers bid to fill the order with their own capital, and the best bid wins. See [onchain auction](/architecture/auction).
+3. **Fill.** Drivers compete to fill the order with their own capital, and the best offer wins.
 4. **Settle.** The winning driver pays the user, then reclaims the source funds afterwards.
 
 ```typescript
@@ -37,7 +37,7 @@ Any token with a contract address is tradable. There is no whitelist and no list
 
 Mayan is built to carry size. Three transfer methods sit underneath a swap, each suited to a different profile of trade, so a large order routes through the path that keeps its slippage down rather than through the same path as a small one.
 
-Single swaps route up to \$10M. Moving \$1M feels the same to the user as moving \$100.
+Swift routes single swaps up to around \$1M depending on the chain, and MCTP and Fast MCTP carry up to around \$10M. Moving \$1M feels the same to the user as moving \$100.
 
 ## Examples
 

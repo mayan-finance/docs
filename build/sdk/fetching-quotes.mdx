@@ -52,7 +52,7 @@ These are the fields that matter in a confirmation screen.
 | `etaSeconds` / `clientEta` | Estimated settlement time, in seconds and as a display string. |
 | `gasDrop` | Native gas delivered on the destination chain alongside the output. |
 | `type` | The transfer method the route uses: `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. |
-| `swiftAuctionMode` | On Swift quotes, how the output is determined. `2` is an English auction, `3` is exact-out. See [guaranteed price](/features/guaranteed-price). |
+| `swiftAuctionMode` | On Swift quotes, how the output is determined. `2` settles at or above `minAmountOut`, `3` is exact-out. See [Guaranteed Price](/features/guaranteed-price). |
 | `gasless` | Whether the user signs a message instead of a transaction. Changes what `swapFromEvm` returns. See [gasless execution](/features/gasless-execution). |
 | `deadline64` | The timestamp after which the order becomes refundable rather than fillable. See [refunds](/how-mayan-works/refunds). |
 | `protocolBps` | The live protocol fee for this quote. Read it rather than hardcoding. |

@@ -24,7 +24,7 @@ The user states the outcome. Everything needed to produce it happens on Mayan's 
     The asset being sent, the destination chain, the token to receive, and the minimum they will accept.
   </Step>
   <Step title="The network competes to fill it">
-    The order opens to an auction and drivers bid against each other. The best bid wins. See [onchain auction](/architecture/auction).
+    Drivers compete against each other to fill it, and the best offer wins.
   </Step>
   <Step title="The winning driver fills it from their own capital">
     They pay the user on the destination chain from assets they already hold there, rather than waiting for the user's funds to cross.
@@ -50,6 +50,10 @@ Every order is contested, and the effects compound:
 - **Faster fills**, because a driver who is slow loses the next order.
 - **Wider coverage**, because any driver willing to hold a long-tail asset can win orders in it.
 - **No liquidity to configure**, because the capital belongs to the drivers rather than to a pool you have to seed.
+
+## Transaction sizes
+
+The method that fills an order sets how much it can carry. Swift handles up to around \$1M in a single transaction depending on the chain. MCTP and Fast MCTP carry up to around \$10M.
 
 ## Which route fills it
 
