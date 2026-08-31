@@ -9,6 +9,7 @@ let a user deposit, and get notified when funds are delivered.
 ## Prerequisites
 
 - An **API key** (UUID) from the Mayan team — see [Getting access](/payment-service/overview#getting-access).
+  No key yet? Try the public demo key `03b9969f-7c6a-4bd1-9ad4-c0e0e9f3dcb7` (shared, for evaluation only).
   You need it for the [MPS panel](https://mps.mayan.finance) and for the tracking endpoints below;
   **getting a deposit address from a quote works without it**.
 - The base URL: `https://mps-api.mayan.finance`.
@@ -40,7 +41,7 @@ curl -X POST "https://price-api.mayan.finance/v3/quote?apiKey=$MAYAN_API_KEY" \
     "solanaProgram": "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
     "forwarderAddress": "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
     "swift": true, "mctp": true, "fastMctp": true, "monoChain": true, "fullList": true,
-    "sdkVersion": "15_0_0"
+    "sdkVersion": "15_2_2"
   }'
 ```
 
@@ -63,7 +64,7 @@ const res = await fetch(`${PRICE_URL}/v3/quote?apiKey=${API_KEY}`, {
     solanaProgram: "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
     forwarderAddress: "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
     swift: true, mctp: true, fastMctp: true, monoChain: true, fullList: true,
-    sdkVersion: "15_0_0",
+    sdkVersion: "15_2_2",
   }),
 });
 
@@ -94,7 +95,7 @@ res = requests.post(
         "solanaProgram": "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
         "forwarderAddress": "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
         "swift": True, "mctp": True, "fastMctp": True, "monoChain": True, "fullList": True,
-        "sdkVersion": "15_0_0",
+        "sdkVersion": "15_2_2",
     },
 )
 quotes = res.json()["quotes"]
@@ -223,7 +224,7 @@ export async function createPaymentAddress(orderId: string, merchantWallet: stri
       solanaProgram: "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
       forwarderAddress: "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
       swift: true, mctp: true, fastMctp: true, monoChain: true, fullList: true,
-      sdkVersion: "15_0_0",
+      sdkVersion: "15_2_2",
     }),
   });
   const { quotes } = await res.json();
@@ -262,7 +263,7 @@ def create_payment_address(order_id: str, merchant_wallet: str):
             "solanaProgram": "FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf",
             "forwarderAddress": "0x337685fdaB40D39bd02028545a4FfA7D287cC3E2",
             "swift": True, "mctp": True, "fastMctp": True, "monoChain": True, "fullList": True,
-            "sdkVersion": "15_0_0",
+            "sdkVersion": "15_2_2",
         },
     )
     quotes = res.json()["quotes"]
