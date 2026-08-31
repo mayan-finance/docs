@@ -9,15 +9,15 @@ description: "Low-slippage cross-chain transfers of high-value assets, routed ov
 
 - Users initiate a swap that sends tokens via the Wormhole Token Bridge using mint-and-burn.
 - Swap details are embedded in generic Wormhole messages delivered by relayers on Solana.
-- Drivers receive all swap information and participate in a Mayan on-chain auction to determine the best execution price.
-- The auction winner performs a flash swap on Solana, obtaining the funds and atomically sending the promised output amount within the same transaction.
+- Drivers receive all swap information and compete on Solana to determine the best execution price.
+- The winning driver performs a flash swap on Solana, obtaining the funds and atomically sending the promised output amount within the same transaction.
 - Post-swap, if the destination address is on Solana, the relayer directly transfers output tokens to the user's wallet. Otherwise, relayers send tokens to destination chains via the Token Bridge.
 
 **Key advantages:**
 
 - Atomic flash swaps ensure secure, simultaneous execution without intermediary risk.
 - Fully permissionless and open-source.
-- Efficient use of Wormhole messaging coupled with Mayan’s competitive auction to optimize pricing and execution.
+- Efficient use of Wormhole messaging coupled with Mayan’s competitive driver network to optimize pricing and execution.
 
 Here is an overview of what happens when a user executes a cross-chain transaction on Mayan:
 

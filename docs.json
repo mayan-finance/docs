@@ -89,6 +89,7 @@
           {
             "group": "Routes",
             "pages": [
+              "architecture/swift",
               "architecture/swift-v2",
               "architecture/mctp",
               "architecture/wh-swap"
@@ -223,11 +224,5 @@
       "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc"
     }
   },
-  "redirects": [
-    {
-      "source": "/architecture/swift",
-      "destination": "/architecture/swift-v2",
-      "permanent": true
-    }
-  ]
+  "redirects": []
 }
