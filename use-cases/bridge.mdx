@@ -24,7 +24,7 @@ const quotes = await fetchQuote({
 
 `fetchQuote` returns the routes available for the pair, and each one is tagged with the transfer method it uses as `type`. You choose which route to execute:
 
-- **Swift** for speed. See [Swift](/architecture/swift-v2).
+- **Swift** for speed. See [Swift](/architecture/swift).
 - **MCTP** for high-value stablecoin transfers, routed over Circle's CCTP. See [MCTP](/architecture/mctp).
 - **Wormhole Swap** for low-slippage transfers of assets such as SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
 

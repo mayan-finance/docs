@@ -90,7 +90,6 @@
             "group": "Routes",
             "pages": [
               "architecture/swift",
-              "architecture/swift-v2",
               "architecture/mctp",
               "architecture/wh-swap"
             ]
