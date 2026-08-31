@@ -56,8 +56,9 @@ the [`/swaps`](/payment-service/api-reference#list-swaps) endpoint.
 - **Deterministic & permanent addresses** — the same parameters always produce the same address.
   Addresses never expire and can be reused for repeat payments from the same user.
 - **One address, many chains** — an EVM deposit address is valid on every supported EVM chain (quote
-  from an EVM source chain to get it). A Solana source quote returns a Solana vault for SPL /
-  Token-2022 deposits (USDC, USDT, and WETH are auto-detected).
+  from an EVM source chain to get it). A Solana source quote returns a Solana vault that accepts
+  native SOL as well as SPL / Token-2022 deposits (SOL, USDC, USDT, WETH, and WSOL are
+  auto-detected).
 - **Any token in, one token out** — users pay in whatever they hold; you always receive the
   destination token you configured. Common tokens are detected automatically; anything else can be
   indexed on demand (see [Supported tokens](#supported-tokens)).
@@ -106,25 +107,33 @@ deposit below it is detected but not settled.
 
 | Chain     | Token | Contract / mint address                        | Min deposit |
 |-----------|-------|------------------------------------------------|-------------|
-| Solana    | USDC  | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`  | 1           |
-| Solana    | USDT  | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`  | 1           |
-| Solana    | WETH  | `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs`  | 0.0003      |
-| Ethereum  | ETH   | native                                         | 0.003       |
+| Solana    | SOL   | native (`11111111111111111111111111111111`)    | 0.02        |
+| Solana    | USDC  | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`  | 3           |
+| Solana    | USDT  | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`  | 3           |
+| Solana    | WETH  | `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs`  | 0.002       |
+| Solana    | WSOL  | `So11111111111111111111111111111111111111112`  | 0.02        |
+| Ethereum  | ETH   | native                                         | 0.004       |
 | Ethereum  | USDC  | `0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48`    | 10          |
-| BSC       | BNB   | native                                         | 0.002       |
-| BSC       | USDC  | `0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d`    | 1           |
-| Polygon   | POL   | native                                         | 2           |
-| Polygon   | USDC  | `0x3c499c542cef5e3811e1192ce70d8cc03d5c3359`    | 1           |
-| Avalanche | AVAX  | native                                         | 0.03        |
-| Avalanche | USDC  | `0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e`    | 1           |
-| Arbitrum  | ETH   | native                                         | 0.0003      |
-| Arbitrum  | USDC  | `0xaf88d065e77c8cc2239327c5edb3a432268e5831`    | 1           |
-| Optimism  | ETH   | native                                         | 0.0003      |
-| Optimism  | USDC  | `0x0b2c639c533813f4aa9d7837caf62653d097ff85`    | 1           |
-| Base      | ETH   | native                                         | 0.0003      |
-| Base      | USDC  | `0x833589fcd6edb6e08f4c7c32d4f71b54bda02913`    | 1           |
-| Monad     | MON   | native                                         | 1           |
-| Monad     | USDC  | `0x754704bc059f8c67012fed69bc8a327a5aafb603`    | 1           |
+| BSC       | BNB   | native                                         | 0.01        |
+| BSC       | USDC  | `0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d`    | 3           |
+| Polygon   | POL   | native                                         | 200         |
+| Polygon   | USDC  | `0x3c499c542cef5e3811e1192ce70d8cc03d5c3359`    | 3           |
+| Avalanche | AVAX  | native                                         | 1           |
+| Avalanche | USDC  | `0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e`    | 3           |
+| Arbitrum  | ETH   | native                                         | 0.002       |
+| Arbitrum  | USDC  | `0xaf88d065e77c8cc2239327c5edb3a432268e5831`    | 3           |
+| Optimism  | ETH   | native                                         | 0.002       |
+| Optimism  | USDC  | `0x0b2c639c533813f4aa9d7837caf62653d097ff85`    | 3           |
+| Base      | ETH   | native                                         | 0.002       |
+| Base      | USDC  | `0x833589fcd6edb6e08f4c7c32d4f71b54bda02913`    | 3           |
+| Monad     | MON   | native                                         | 200         |
+| Monad     | USDC  | `0x754704bc059f8c67012fed69bc8a327a5aafb603`    | 3           |
+
+<Note>
+  On Solana, **SOL** and **WSOL** are separate entries: `SOL` is native lamports sent to the vault
+  address, `WSOL` is the wrapped-SOL SPL token. Both are auto-detected, but they are different
+  balances — use the address matching what you actually send.
+</Note>
 
 The table above is a convenience snapshot. The **authoritative, live** list — with the current
 per-token minimums — is [`GET /source-config`](/payment-service/api-reference#source-config). Poll it
@@ -158,9 +167,10 @@ rather than hardcoding, and surface each token's `minDeposit` to your users befo
 
 ## Getting access
 
-You need an **API key** (a UUID) to call the API and connect to the event stream. To receive one,
-email [support@mayan.finance](mailto:support@mayan.finance) or reach out to the Mayan team in
-[Discord](https://discord.com/invite/MayanFinance).
+You need an **API key** (a UUID) to call the tracking API, connect to the event stream, and log in to
+the [MPS panel](https://mps.mayan.finance). Getting a deposit address from a quote works without one.
+To receive a key, email [support@mayan.finance](mailto:support@mayan.finance) or reach out to the
+Mayan team in [Discord](https://discord.com/invite/MayanFinance).
 
 <Tip>
   **Want to try MPS right away?** Use the shared demo key:
