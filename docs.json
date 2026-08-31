@@ -224,5 +224,11 @@
       "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc"
     }
   },
-  "redirects": []
+  "redirects": [
+    {
+      "source": "/architecture/swift-v2",
+      "destination": "/architecture/swift",
+      "permanent": true
+    }
+  ]
 }
