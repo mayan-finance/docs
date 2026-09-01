@@ -57,7 +57,7 @@ The method that fills an order sets how much it can carry. Swift handles up to a
 
 ## Which route fills it
 
-Three transfer methods sit underneath: [Swift](/architecture/swift-v2), [MCTP and Fast MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap). A quote request returns the routes available for the pair, each tagged with the method it uses, and you choose which one to execute. Having all three under one integration is what lets it serve a small trade and a large one equally well.
+Three transfer methods sit underneath: [Swift](/architecture/swift), [MCTP and Fast MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap). A quote request returns the routes available for the pair, each tagged with the method it uses, and you choose which one to execute. Having all three under one integration is what lets it serve a small trade and a large one equally well.
 
 ## If an order is not filled
 
