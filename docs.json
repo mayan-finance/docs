@@ -57,8 +57,7 @@
           "index",
           "get-started/quickstart",
           "get-started/why-mayan",
-          "application/user-manual",
-          "application/mayan-explorer"
+          "application/user-manual"
         ]
       },
       {
@@ -128,9 +127,9 @@
               "build/sdk",
               "build/sdk/fetching-quotes",
               "build/sdk/executing-swaps",
-              "build/sdk/fee-splitting",
               "link/swap",
               "build/fees-earning",
+              "build/sdk/fee-splitting",
               "build/sdk/manual-transactions",
               "integration/forwarder-contract"
             ]
@@ -148,7 +147,8 @@
             "group": "Guides",
             "pages": [
               "build/track-transactions",
-              "build/direct-route-linking"
+              "build/direct-route-linking",
+              "application/mayan-explorer"
             ]
           },
           "integration/referral",
