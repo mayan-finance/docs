@@ -83,7 +83,6 @@
         "group": "How Mayan Works",
         "pages": [
           "how-mayan-works/intent-based-swaps",
-          "architecture/auction",
           "architecture/relayers",
           "how-mayan-works/refunds",
           {
@@ -227,6 +226,11 @@
     {
       "source": "/architecture/swift-v2",
       "destination": "/architecture/swift",
+      "permanent": true
+    },
+    {
+      "source": "/architecture/auction",
+      "destination": "/how-mayan-works/intent-based-swaps",
       "permanent": true
     }
   ]

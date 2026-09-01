@@ -58,7 +58,7 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
     | `type` | The route the order takes: `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. |
 
     <Note>
-      On Swift quotes, `swiftAuctionMode` tells you how the output amount is determined. Mode `2` runs an English auction, where the user receives at least `minAmountOut` and typically lands near `expectedAmountOut`. Mode `3` is exact-out, which means the user receives exactly `expectedAmountOut`. See [Guaranteed Price](/features/guaranteed-price) for which routes support it.
+      On Swift quotes, `swiftAuctionMode` tells you how the output amount is determined. Mode `2` settles at or above `minAmountOut`, typically near `expectedAmountOut`. Mode `3` is exact-out, which means the user receives exactly `expectedAmountOut`. See [Guaranteed Price](/features/guaranteed-price) for which routes support it.
     </Note>
   </Step>
   <Step title="Execute the swap">

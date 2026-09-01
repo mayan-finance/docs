@@ -173,7 +173,7 @@ The following table shows the common fields of response:
 | mpsDepositAddress | String | Returned when `mpsDeposit` was requested and the quote is eligible — a deterministic deposit address on the **source** chain (`null` otherwise). Sending the input token to it settles the swap via the [Mayan Payment Service](/payment-service/overview), no signature required. See [MPS deposit address](#mps-deposit-address-mpsdeposit). |
 | mpsIntegratorId | String | The MPS integrator the deposit address was minted under, keyed to your API key. `null` unless `mpsDepositAddress` is set. |
 | mpsUserId | String | Echoes the integrator-scoped `mpsUserId` used to derive the address (the value you sent, or the one derived from your API key). `null` unless `mpsDepositAddress` is set. |
-| swiftAuctionMode | Number | Swift quotes only. Auction mode of the order (see note below). |
+| swiftAuctionMode | Number | Swift quotes only. Settlement mode of the order (see note below). |
 
 <Tip>
   **Settlement modes** (Swift quotes only, `type = "SWIFT"`)
