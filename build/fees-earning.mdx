@@ -27,7 +27,9 @@ Show `clientRelayerFeeSuccess` if you display a cost breakdown. It is already th
 
 ## Earning as an integrator
 
-Set a `referrer` address and a `referrerBps` on the quote, then pass the matching `referrerAddresses` at swap time. The fee is collected onchain automatically, with no invoicing and nothing to reconcile.
+Set a `referrer` address and a `referrerBps` on the quote, then pass the matching `referrerAddresses` at swap time. The fee is collected onchain at settlement.
+
+`referrerBps` sits on top of the protocol fee. It is not taken out of it.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -46,10 +48,6 @@ const quotes = await fetchQuote({
 ### Splitting across wallets
 
 Pass a `referrers` object to `fetchQuote` instead, with a bps share per wallet, then pass the same object at swap time. The SDK throws if it does not match the quote. See [SDK](/build/sdk).
-
-<Warning>
-  **Needs engineering input.** Which chain the referrer fee pays out on, and whether `referrerBps` sits on top of the protocol fee or comes out of it.
-</Warning>
 
 ## Next steps
 

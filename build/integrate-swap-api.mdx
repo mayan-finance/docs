@@ -89,6 +89,4 @@ curl 'https://explorer-api.mayan.finance/v3/swap/trx/{sourceTxHash}'
 - `GET https://sia.mayan.finance/v10/init` returns every supported chain, with `originActive` and `destinationActive` telling you which direction each supports.
 - `GET https://price-api.mayan.finance/v3/tokens?chain=solana` returns the whitelisted token list. Drop `chain` for all chains. Any token with a contract address is routable, whitelisted or not, given liquidity.
 
-<Warning>
-  **Needs engineering input.** The Quote API error codes, which a direct integrator cannot handle failures without.
-</Warning>
+The API does not return a documented error-code enum. The [SDK](/build/sdk) handles quote and execution failures for you, so if you can use it, use it.
