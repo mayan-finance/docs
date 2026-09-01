@@ -7,14 +7,14 @@ This guide takes you from zero to a working cross-chain payment: get a deposit a
 
 ## Prerequisites
 
-- An **API key** (UUID) from the Mayan team — see [Getting access](/payment-service/overview#getting-access).
+- An **API key** (UUID) from the Mayan team. Email [support@mayan.finance](mailto:support@mayan.finance) to get one.
 - The base URL: `https://mps-api.mayan.finance`.
 
 All authenticated requests send your key in the `x-api-key` header.
 
 ## 1. Get a deposit address from a quote
 
-Request a [Mayan quote](/integration/quote-api#mps-deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress` (where the funds settle), then read `mpsDepositAddress` from an eligible quote. It's a deterministic address on the quote's **source** chain — in the example below the payer funds on Arbitrum and the merchant receives USDC on Base. The address is minted under your API key, so MPS must be enabled for it.
+Request a [Mayan quote](/integration/quote-api#deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress` (where the funds settle), then read `mpsDepositAddress` from an eligible quote. It's a deterministic address on the quote's **source** chain. In the example below the payer funds on Arbitrum and the merchant receives USDC on Base. The address is minted under your API key, so deposit addresses must be enabled for it.
 
 <CodeGroup>
 
@@ -91,7 +91,7 @@ print(deposit_address)  # address on Arbitrum (the source chain)
 
 </CodeGroup>
 
-**Response** (abridged — one quote shown):
+**Response** (abridged, one quote shown):
 
 ```json
 {
@@ -107,26 +107,26 @@ print(deposit_address)  # address on Arbitrum (the source chain)
 }
 ```
 
-Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`) — they all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
+Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`). they all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
 
 <Info>
-  The address is deterministic and permanent for a given recipient \+ `mpsUserId` — requesting another quote returns the same address, so it's safe to call on every checkout. It's `null` unless MPS is enabled for your key, `destinationAddress` is set, and the amount clears the token's [minimum](/payment-service/api-reference#source-config).
+  The address is deterministic and permanent for a given recipient \+ `mpsUserId`. Requesting another quote returns the same address, so it's safe to call on every checkout. It's `null` unless deposit addresses are enabled for your key, `destinationAddress` is set, and the amount clears the token's [minimum](/payment-service/api-reference#source-config).
 </Info>
 
 ## 2. Let the user deposit
 
-Show `mpsDepositAddress` to your user and have them send the input token on the **source** chain (Arbitrum, in the example above). MPS detects the deposit and settles it to your destination token automatically — no signature, no transaction to build.
+Show `mpsDepositAddress` to your user and have them send the input token on the **source** chain (Arbitrum, in the example above). Mayan detects the deposit and settles it to your destination token automatically. No signature, no transaction to build.
 
 - A quote from an **EVM** source chain returns an EVM address (valid on that chain).
 - A quote from **Solana** returns a Solana vault for SPL / Token-2022 deposits (USDC, USDT, WETH).
 
 <Note>
-  Whitelisted tokens — the native coin and **USDC** on EVM, and **USDC / USDT / WETH** on Solana — are detected automatically. For any other token, trigger indexing yourself with [`POST /request-index`](/payment-service/api-reference#request-index). See [Supported tokens](/payment-service/overview#supported-tokens).
+  Whitelisted tokens, the native coin and **USDC** on EVM, and **USDC / USDT / WETH** on Solana — are detected automatically. For any other token, trigger indexing yourself with [`POST /request-index`](/payment-service/api-reference#request-index). See [Supported tokens](/payment-service/api-reference#source-config).
 </Note>
 
 ## 3. Receive the settlement
 
-You have two ways to track a payment — use whichever fits your stack:
+You have two ways to track a payment. Use whichever fits your stack:
 
 <Tabs>
   <Tab title="WebSocket (real-time)">
@@ -251,7 +251,7 @@ Show the deposit address to the customer. They send ~2 USDC on Arbitrum; the mer
 
 ## Watch a payment end-to-end
 
-Get an address from a quote (step 1), then subscribe to the event stream (**Socket.IO**) and wait until the settlement is terminal. This is the snippet most integrations start from — it prints each event and resolves on `completed` (success) or `dead` (gave up).
+Get an address from a quote (step 1), then subscribe to the event stream (**Socket.IO**) and wait until the settlement is terminal. This is the snippet most integrations start from. It prints each event and resolves on `completed` (success) or `dead` (gave up).
 
 <CodeGroup>
 

@@ -47,8 +47,8 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?amountIn=100&fromToken=0
 | fullList | Boolean | No | Default is `false`. Enables returning all available quote options instead of the default limited (fastest and best-return) results |
 | destinationAddress | String | No | Helps provide a more accurate quote, for example by checking whether the Solana ATA exists. |
 | apiKey | String | No | Defines an API key that prevents the **rate-limit-exceeded** error on a per-IP basis. |
-| mpsDeposit | Boolean | No | Default is `false`. When `true`, attaches an [MPS deposit address](#mps-deposit-address-mpsdeposit) (`mpsDepositAddress`) to each eligible quote so a payer can fund the swap with a plain transfer instead of signing a transaction. Requires `destinationAddress`. See [MPS deposit address](#mps-deposit-address-mpsdeposit). |
-| mpsUserId | String | No | Integrator-scoped identity that keys the MPS deposit address — a `0x`-prefixed hex string whose value fits in 20 bytes. Only used when `mpsDeposit` is `true`; when omitted it is derived from your `apiKey`. |
+| mpsDeposit | Boolean | No | Default is `false`. When `true`, attaches a [deposit address](#deposit-address-mpsdeposit) (`mpsDepositAddress`) to each eligible quote so a payer can fund the swap with a plain transfer instead of signing a transaction. Requires `destinationAddress`. See [deposit address](#deposit-address-mpsdeposit). |
+| mpsUserId | String | No | Integrator-scoped identity that keys the deposit address: a `0x`-prefixed hex string whose value fits in 20 bytes. Only used when `mpsDeposit` is `true`; when omitted it is derived from your `apiKey`. |
 
 #### Response:
 
@@ -170,8 +170,8 @@ The following table shows the common fields of response:
 | fromChain | String | Source network name |
 | toToken | Object | Output token details |
 | toChain | String | Destination network name |
-| mpsDepositAddress | String | Returned when `mpsDeposit` was requested and the quote is eligible — a deterministic deposit address on the **source** chain (`null` otherwise). Sending the input token to it settles the swap via the [Mayan Payment Service](/payment-service/overview), no signature required. See [MPS deposit address](#mps-deposit-address-mpsdeposit). |
-| mpsIntegratorId | String | The MPS integrator the deposit address was minted under, keyed to your API key. `null` unless `mpsDepositAddress` is set. |
+| mpsDepositAddress | String | Returned when `mpsDeposit` was requested and the quote is eligible: a deterministic deposit address on the **source** chain (`null` otherwise). Sending the input token to it settles the swap via [deposit addresses](/features/deposit-addresses), no signature required. See [deposit address](#deposit-address-mpsdeposit). |
+| mpsIntegratorId | String | The integrator the deposit address was minted under, keyed to your API key. `null` unless `mpsDepositAddress` is set. |
 | mpsUserId | String | Echoes the integrator-scoped `mpsUserId` used to derive the address (the value you sent, or the one derived from your API key). `null` unless `mpsDepositAddress` is set. |
 | swiftAuctionMode | Number | Swift quotes only. Settlement mode of the order (see note below). |
 
@@ -182,23 +182,23 @@ The following table shows the common fields of response:
   - `3`: Exact-out. The user is guaranteed to receive exactly `expectedAmountOut`.
 </Tip>
 
-### MPS deposit address (`mpsDeposit`)
+### Deposit address (`mpsDeposit`)
 
-Pass `mpsDeposit: true` to make a quote **fundable by a plain transfer**. On eligible quotes the response carries an `mpsDepositAddress` — a deterministic address on the _source_ chain — plus `mpsIntegratorId` and `mpsUserId`. When the payer simply sends the input token to that address, the [Mayan Payment Service (MPS)](/payment-service/overview) detects the deposit and settles the swap to `destinationAddress` on the destination chain, with **no transaction to sign** and no SDK swap call. This is the recommended way to obtain an MPS deposit address — the quote endpoint derives it for you inline, so there is no separate address-generation call to make.
+Pass `mpsDeposit: true` to make a quote **fundable by a plain transfer**. On eligible quotes the response carries an `mpsDepositAddress`, a deterministic address on the _source_ chain, plus `mpsIntegratorId` and `mpsUserId`. When the payer simply sends the input token to that address, Mayan detects the deposit and settles the swap to `destinationAddress` on the destination chain, with **no transaction to sign** and no SDK swap call. This is the recommended way to obtain a [deposit address](/features/deposit-addresses). The quote endpoint derives it for you inline, so there is no separate address-generation call to make.
 
 Requirements and behavior:
 
 - **`destinationAddress` is required.** Without it `mpsDepositAddress` is `null` (the address is keyed to the final recipient).
-- **MPS must be enabled for your API key.** The address is minted under your integrator identity, so pass your `apiKey`; without an MPS-enabled key the field comes back `null`. Contact [support@mayan.finance](mailto:support@mayan.finance) to enable it.
+- **Deposit addresses must be enabled for your API key.** The address is minted under your integrator identity, so pass your `apiKey`; without an enabled key the field comes back `null`. Contact [support@mayan.finance](mailto:support@mayan.finance) to enable it.
 - **`mpsUserId` is optional.** It's an integrator-scoped identity (a `0x`-prefixed hex string whose value fits in 20 bytes, e.g. `0x1`); the same id always yields the same deposit address. When omitted, it is derived from your `apiKey`, so deposits still bucket by caller. The value used is echoed back as `mpsUserId`.
-- **Only eligible quotes get an address.** MPS attaches it to Swift, mono-chain, and _direct_ (no source swap) Fast MCTP quotes whose source chain and token are indexed by MPS (see the [deposit source chains](/payment-service/overview#deposit-source-chains) and [supported tokens](/payment-service/overview#supported-tokens)) — and only when the amount clears the token's minimum. Other quotes in the same response return `mpsDepositAddress: null`.
+- **Only eligible quotes get an address.** Mayan attaches it to Swift, mono-chain, and _direct_ (no source swap) Fast MCTP quotes whose source chain and token are indexed for deposit addresses (see [supported tokens](/payment-service/api-reference#source-config)), and only when the amount clears the token's minimum. Other quotes in the same response return `mpsDepositAddress: null`.
 - **Best-effort.** If the address can't be derived for any reason, the quote is still returned with `mpsDepositAddress: null`. Never treat a `null` as an error.
 
 <Note>
   The [Mayan SDK](https://github.com/mayan-finance/swap-sdk) (v15\+) exposes this as `fetchQuote` options `mpsDeposit` and `mpsUserId`, and reads it back as `quote.mpsDepositAddress`. Passing `mpsDeposit` forces the SDK's POST-body request path.
 </Note>
 
-Track a deposit made to an `mpsDepositAddress` — detection, settlement, and delivery — with the MPS [events stream](/payment-service/events) or by polling [`GET /swaps`](/payment-service/api-reference#list-swaps).
+Track a deposit made to an `mpsDepositAddress` through detection, settlement, and delivery with the [events stream](/payment-service/events) or by polling [`GET /swaps`](/payment-service/api-reference#list-swaps).
 
 ### **Supported Tokens**
 
