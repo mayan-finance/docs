@@ -57,7 +57,8 @@
           "index",
           "get-started/quickstart",
           "get-started/why-mayan",
-          "application/user-manual"
+          "application/user-manual",
+          "application/mayan-explorer"
         ]
       },
       {
@@ -93,7 +94,8 @@
           },
           "architecture/relayers",
           "how-mayan-works/refunds",
-          "resources/audits"
+          "resources/audits",
+          "resources/compliance"
         ]
       },
       {
@@ -148,25 +150,11 @@
               "build/direct-route-linking"
             ]
           },
-          {
-            "group": "Reference",
-            "pages": [
-              "build/fees-earning"
-            ]
-          },
           "integration/referral",
-          "application/relayer-fees"
-        ]
-      },
-      {
-        "group": "Resources",
-        "pages": [
-          "application/mayan-explorer",
+          "application/relayer-fees",
+          "build/fees-earning",
           "resources/chains-contracts",
-          "resources/compliance",
-          "resources/technical-faq",
-          "link/brand",
-          "link/github"
+          "resources/technical-faq"
         ]
       },
       {
