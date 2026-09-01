@@ -3,8 +3,7 @@ title: "Quickstart"
 description: "Get a deposit address from a quote, accept a payment, and receive the settlement — end to end."
 ---
 
-This guide takes you from zero to a working cross-chain payment: get a deposit address from a quote,
-let a user deposit, and get notified when funds are delivered.
+This guide takes you from zero to a working cross-chain payment: get a deposit address from a quote, let a user deposit, and get notified when funds are delivered.
 
 ## Prerequisites
 
@@ -15,11 +14,7 @@ All authenticated requests send your key in the `x-api-key` header.
 
 ## 1. Get a deposit address from a quote
 
-Request a [Mayan quote](/integration/quote-api#mps-deposit-address-mpsdeposit) with `mpsDeposit: true`
-and a `destinationAddress` (where the funds settle), then read `mpsDepositAddress` from an eligible
-quote. It's a deterministic address on the quote's **source** chain — in the example below the payer
-funds on Arbitrum and the merchant receives USDC on Base. The address is minted under your API key, so
-MPS must be enabled for it.
+Request a [Mayan quote](/integration/quote-api#mps-deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress` (where the funds settle), then read `mpsDepositAddress` from an eligible quote. It's a deterministic address on the quote's **source** chain — in the example below the payer funds on Arbitrum and the merchant receives USDC on Base. The address is minted under your API key, so MPS must be enabled for it.
 
 <CodeGroup>
 
@@ -112,30 +107,21 @@ print(deposit_address)  # address on Arbitrum (the source chain)
 }
 ```
 
-Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`) —
-they all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
+Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`) — they all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
 
 <Info>
-  The address is deterministic and permanent for a given recipient + `mpsUserId` — requesting another
-  quote returns the same address, so it's safe to call on every checkout. It's `null` unless MPS is
-  enabled for your key, `destinationAddress` is set, and the amount clears the token's
-  [minimum](/payment-service/api-reference#source-config).
+  The address is deterministic and permanent for a given recipient \+ `mpsUserId` — requesting another quote returns the same address, so it's safe to call on every checkout. It's `null` unless MPS is enabled for your key, `destinationAddress` is set, and the amount clears the token's [minimum](/payment-service/api-reference#source-config).
 </Info>
 
 ## 2. Let the user deposit
 
-Show `mpsDepositAddress` to your user and have them send the input token on the **source** chain
-(Arbitrum, in the example above). MPS detects the deposit and settles it to your destination token
-automatically — no signature, no transaction to build.
+Show `mpsDepositAddress` to your user and have them send the input token on the **source** chain (Arbitrum, in the example above). MPS detects the deposit and settles it to your destination token automatically — no signature, no transaction to build.
 
 - A quote from an **EVM** source chain returns an EVM address (valid on that chain).
 - A quote from **Solana** returns a Solana vault for SPL / Token-2022 deposits (USDC, USDT, WETH).
 
 <Note>
-  Whitelisted tokens — the native coin and **USDC** on EVM, and **USDC / USDT / WETH** on Solana
-  — are detected automatically. For any other token, trigger indexing yourself with
-  [`POST /request-index`](/payment-service/api-reference#request-index). See
-  [Supported tokens](/payment-service/overview#supported-tokens).
+  Whitelisted tokens — the native coin and **USDC** on EVM, and **USDC / USDT / WETH** on Solana — are detected automatically. For any other token, trigger indexing yourself with [`POST /request-index`](/payment-service/api-reference#request-index). See [Supported tokens](/payment-service/overview#supported-tokens).
 </Note>
 
 ## 3. Receive the settlement
@@ -144,17 +130,16 @@ You have two ways to track a payment — use whichever fits your stack:
 
 <Tabs>
   <Tab title="WebSocket (real-time)">
-    The stream is served over **Socket.IO** (`bun add socket.io-client`). Connect and receive
-    `deposit_detected` and `status_changed` events as they happen.
+    The stream is served over **Socket.IO** (`bun add socket.io-client`). Connect and receive `deposit_detected` and `status_changed` events as they happen.
 
     ```typescript
     import * as io from "socket.io-client";
-
+    
     const socket = io.connect("https://mps-api.mayan.finance", {
       transports: ["websocket"],
       auth: { apiKey: API_KEY },
     });
-
+    
     socket.on("event", (evt) => {
       if (evt.type === "status_changed" && evt.data.terminal) {
         // completed = success, dead = gave up
@@ -166,8 +151,7 @@ You have two ways to track a payment — use whichever fits your stack:
     See [Events](/payment-service/events) for the full payloads and reconnection/replay guidance.
   </Tab>
   <Tab title="Polling">
-    Poll [`GET /swaps`](/payment-service/api-reference#list-swaps) and read each item's `status`,
-    `terminal`, and `error`. A payment is delivered when `status` is `completed`.
+    Poll [`GET /swaps`](/payment-service/api-reference#list-swaps) and read each item's `status`, `terminal`, and `error`. A payment is delivered when `status` is `completed`.
 
     ```bash
     curl "https://mps-api.mayan.finance/swaps?limit=20" -H "x-api-key: $MAYAN_API_KEY"
@@ -175,13 +159,11 @@ You have two ways to track a payment — use whichever fits your stack:
   </Tab>
 </Tabs>
 
-A payment is **done** when a swap reaches `status: "completed"` (`terminal: true`, `category: "success"`).
-Most transfers settle in seconds. See [Swap Statuses](/payment-service/statuses) for the full lifecycle.
+A payment is **done** when a swap reaches `status: "completed"` (`terminal: true`, `category: "success"`). Most transfers settle in seconds. See [Swap Statuses](/payment-service/statuses) for the full lifecycle.
 
 ## Full example: e-commerce checkout
 
-Map your order ID to a stable `mpsUserId` so the same order always maps to the same deposit address,
-then watch for the terminal event.
+Map your order ID to a stable `mpsUserId` so the same order always maps to the same deposit address, then watch for the terminal event.
 
 <CodeGroup>
 
@@ -261,20 +243,15 @@ def create_payment_address(order_id: str, merchant_wallet: str):
 
 </CodeGroup>
 
-Show the deposit address to the customer. They send ~2 USDC on Arbitrum; the merchant receives USDC on
-Base, and you get a `status_changed` → `completed` event to fulfil the order.
+Show the deposit address to the customer. They send ~2 USDC on Arbitrum; the merchant receives USDC on Base, and you get a `status_changed` → `completed` event to fulfil the order.
 
 <Note>
-  Deposits below the per-chain minimum USD value are detected but not settled. You still receive a
-  `deposit_detected` event with `queued: false` and `ignoredReason: "below_min"`, so it's never a
-  silent gap.
+  Deposits below the per-chain minimum USD value are detected but not settled. You still receive a `deposit_detected` event with `queued: false` and `ignoredReason: "below_min"`, so it's never a silent gap.
 </Note>
 
 ## Watch a payment end-to-end
 
-Get an address from a quote (step 1), then subscribe to the event stream (**Socket.IO**) and wait
-until the settlement is terminal. This is the snippet most integrations start from — it prints each
-event and resolves on `completed` (success) or `dead` (gave up).
+Get an address from a quote (step 1), then subscribe to the event stream (**Socket.IO**) and wait until the settlement is terminal. This is the snippet most integrations start from — it prints each event and resolves on `completed` (success) or `dead` (gave up).
 
 <CodeGroup>
 
@@ -340,6 +317,17 @@ print("✅" if result["status"] == "completed" else "❌", result["status"], res
 </CodeGroup>
 
 <Tip>
-  Full runnable examples (deposit **~2 USDC** on Base or Solana → receive USDC on Arbitrum) are on the
-  [Examples](/payment-service/examples) page.
+  Full runnable examples (deposit **~2 USDC** on Base or Solana → receive USDC on Arbitrum) are on the [Examples](/payment-service/examples) page.
 </Tip>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Swap Statuses" icon="list-check" href="/payment-service/statuses">
+    Every status a deposit passes through, and which ones are terminal.
+  </Card>
+
+  <Card title="API Reference" icon="code" href="/payment-service/api-reference">
+    Every endpoint, request and response shape, and the error model.
+  </Card>
+</CardGroup>
