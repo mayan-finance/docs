@@ -92,7 +92,8 @@
             ]
           },
           "architecture/relayers",
-          "how-mayan-works/refunds"
+          "how-mayan-works/refunds",
+          "resources/audits"
         ]
       },
       {
@@ -127,7 +128,8 @@
               "build/sdk/executing-swaps",
               "build/sdk/manual-transactions",
               "build/sdk/fee-splitting",
-              "link/swap"
+              "link/swap",
+              "integration/forwarder-contract"
             ]
           },
           "integration/swap-widget",
@@ -149,8 +151,7 @@
           {
             "group": "Reference",
             "pages": [
-              "build/fees-earning",
-              "integration/forwarder-contract"
+              "build/fees-earning"
             ]
           },
           "integration/referral",
@@ -162,7 +163,6 @@
         "pages": [
           "application/mayan-explorer",
           "resources/chains-contracts",
-          "resources/audits",
           "resources/compliance",
           "resources/technical-faq",
           "link/brand",
