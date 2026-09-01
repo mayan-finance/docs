@@ -83,8 +83,6 @@
         "group": "How Mayan Works",
         "pages": [
           "how-mayan-works/intent-based-swaps",
-          "architecture/relayers",
-          "how-mayan-works/refunds",
           {
             "group": "Routes",
             "pages": [
@@ -92,7 +90,9 @@
               "architecture/mctp",
               "architecture/wh-swap"
             ]
-          }
+          },
+          "architecture/relayers",
+          "how-mayan-works/refunds"
         ]
       },
       {

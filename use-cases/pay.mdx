@@ -5,7 +5,7 @@ description: "Pay from any asset, settle in stablecoins, on any chain."
 
 An onchain payment has two requirements a trade does not. The amount has to be exact, because a business cannot bill one number and receive another. And it has to arrive now, because nobody waits at a checkout.
 
-Mayan covers both. Stablecoins are its most moved asset, with over **\$8B** moved cross-chain, and Fast MCTP is the route to select for them: it moves stablecoins over Circle's CCTP.
+Mayan covers both. Stablecoins are its most moved asset, with over **\$8B** moved cross-chain.
 
 ## How it works
 
@@ -13,7 +13,7 @@ Stablecoins move across chains on Mayan the way any asset does: one signature, a
 
 **The amount holds.** On USDC, USDT and ETH routes Mayan settles exact-out, so the amount sent is the amount received. See [Guaranteed Price](/features/guaranteed-price).
 
-**The cost stays low at size.** Select the Fast MCTP route and the transfer moves over Circle's CCTP, which carries up to around \$10M in a single transaction.
+**The cost stays low at size.** Stablecoin transfers can run over Circle's CCTP, which carries up to around \$10M in a single transaction.
 
 **Neither side has to match.** The sender pays from the asset and chain they already hold, and the recipient is paid in the stablecoin they settle in. The conversion happens in transit, in the same move.
 
@@ -30,7 +30,7 @@ Where the same payer sends again and again, they can pay to a fixed address inst
 
 ## Case studies
 
-- **PrimeVault** rebalances stablecoin reserves across ecosystems and pays a vendor on one chain from a treasury on another, without assets leaving the vault. [Read more](https://mayan.finance/blog/mayan-unlocks-native-cross-chain-transfers-for-institutions-on-primevault).
+- [**PrimeVault**](https://mayan.finance/blog/mayan-unlocks-native-cross-chain-transfers-for-institutions-on-primevault) rebalances stablecoin reserves across ecosystems and pays a vendor on one chain from a treasury on another, without assets leaving the vault.
 
 ## Get started
 
