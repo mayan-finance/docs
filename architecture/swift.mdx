@@ -5,7 +5,7 @@ description: "Mayan's intent-based method for fast cross-chain swaps, filled fro
 
 Swift is Mayan's intent-based method for cross-chain swaps, and the path most orders take. Rather than bridging tokens or minting a wrapped asset, drivers deliver the user's output directly on the destination chain from liquidity they already hold, and Swift releases the user's original funds on the source chain afterwards.
 
-That ordering is what makes it fast. The user is paid before the cross-chain message is verified, so settlement does not wait on source-chain finality.
+That ordering is what makes it fast. Most Swift orders settle in around 2 seconds, because the user is paid before the cross-chain message is verified rather than after the source chain finalizes.
 
 ## How it works
 
@@ -28,7 +28,7 @@ For payload-enabled swaps the destination contract stages the payout and complet
 
 ## What it gives you
 
-- Settlement in seconds, because the driver fronts the delivery rather than waiting on the source chain.
+- Settlement in around 2 seconds, because the driver fronts the delivery rather than waiting on the source chain.
 - No bridge liquidity to seed, no wrapping, and no mint or burn mechanics.
 - Exact-out settlement on eligible assets. See [Guaranteed Price](/features/guaranteed-price).
 - Integration through the [SDK](/build/sdk), with minimal onchain assumptions.
