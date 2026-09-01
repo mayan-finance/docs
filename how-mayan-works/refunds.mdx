@@ -23,8 +23,8 @@ Each quote carries a `deadline64` value. That is the timestamp after which the o
 
 Yes. A refund is an onchain action and carries its own relayer fee, which is returned in the quote before the user signs:
 
-- `refundRelayerFee` and `refundRelayerFee64` — the fee itself
-- `clientRelayerFeeRefund` — the total dollar value of relayer fees in the refund scenario
+- `refundRelayerFee` and `refundRelayerFee64`: the fee itself
+- `clientRelayerFeeRefund`: the total dollar value of relayer fees in the refund scenario
 
 Both are available at quote time, so you can show a user what a refund would cost before they commit.
 

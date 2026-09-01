@@ -80,7 +80,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 ## **How to Enable Referral Fees in the SDK**
 
-### Step 1 — Prepare Referrer Addresses
+### Step 1: prepare referrer addresses
 
 You must prepare a referral address for each VM type:
 
@@ -92,7 +92,7 @@ const referrerAddresses = {
 };
 ```
 
-### Step 2 — During Quote Fetching
+### Step 2: during quote fetching
 
 - Always pass your **Solana referral address** as the `"referrer"` parameter.
 - Set your desired referral fee (in bps) as `"referrerBps"`.
@@ -107,7 +107,7 @@ const quote = await fetchQuote({
 });
 ```
 
-### Step 3 — During Transaction Building
+### Step 3: during transaction building
 
 All transaction or bridge functions in the SDK accept an optional `referrerAddresses` parameter:
 

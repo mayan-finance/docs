@@ -10,7 +10,7 @@ Give each user an address that never expires. They send any supported token from
 
 <Steps>
   <Step title="Get a deposit address from a quote">
-    Request a [quote](/integration/quote-api#mps-deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off an eligible quote. It is a deterministic address on the source chain of that quote, permanent and reusable for the same recipient.
+    Request a [quote](/integration/quote-api#deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off an eligible quote. It is a deterministic address on the source chain of that quote, permanent and reusable for the same recipient.
   </Step>
   <Step title="The user deposits">
     Show the address to your user. They send the input token on the source chain, with no signature and no transaction to build.
@@ -40,7 +40,7 @@ Deposits are accepted on a fixed set of source chains, and settle to any chain M
 
 | Chain | Wormhole chain ID | EVM chain ID | Native token |
 | --- | --- | --- | --- |
-| Solana | 1 | — | SOL |
+| Solana | 1 | n/a | SOL |
 | Ethereum | 2 | 1 | ETH |
 | BSC | 4 | 56 | BNB |
 | Polygon | 5 | 137 | POL |

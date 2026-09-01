@@ -13,12 +13,12 @@ Every chain Mayan supports, with the identifiers you pass to the API and the con
 
 | Chain | Name in API | Wormhole chain ID | EVM chain ID |
 | --- | --- | --- | --- |
-| Solana | `solana` | 1 | — |
+| Solana | `solana` | 1 | n/a |
 | Ethereum | `ethereum` | 2 | 1 |
 | BNB Smart Chain | `bsc` | 4 | 56 |
 | Polygon | `polygon` | 5 | 137 |
 | Avalanche | `avalanche` | 6 | 43114 |
-| Sui | `sui` | 21 | — |
+| Sui | `sui` | 21 | n/a |
 | Arbitrum | `arbitrum` | 23 | 42161 |
 | Optimism | `optimism` | 24 | 10 |
 | Base | `base` | 30 | 8453 |
@@ -26,8 +26,8 @@ Every chain Mayan supports, with the identifiers you pass to the API and the con
 | Unichain | `unichain` | 44 | 130 |
 | HyperEVM | `hyperevm` | 47 | 999 |
 | Monad | `monad` | 48 | 143 |
-| Fogo | `fogo` | 51 | — |
-| HyperCore | `hypercore` | 65000 | — |
+| Fogo | `fogo` | 51 | n/a |
+| HyperCore | `hypercore` | 65000 | n/a |
 
 Support differs by direction. `GET https://sia.mayan.finance/v10/init` returns the live list with `originActive` and `destinationActive` per chain. Read it rather than assuming a chain works both ways.
 
@@ -45,8 +45,8 @@ Approve the Forwarder for ERC20 inputs before swapping. See [Forwarder Contract]
 
 | Contract | Address |
 | --- | --- |
-| MPS factory | `0xfa829c5E1efc9d788280a8213cb0713be5474F7d` |
-| MPS wallet implementation | `0xFD7188cf0Ac99705Cc8c595a1d198C2a43df467C` |
+| Deposit address factory | `0xfa829c5E1efc9d788280a8213cb0713be5474F7d` |
+| Deposit address wallet implementation | `0xFD7188cf0Ac99705Cc8c595a1d198C2a43df467C` |
 
 See [Deposit Addresses](/features/deposit-addresses).
 
@@ -61,7 +61,7 @@ See [Deposit Addresses](/features/deposit-addresses).
 | Auction | `8QJmxZcEzwuYmCPy6XqgN2sHcYCcFq6AEfBMJZZuLo5a` |
 | Mayan | `FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf` |
 | Fee manager | `5VtQHnhs2pfVEr68qQsbTRwKh4JV5GTu9mBHgHFxpHeQ` |
-| MPS | `GFRP4yXUjvcQemf2zRJN8w9sPNaDk5PyBUQdPHD1AzLp` |
+| Deposit addresses | `GFRP4yXUjvcQemf2zRJN8w9sPNaDk5PyBUQdPHD1AzLp` |
 | Payload writer | `DwMLtdtJqJQkHzNcrdTBuWHJByJfgpKBnvFvzyKdy3cU` |
 
 ## Sui objects

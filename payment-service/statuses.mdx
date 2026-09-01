@@ -3,32 +3,27 @@ title: "Swap Statuses"
 description: "The full settlement lifecycle — phase, category, terminal, retries, and how to react to each state."
 ---
 
-Every deposit that enters the settlement queue moves through a status machine. The current state is
-on each [`/swaps`](/payment-service/api-reference#list-swaps) item and on every
-[`status_changed`](/payment-service/events#status_changed) event.
+Every deposit that enters the settlement queue moves through a status machine. The current state is on each [`/swaps`](/payment-service/api-reference#list-swaps) item and on every [`status_changed`](/payment-service/events#status_changed) event.
 
 ## Don't hardcode status strings
 
-Depending on the source chain, a deposit flows through one of two machines — **EVM** (deploy → swap)
-or **Solana** (settle). So each item carries three fields that let you react to *meaning* rather than
-memorizing every string:
+Depending on the source chain, a deposit flows through one of two machines: **EVM** (deploy → swap) or **Solana** (settle). So each item carries three fields that let you react to _meaning_ rather than memorizing every string:
 
-- **`phase`** — which leg of the lifecycle: `deploy` | `swap` | `settle` | `done`
-- **`category`** — the integrator-facing meaning, independent of chain:
-  - `waiting` — queued, will be picked up automatically
-  - `active` — a transaction is in flight right now
-  - `retrying` — the last attempt failed or was deferred; will retry after backoff
-  - `success` — terminal, funds delivered
-  - `failed` — terminal, gave up
-- **`terminal`** — `true` once no further automatic transition will happen (`completed` or `dead`)
+- **`phase`:** which leg of the lifecycle: `deploy` | `swap` | `settle` | `done`
+- **`category`:** the integrator-facing meaning, independent of chain:
+  - `waiting`: queued, will be picked up automatically
+  - `active`: a transaction is in flight right now
+  - `retrying`: the last attempt failed or was deferred; will retry after backoff
+  - `success`: terminal, funds delivered
+  - `failed`: terminal, gave up
+- **`terminal`:** `true` once no further automatic transition will happen (`completed` or `dead`)
 
-The simplest integration: **watch for `terminal: true`** — `completed` is success, `dead` is
-failure. Everything else is in-progress.
+The simplest integration: **watch for `terminal: true`**. `completed` is success, `dead` is failure. Everything else is in-progress.
 
 ## Status reference
 
 | Status | Chain | phase | category | terminal | Description |
-|--------|-------|-------|----------|----------|-------------|
+| --- | --- | --- | --- | --- | --- |
 | `pending_deploy` | EVM | deploy | waiting | no | Queued; waiting for smart-wallet deployment |
 | `deploying` | EVM | deploy | active | no | Wallet deployment transaction in flight |
 | `pending_swap` | EVM | swap | waiting | no | Wallet deployed; waiting for swap execution |
@@ -44,42 +39,35 @@ failure. Everything else is in-progress.
 
 ## Happy paths
 
-```
+```text
 EVM:     pending_deploy → deploying → pending_swap → swapping → completed
 Solana:  pending_settle → settling → completed
 ```
 
 ## The `error` field
 
-When a swap is in a `retrying` state (or `dead`), its `error` is a
-[structured error](/payment-service/api-reference#errors):
+When a swap is in a `retrying` state (or `dead`), its `error` is a [structured error](/payment-service/api-reference#errors):
 
 ```json
 { "code": "NO_ROUTE", "message": "No route available for this pair right now.", "retryable": true }
 ```
 
-- `error` is `null` on any non-failing state. A **non-null `error` never means success** — success is
-  always `status: "completed"` with `error: null`.
+- `error` is `null` on any non-failing state. A **non-null `error` never means success**. Success is always `status: "completed"` with `error: null`.
 - Branch on `error.code` (stable), not on `message`.
-- `error.retryable` reflects whether the worker will try again. A `dead` item always reports
-  `retryable: false`.
+- `error.retryable` reflects whether the worker will try again. A `dead` item always reports `retryable: false`.
 
 ## Retries & backoff
 
 Failed attempts are retried automatically with exponential backoff:
 
-```
+```text
 5s → 15s → 30s → 45s → 1m → 5m → 15m
 ```
 
-After **7** attempts — or immediately for a non-retryable error such as `UNSUPPORTED_DEST` — the item
-becomes `dead`. Every attempt emits a `status_changed` event carrying the incremented `retryCount`
-and the current `error`, so you can surface retry progress in real time.
+After **7** attempts, or immediately for a non-retryable error such as `UNSUPPORTED_DEST`, the item becomes `dead`. Every attempt emits a `status_changed` event carrying the incremented `retryCount` and the current `error`, so you can surface retry progress in real time.
 
 <Info>
-  `deferred` (Solana) is not a failure — it means settlement is temporarily blocked (e.g. no quote
-  yet, or the accumulated balance is still too small) and will be retried. It shares the same
-  backoff and `dead` cap as the failing states.
+  `deferred` (Solana) is not a failure. It means settlement is temporarily blocked (e.g. no quote yet, or the accumulated balance is still too small) and will be retried. It shares the same backoff and `dead` cap as the failing states.
 </Info>
 
 ## Reacting to states
@@ -109,3 +97,15 @@ def on_swap_update(s: dict) -> None:
 ```
 
 </CodeGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Events" icon="bell" href="/payment-service/events">
+    The event stream, and replaying what you missed after a disconnect.
+  </Card>
+
+  <Card title="API Reference" icon="code" href="/payment-service/api-reference">
+    Every endpoint, request and response shape, and the error model.
+  </Card>
+</CardGroup>
