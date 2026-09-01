@@ -71,7 +71,7 @@ The contract and calldata depend on `type`. Read the route page for the one you 
 - [Wormhole Swap](/architecture/wh-swap)
 
 <Note>
-  If you find yourself reimplementing transaction construction per route, this is the point where the SDK pays for itself. `getSwapFromEvmTxPayload` returns the payload without the SDK sending it, and its `_forwarder` object gives you the method name and parameters for a contract-level call.
+  `getSwapFromEvmTxPayload` returns the payload without sending it, and its `_forwarder` object gives you the method name and parameters for a contract-level call. See [manual transaction building](/build/sdk/manual-transactions).
 </Note>
 
 ## Track it

@@ -29,7 +29,7 @@ Gasless execution removes that requirement. Instead of sending a transaction, th
 
 ## Key concepts
 
-- **A signature, not a transaction.** This is the whole mechanism. The user authorises the order off-chain and the relayer bears the cost of putting it onchain.
+- **A signature, not a transaction.** The user signs, and a Mayan relayer submits the transaction and pays the gas.
 - **The return value changes.** On a normal quote `swapFromEvm` returns a transaction. On a gasless quote it returns an order hash string. Code that assumes a transaction object will break, so branch on `quote.gasless`.
 - **Not every route supports it.** Requesting `gasless: true` narrows the routes the quoter will return. If nothing comes back for a pair, that pair cannot be executed gaslessly.
 - **Refunds go back to the signer.** A gasless Swift order requires the refund address to match the wallet that signed. `swiftRefundAddress` is rejected on a gasless quote, so request `gasless: false` if you need a refund to land somewhere else. See [executing swaps](/build/sdk/executing-swaps).
@@ -75,7 +75,7 @@ The status values and their meanings are the same as any other swap. See [track 
 
 **Withdrawals.** A user leaving an app should not need to top up gas on the chain they are leaving in order to leave it.
 
-**Consumer flows.** Any interface where explaining gas to the user is a cost in itself. The fewer prerequisites between intent and execution, the fewer people drop out.
+**Consumer flows.** Any interface where you would rather not explain gas at all.
 
 <Warning>
   **Needs engineering input.** Which chains and routes support gasless, and whether the relayer's gas cost comes out of the output.

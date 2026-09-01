@@ -20,14 +20,14 @@ It does not work for a payment. A merchant cannot display one number and receive
     Surface it in your interface so the user knows the number is fixed rather than estimated. On a mode `3` quote, `expectedAmountOut` is the exact amount that will arrive.
   </Step>
   <Step title="The swap settles exact-out">
-    The recipient receives exactly `expectedAmountOut`. Not the minimum, not something in between.
+    The recipient receives exactly `expectedAmountOut`.
   </Step>
 </Steps>
 
 ## Key concepts
 
 - **Two settlement modes, one field.** Swift quotes come back tagged with `swiftAuctionMode`. On mode `2` the user receives at least `minAmountOut` and typically lands near `expectedAmountOut`. Mode `3` is exact-out: `expectedAmountOut` is what arrives.
-- **Mayan decides eligibility, not the integrator.** There is no parameter to pass and no allowlist to join. If a quote comes back as mode `3`, Guaranteed Price is available on that order.
+- **Eligibility is set by the route, not by a parameter.** There is nothing to pass and no allowlist to join. If a quote comes back as mode `3`, Guaranteed Price is available on that order.
 - **`minAmountOut` stops mattering.** On a mode `2` quote it is the floor that protects the user. On an exact-out quote the output is already fixed, so the number to display is `expectedAmountOut`.
 - **The guarantee covers the amount, not the timing.** An exact-out order still has a deadline, and an order that no driver fills before it is refunded rather than settled short. See [refunds](/how-mayan-works/refunds).
 
@@ -56,7 +56,7 @@ Everything else settles between the expected and minimum amounts.
 
 ## Building with it
 
-The guarantee matters wherever a number is quoted to someone before the money moves.
+Use it wherever the amount shown has to match the amount received.
 
 - **Checkout and payments.** The invoice, the confirmation screen and the settlement all carry the same figure, so nothing has to be reconciled afterwards. See [Pay](/use-cases/pay).
 - **Payouts and payroll.** A recipient is paid what they were promised, rather than what the market allowed at the moment of settlement.
