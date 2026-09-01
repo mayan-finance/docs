@@ -4,7 +4,7 @@ title: "Quote API"
 
 We highly recommend using [Mayan SDK](https://github.com/mayan-finance/swap-sdk) for integration as it simplifies the integration process.
 
-Before performing a swap we need find the best route and get the swap rate for the token pair using quote API.
+Before performing a swap, request a quote for the token pair. The response returns the available routes and the rate for each.
 
 ### API Reference
 
@@ -215,13 +215,13 @@ curl -X 'GET' \
   -H 'accept: application/json'
 ```
 
-To get the aggregated list of tokens from all chains remove `chain` from in the query .
+To get the aggregated list of tokens from all chains remove `chain` from the query.
 
 ### Supported Chains
 
 #### `GET` `sia.mayan.finance/v10/init`
 
-Returns configuration for every supported chain, including whether it can be used as a origin or destination\*\* \*\*chain.
+Returns configuration for every supported chain, including whether it can be used as an origin or destination chain.
 
 #### Example:
 

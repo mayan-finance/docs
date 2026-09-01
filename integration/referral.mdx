@@ -13,9 +13,8 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 **Fee Collection**
 
 - Fees are collected on the **source chain** once the bridge is successfully completed.
-- Deposited into the [fee manager contract](https://etherscan.io/address/0x26227ACE40de5671e8355fCAFf65a0522aa7b303)**.
-- Fees are collected in the fee manager contract and can be withdrawn using this tool:\
-  [https://explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift)
+- Deposited into the [fee manager contract](https://etherscan.io/address/0x26227ACE40de5671e8355fCAFf65a0522aa7b303).
+- Fees are collected in the fee manager contract and can be withdrawn using this tool:<br />[https://explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift)
 - Collected via the **locked assets** (e.g., USDC, ETH).
 
 **Fee Rate**
@@ -60,8 +59,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 **Fee Collection**
 
 - All referral fees are received on the **Solana chain**.
-- Fees are only distributed if the **bridge is successfully completed** and **includes a swap**.\
-  (Example: a bridge from Ethereum → Solana where ETH is swapped to WETH will **not** generate referral fees.)
+- Fees are only distributed if the **bridge is successfully completed** and **includes a swap**.<br />(Example: a bridge from Ethereum → Solana where ETH is swapped to WETH will **not** generate referral fees.)
 - The fees are collected in the **output token** and automatically transferred to the **referrer Solana address**.
 
 **Fee Rate**
@@ -86,7 +84,7 @@ Each bridging method within the Mayan protocol has its own referral fee behavior
 
 You must prepare a referral address for each VM type:
 
-```text
+```typescript
 const referrerAddresses = {
   solana: 'VALID_SOLANA_WALLET_ADDRESS',
   evm: 'VALID_EVM_WALLET_ADDRESS',
@@ -100,7 +98,7 @@ const referrerAddresses = {
 - Set your desired referral fee (in bps) as `"referrerBps"`.
 - **Note:** Always use the Solana address as your referrer, regardless of source or destination chain (even for EVM → EVM routes).
 
-```text
+```typescript
 const quote = await fetchQuote({
   ...
   referrer: referrerAddresses.solana,
@@ -113,7 +111,7 @@ const quote = await fetchQuote({
 
 All transaction or bridge functions in the SDK accept an optional `referrerAddresses` parameter:
 
-```text
+```typescript
 type ReferrerAddresses = {
   solana: string;
   evm: string;
@@ -121,8 +119,7 @@ type ReferrerAddresses = {
 };
 ```
 
-Always pass the **full object** prepared in Step 1.\
-The SDK will automatically determine which wallet to use based on the selected bridge method, source, and destination.
+Always pass the **full object** prepared in Step 1.<br />The SDK will automatically determine which wallet to use based on the selected bridge method, source, and destination.
 
 This ensures referral fees are correctly routed, regardless of the bridge type or source/destination chains.
 

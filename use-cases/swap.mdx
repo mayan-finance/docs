@@ -33,9 +33,11 @@ The driver pays the user from capital they already hold on the destination chain
 
 Any token with a contract address is tradable. There is no whitelist and no listing process, so a long-tail asset routes the same way a major does, and adding an asset is never an integration change.
 
-## Any size
+## Transfer methods and size
 
-Three transfer methods sit underneath a swap, each suited to a different size and asset profile. Swift routes single swaps up to around \$1M depending on the chain, and MCTP and Fast MCTP carry up to around \$10M.
+A swap can execute over any of three transfer methods. `fetchQuote` returns the routes available for the pair, each tagged with its method, and you choose which one to execute.
+
+Swift carries single swaps up to around \$1M, depending on the chain. MCTP and Fast MCTP carry up to around \$10M.
 
 ## Examples
 
