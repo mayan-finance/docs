@@ -1,6 +1,66 @@
 ---
 title: "Direct Route Linking"
-description: "Deep-link users to a pre-filled route on the Mayan app."
+description: "Prefill a swap route in the Mayan app with a URL."
+sidebarTitle: "Direct Route Linking"
 ---
 
-Build deep links that pre-fill a route on the Mayan app. Content in progress.
+A direct route link opens [swap.mayan.finance](https://swap.mayan.finance) with the route already filled in. The user lands on the page with the source token, the destination token, and both chains selected, and only has to enter an amount and confirm.
+
+Use it in campaign links, wallet integrations, token pages, or anywhere you want to send someone to one specific route.
+
+## The URL format
+
+```text
+https://swap.mayan.finance/?default_from=<chain>-<token_address>&default_to=<chain>-<token_address>
+```
+
+There are two parameters:
+
+- `default_from` sets the chain and token the swap starts from.
+- `default_to` sets the chain and token the swap ends on.
+
+Each value is the chain name, a hyphen, then the token's contract address on that chain. Native tokens on EVM chains use the zero address.
+
+### Example
+
+ETH on Ethereum to USDC on Solana:
+
+```text
+https://swap.mayan.finance/?default_from=ethereum-0x0000000000000000000000000000000000000000&default_to=solana-EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+```
+
+## Partial links
+
+Both parameters are optional. Include only the one you need.
+
+Destination only, so the user chooses what they are sending:
+
+```text
+https://swap.mayan.finance/?default_to=solana-EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+```
+
+Source only, so the user chooses what they receive:
+
+```text
+https://swap.mayan.finance/?default_from=ethereum-0x0000000000000000000000000000000000000000
+```
+
+## Common token values
+
+| Token | Chain | Value |
+| --- | --- | --- |
+| ETH | Ethereum | `ethereum-0x0000000000000000000000000000000000000000` |
+| USDC | Ethereum | `ethereum-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
+| SOL | Solana | `solana-So11111111111111111111111111111111111111112` |
+| USDC | Solana | `solana-EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| USDC | Hyperliquid | `hypercore-0x000000000000000000000000000000000000ffff` |
+
+Any token Mayan supports works, not only the ones above. Use the token's contract address on its chain:
+
+```text
+https://swap.mayan.finance/?default_to=solana-poNSfquKq512ApeYjVghwViSun4x1MhCqHVH2Paq4jN
+```
+
+<Warning>
+  An older link format used `source_chains`, `from_tokens`, `dest_chains`, and `to_tokens`. Those parameters lock the route, so the user cannot change the fields. For campaign links, use `default_from` and `default_to` instead. They prefill the same fields and leave them editable.
+</Warning>
