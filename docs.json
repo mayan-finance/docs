@@ -195,7 +195,39 @@
     "socials": {
       "x": "https://x.com/mayan",
       "discord": "https://discord.com/invite/MayanFinance"
-    }
+    },
+    "links": [
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "GitHub",
+            "href": "https://github.com/mayan-finance"
+          },
+          {
+            "label": "Brand Kit",
+            "href": "https://drive.google.com/drive/folders/1rTsnJrREco-ygz37ZzFNPHN68mIPeAby"
+          },
+          {
+            "label": "Mayan Explorer",
+            "href": "https://explorer.mayan.finance/"
+          }
+        ]
+      },
+      {
+        "header": "Product",
+        "items": [
+          {
+            "label": "Mayan App",
+            "href": "https://swap.mayan.finance/"
+          },
+          {
+            "label": "Blog",
+            "href": "https://mayan.finance/blog"
+          }
+        ]
+      }
+    ]
   },
   "banner": {
     "content": "\ud83d\udd14 **Integrators:** Swift v1 is now deprecated. Update the SDK to the latest version to run on Swift v2.",
