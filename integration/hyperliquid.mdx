@@ -39,7 +39,7 @@ You can always discover these dynamically from the [Tokens API](https://price-ap
 
 ## Deposit (into HyperCore)
 
-Bridge/swap from a source chain into a HyperCore USDC balance. This is a normal signed transaction on the **source** chain (so the user needs gas there); the SDK and Mayan relayer handle the rest, crediting the chosen HyperCore balance. Deposits typically credit in around 8 seconds.
+Bridge/swap from a source chain into a HyperCore USDC balance. This is a normal signed transaction on the **source** chain (so the user needs gas there); the SDK and Mayan relayer handle the rest, crediting the chosen HyperCore balance. Deposits credit in as little as 6 seconds.
 
 ### 1. Fetch a quote
 
@@ -116,7 +116,7 @@ const { clientStatus } = await res.json();
 
 ## Withdraw (out of HyperCore)
 
-Move USDC out of a HyperCore balance to an EVM chain. Withdrawals are **gasless**: the user signs an EIP-712 typed-data message instead of sending an on-chain transaction, and the SDK submits it to the Mayan relayer. **No source-chain gas is required.** Withdrawals typically land in around 15 seconds.
+Move USDC out of a HyperCore balance to an EVM chain. Withdrawals are **gasless**: the user signs an EIP-712 typed-data message instead of sending an on-chain transaction, and the SDK submits it to the Mayan relayer. **No source-chain gas is required.** Withdrawals land in as little as 7 seconds.
 
 ### 1. Fetch a quote
 

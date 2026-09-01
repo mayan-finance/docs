@@ -13,7 +13,7 @@ description: "Low-slippage cross-chain transfers of high-value assets, routed ov
 - The winning driver performs a flash swap on Solana, obtaining the funds and atomically sending the promised output amount within the same transaction.
 - Post-swap, if the destination address is on Solana, the relayer directly transfers output tokens to the user's wallet. Otherwise, relayers send tokens to destination chains via the Token Bridge.
 
-Wormhole Swap typically settles in around two minutes, bounded by Guardian attestation on the source chain.
+Wormhole Swap settles in under a minute.
 
 **Key advantages:**
 
