@@ -3,13 +3,13 @@ title: "Bridge"
 description: "Move any asset cross-chain in one transaction."
 ---
 
-Bridging means moving an asset from one chain to another. It used to be its own task: find a bridge, wait for it to clear, then swap into the asset you actually wanted once you arrived.
+Bridging means moving an asset from one chain to another. It used to be a task of its own: find a bridge, wait for it to clear, then swap into the asset the user actually wanted once it arrived.
 
-On Mayan it feels like a swap. The user names where their assets are and where they need to be, signs once, and the asset arrives on the other side in seconds.
+On Mayan it is a swap. The user says where their assets are and where they need to be, signs once, and the asset arrives on the other side in seconds.
 
 ## How it works
 
-A bridge transfer is a quote with the same asset on both sides and different chains.
+A bridge transfer is a quote where the source and destination chains differ. The asset can stay the same or change in transit.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -17,7 +17,7 @@ const quotes = await fetchQuote({
   fromChain: "ethereum",
   fromToken: USDC_ETHEREUM,
   toChain: "base",
-  toToken: USDC_BASE,        // same asset, different chain
+  toToken: USDC_BASE,        // same asset here, but it can change
   slippageBps: "auto",
 });
 ```
@@ -43,11 +43,15 @@ A cross-chain transfer requires the destination chain to know what happened on t
 
 Contracts are public and audited. See [security & audits](/resources/audits).
 
-## Examples
+## Where it fits
 
 - A wallet lets users move holdings between chains without leaving the app.
 - A new chain becomes reachable from every major ecosystem on day one.
 - An app accepts users who hold assets in a different ecosystem.
+
+## Case studies
+
+- [**Superbridge**](https://mayan.finance/blog/mayan-is-live-on-superbridge) added any-asset, any-chain movement to a bridge interface, so its users are no longer limited to the routes the bridge itself supports.
 
 ## Next steps
 

@@ -35,7 +35,7 @@ Only specific swap routes support caller-supplied payloads; others will reject o
 
 ## Use custom payloads in the Swap SDK
 
-You can attach a custom payload from EVM, Solana, or Sui by passing a `Buffer` or `Uint8Array` to the relevant SDK call. Payload support depends on the chain and the route type, so refer to the sections below for precise behavior.
+You can attach a custom payload from EVM, Solana, or Sui by passing a `Buffer` or `Uint8Array` to the relevant SDK call. Payload support depends on the chain and the route type, so confirm the quote type and route before attaching one, and make sure your destination logic can decode what you send.
 
 Payloads should stay small. Each chain and route has its own message-size limits, and larger payloads may increase fees or cause the swap to fail if the underlying protocol rejects the message.
 
@@ -131,7 +131,3 @@ const tx = await createSwapFromSuiMoveCalls(
   suiClient
 );
 ```
-
-## Summary
-
-Zaps let you attach application-specific data to supported Mayan swap routes. Only specific paths accept payloads, and each chain has its own conditions. Always confirm the quote type and route before attaching a payload, and ensure your destination logic is prepared to decode the data you send.

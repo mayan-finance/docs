@@ -3,9 +3,9 @@ title: "Orchestrate"
 description: "Attach any onchain action to a single swap."
 ---
 
-Orchestrate is a swap with an instruction attached. The funds and a payload travel together, and your destination logic acts on the payload once the funds arrive.
+Orchestrate is a swap with an instruction attached. The funds and a payload travel together, and your contract on the destination chain reads that payload and acts on it the moment the funds land.
 
-Entering a protocol from another chain normally takes four user actions: move funds, swap, switch apps, deposit. Orchestrate does it in one.
+Entering a protocol from another chain normally takes four separate user actions: move funds across, swap into the right asset, switch apps, deposit. Orchestrate collapses all four into the one signature the user already gives to swap.
 
 ## How it works
 
@@ -55,7 +55,7 @@ Orchestrate is the one part of Mayan that is not a drop-in:
 
 See [Zaps](/integration/custom-payload) for the payload format and per-chain behavior.
 
-## Examples
+## Where it fits
 
 - A vault turns a multi-step entry into one click.
 - A yield app puts deposits to work the moment they land.

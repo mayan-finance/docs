@@ -32,7 +32,7 @@ Withdrawals invert it: your app is the source, and the user supplies the destina
 - **Per-transfer.** The standard flow above. The user requests a quote and signs once for each deposit.
 - **Permanent address.** For users who fund repeatedly, Mayan can issue an address that does not expire. They send to it like an ordinary transfer, with no wallet connection, signature or approval. Set `mpsDeposit: true` alongside your `destinationAddress` on the quote request, and the response returns an `mpsDepositAddress`. See [deposit addresses](/features/deposit-addresses).
 
-## Examples
+## Where it fits
 
 - A DEX lets users fund from the asset they already hold rather than the one it settles in.
 - An exchange with internal balances removes the conversion step users otherwise do by hand.
@@ -42,8 +42,9 @@ Withdrawals invert it: your app is the source, and the user supplies the destina
 
 ## Case studies
 
-- [**Hyperliquid**](https://mayan.finance/blog/mayan-powers-one-move-hyperliquid-deposits-and-withdrawals) takes deposits and withdrawals from any chain and any asset. See [HyperCore deposit & withdraw](/integration/hyperliquid) for the integration.
-- [**Manic Trade**](https://mayan.finance/blog/mayan-powers-deposits-from-any-chain-into-manic-trade) takes deposits from any chain.
+- [**Hyperliquid**](https://mayan.finance/blog/mayan-powers-one-move-hyperliquid-deposits-and-withdrawals) takes deposits and withdrawals from any chain and any asset, so a trader never has to bridge into HyperCore before they can use it. See [HyperCore deposit & withdraw](/integration/hyperliquid) for the integration.
+- [**Predikt**](https://mayan.finance/blog/how-predikt-and-mayan-are-connecting-prediction-markets) funds prediction market trades from any chain, so stablecoins reach the market at the moment the trade is placed rather than after a bridge clears.
+- [**Manic Trade**](https://mayan.finance/blog/mayan-powers-deposits-from-any-chain-into-manic-trade) takes deposits from any chain, so a user's funds do not have to be sitting on the right one already.
 
 ## Next steps
 

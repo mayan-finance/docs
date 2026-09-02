@@ -92,9 +92,7 @@
             ]
           },
           "architecture/relayers",
-          "how-mayan-works/refunds",
-          "resources/audits",
-          "resources/compliance"
+          "how-mayan-works/refunds"
         ]
       },
       {
@@ -153,7 +151,9 @@
           },
           "application/relayer-fees",
           "resources/chains-contracts",
-          "resources/technical-faq"
+          "resources/technical-faq",
+          "resources/audits",
+          "resources/compliance"
         ]
       },
       {
