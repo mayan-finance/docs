@@ -153,7 +153,7 @@ The following table shows the common fields of response:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| type | String | Determines the bridge method which can be "WH", "SWIFT", "MCTP" or "FAST\_MCTP" |
+| type | String | Determines the bridge method which can be "WH", "SWIFT", "MCTP" or "FAST_MCTP" |
 | effectiveAmountIn | Number | The actual input amount that will be deducted from user's wallet |
 | expectedAmountOut | Number | Expected output amount that user receives |
 | minAmountOut | Number | Minimum output amount |
@@ -195,7 +195,7 @@ Requirements and behavior:
 - **Best-effort.** If the address can't be derived for any reason, the quote is still returned with `mpsDepositAddress: null`. Never treat a `null` as an error.
 
 <Note>
-  The [Mayan SDK](https://github.com/mayan-finance/swap-sdk) (v15\+) exposes this as `fetchQuote` options `mpsDeposit` and `mpsUserId`, and reads it back as `quote.mpsDepositAddress`. Passing `mpsDeposit` forces the SDK's POST-body request path.
+  The [Mayan SDK](https://github.com/mayan-finance/swap-sdk) (v15+) exposes this as `fetchQuote` options `mpsDeposit` and `mpsUserId`, and reads it back as `quote.mpsDepositAddress`. Passing `mpsDeposit` forces the SDK's POST-body request path.
 </Note>
 
 Track a deposit made to an `mpsDepositAddress` through detection, settlement, and delivery with the [events stream](/payment-service/events) or by polling [`GET /swaps`](/payment-service/api-reference#list-swaps).
