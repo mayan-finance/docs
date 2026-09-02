@@ -151,7 +151,6 @@
               "application/mayan-explorer"
             ]
           },
-          "integration/referral",
           "application/relayer-fees",
           "resources/chains-contracts",
           "resources/technical-faq"
@@ -251,6 +250,11 @@
     {
       "source": "/architecture/auction",
       "destination": "/how-mayan-works/intent-based-swaps",
+      "permanent": true
+    },
+    {
+      "source": "/integration/referral",
+      "destination": "/build/fees-earning",
       "permanent": true
     }
   ]

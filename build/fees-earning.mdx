@@ -3,7 +3,7 @@ title: "Fees & Earning"
 description: "Protocol fees and how integrators earn."
 ---
 
-Two things can happen on a swap: Mayan may take a protocol fee, and if you set a referrer address, you take one too.
+Two things can happen on a swap: Mayan may take a protocol fee, and if you set a referrer address, you take one too. Your referrer fee sits on top of the protocol fee rather than coming out of it.
 
 ## Protocol fee
 
@@ -27,9 +27,7 @@ Show `clientRelayerFeeSuccess` if you display a cost breakdown. It is already th
 
 ## Earning as an integrator
 
-Set a `referrer` address and a `referrerBps` on the quote, then pass the matching `referrerAddresses` at swap time. The fee is collected onchain at settlement.
-
-`referrerBps` sits on top of the protocol fee. It is not taken out of it.
+Set a `referrer` address and a `referrerBps` on the quote, then pass the matching `referrerAddresses` at swap time. The fee is collected onchain.
 
 ```typescript
 const quotes = await fetchQuote({
@@ -39,27 +37,50 @@ const quotes = await fetchQuote({
 });
 ```
 
+Always pass your **Solana** address as `referrer`, whatever the source and destination chains, including EVM to EVM.
+
 `referrerAddresses` is keyed by network type, because the address that receives the fee depends on which chain it settles on:
 
 ```typescript
 { evm: "...", solana: "...", sui: "..." }
 ```
 
-### Splitting across wallets
+Pass the full object at swap time. The SDK picks the right wallet for the route.
 
-Pass a `referrers` object to `fetchQuote` instead, with a bps share per wallet, then pass the same object at swap time. The SDK throws if it does not match the quote. See [SDK](/build/sdk).
+## Where the fee is paid
 
-## Next steps
+Each route collects and pays differently.
 
-<CardGroup cols={2}>
-  <Card title="Fee Splitting" icon="coins" href="/build/sdk/fee-splitting">
-    Split the referrer fee across several wallets.
-  </Card>
+| Route | Paid on | Collected in | Maximum rate | Paid only if |
+| --- | --- | --- | --- | --- |
+| Swift | Source chain | The locked source asset, typically USDC or ETH | 200 bps | The order completes |
+| MCTP | Destination chain | The stablecoin minted during bridging | 100 bps from Solana, 50 bps from other chains | The order completes and includes a swap on the destination chain |
+| Fast MCTP | Destination chain | The stablecoin minted during bridging | 100 bps | The order completes |
+| Wormhole Swap | Solana | The output token | 50 bps, 10 bps by default | The order completes and includes a swap |
 
-  <Card title="Fetching Quotes" icon="magnifying-glass" href="/build/sdk/fetching-quotes">
-    Setting `referrer` and `referrerBps` on the quote.
-  </Card>
-</CardGroup>
+Two cases earn nothing. On MCTP, a plain USDC to USDC transfer has no destination swap. On Wormhole Swap, a transfer that does not swap, such as ETH on Ethereum to WETH on Solana, does not qualify either.
+
+### Setting the rate
+
+On Swift, MCTP and Fast MCTP, set the rate with `referrerBps` on the quote request.
+
+On Wormhole Swap the rate is set onchain instead. Use [Referrer Fee Management](https://explorer.mayan.finance/referrer-fee) to set it against your Solana address.
+
+### Collecting
+
+Fees transfer to your address automatically on every route except **Swift with an EVM source chain**. Those accumulate in the [fee manager contract](https://etherscan.io/address/0x26227ACE40de5671e8355fCAFf65a0522aa7b303), and you withdraw them at [explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift).
+
+<Warning>
+  Your Solana referrer address needs associated token accounts for USDC, USDT and WETH. Without them you can lose the referrer fee on routes that pay out in those tokens. Create them by sending a dust amount of each token to the address.
+
+  - USDC: `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
+  - USDT: `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`
+  - WETH: `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs`
+</Warning>
+
+## Splitting across wallets
+
+Pass a `referrers` object to `fetchQuote` instead, with a bps share per wallet, then pass the same object at swap time. The SDK throws if it does not match the quote. See [Fee Splitting](/build/sdk/fee-splitting).
 
 ## Next steps
 
