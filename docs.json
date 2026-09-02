@@ -159,7 +159,8 @@
         "group": "RESOURCES",
         "pages": [
           "link/brand",
-          "resources/audits"
+          "resources/audits",
+          "link/github"
         ]
       },
       {
