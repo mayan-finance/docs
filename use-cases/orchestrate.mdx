@@ -14,12 +14,12 @@ Request a quote that supports payloads, then pass the bytes to the swap call. Ma
 ```typescript
 const quotes = await fetchQuote(
   {
-	  amountIn64: "100000000",
-	  fromChain: "arbitrum",
-	  fromToken: USDC_ARBITRUM,
-	  toChain: "base",
-	  toToken: USDC_BASE,
-	  slippageBps: "auto",
+    amountIn64: "100000000",
+    fromChain: "arbitrum",
+    fromToken: USDC_ARBITRUM,
+    toChain: "base",
+    toToken: USDC_BASE,
+    slippageBps: "auto",
   },
   { payload: "true" },   // only routes that carry payloads
 );

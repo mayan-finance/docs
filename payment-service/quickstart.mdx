@@ -107,10 +107,10 @@ print(deposit_address)  # address on Arbitrum (the source chain)
 }
 ```
 
-Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`). they all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
+Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`). They all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
 
 <Info>
-  The address is deterministic and permanent for a given recipient \+ `mpsUserId`. Requesting another quote returns the same address, so it's safe to call on every checkout. It's `null` unless deposit addresses are enabled for your key, `destinationAddress` is set, and the amount clears the token's [minimum](/payment-service/api-reference#source-config).
+  The address is deterministic and permanent for a given recipient + `mpsUserId`. Requesting another quote returns the same address, so it's safe to call on every checkout. It's `null` unless deposit addresses are enabled for your key, `destinationAddress` is set, and the amount clears the token's [minimum](/payment-service/api-reference#source-config).
 </Info>
 
 ## 2. Let the user deposit
