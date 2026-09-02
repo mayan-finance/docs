@@ -52,7 +52,7 @@
     },
     "groups": [
       {
-        "group": "Get Started",
+        "group": "GET STARTED",
         "pages": [
           "index",
           "get-started/quickstart",
@@ -61,7 +61,7 @@
         ]
       },
       {
-        "group": "Use Cases",
+        "group": "USE CASES",
         "pages": [
           "use-cases/swap",
           "use-cases/bridge",
@@ -71,7 +71,7 @@
         ]
       },
       {
-        "group": "Solutions",
+        "group": "SOLUTIONS",
         "pages": [
           "solutions/wallets",
           "solutions/applications",
@@ -80,7 +80,7 @@
         ]
       },
       {
-        "group": "How Mayan Works",
+        "group": "HOW MAYAN WORKS",
         "pages": [
           "how-mayan-works/intent-based-swaps",
           {
@@ -92,11 +92,12 @@
             ]
           },
           "architecture/relayers",
-          "how-mayan-works/refunds"
+          "how-mayan-works/refunds",
+          "application/mayan-explorer"
         ]
       },
       {
-        "group": "Features",
+        "group": "FEATURES",
         "pages": [
           "features/guaranteed-price",
           {
@@ -117,7 +118,7 @@
         ]
       },
       {
-        "group": "Build",
+        "group": "INTEGRATION",
         "pages": [
           {
             "group": "SDK",
@@ -145,19 +146,24 @@
             "group": "Guides",
             "pages": [
               "build/track-transactions",
-              "build/direct-route-linking",
-              "application/mayan-explorer"
+              "build/direct-route-linking"
             ]
           },
           "application/relayer-fees",
           "resources/chains-contracts",
           "resources/technical-faq",
-          "resources/audits",
           "resources/compliance"
         ]
       },
       {
-        "group": "AI Agents",
+        "group": "RESOURCES",
+        "pages": [
+          "link/brand",
+          "resources/audits"
+        ]
+      },
+      {
+        "group": "AI AGENTS",
         "pages": [
           "ai-agents/llms-txt",
           "ai-agents/agents-md"
