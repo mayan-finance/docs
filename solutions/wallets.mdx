@@ -1,0 +1,47 @@
+---
+title: "Wallets"
+description: "Add cross-chain swaps to your wallet and earn on every swap."
+---
+
+Wallets integrate Mayan to give users in-app swapping across chains. MetaMask, Phantom, OKX Wallet and Backpack run their swap experience this way: the interface belongs to the wallet, and routing and execution run underneath it.
+
+## What integrating with Mayan unlocks
+
+- **Any token to any chain.** Users swap between any supported assets, on one chain or across two, without leaving the wallet.
+- **One move.** A cross-chain swap is a single signature, not a bridge followed by a swap.
+- **Instant settlement.** Swaps complete in seconds.
+- **Non-custodial.** Funds move between the user's own addresses, so the wallet's security model is unchanged.
+
+Most wallets integrate through the [SDK](/build/sdk). The [widget](/integration/swap-widget) is a drop-in alternative if you would rather not build the interface.
+
+## Fees
+
+You set a referrer address and a fee in basis points on the quote request. The fee is collected onchain on every swap routed through your integration, with no invoicing and nothing to reconcile. See [fees & earning](/build/fees-earning).
+
+## Use cases
+
+- [Swap](/use-cases/swap): trade any asset to any asset in-app
+- [Bridge](/use-cases/bridge): move holdings between chains
+- [Deposit & Withdraw](/use-cases/deposit): fund and exit other apps from the wallet
+
+## Case studies
+
+- [**MetaMask**](https://mayan.finance/blog/mayan-powers-faster-cross-chain-swaps-inside-metamask) improved cross-chain quote latency for millions of users with Mayan.
+- [**imToken**](https://mayan.finance/blog/mayan-unlocks-cross-chain-swaps-inside-imtoken-wallet) unlocked cross-chain swaps inside its self-custody wallet with Mayan.
+- [**Gem Wallet**](https://mayan.finance/blog/how-gem-wallet-took-self-custody-multichain-with-mayan) added cross-chain with Mayan, without compromising its non-custodial design.
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Widget" icon="window" href="/integration/swap-widget">
+    A prebuilt swap interface you can embed.
+  </Card>
+
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    Build the swap flow into your own interface instead.
+  </Card>
+
+  <Card title="Fees & Earning" icon="coins" href="/build/fees-earning">
+    Set a referrer address and earn on every swap you route.
+  </Card>
+</CardGroup>

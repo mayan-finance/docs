@@ -1,0 +1,39 @@
+---
+title: "Fee Splitting"
+description: "Split the referrer fee across several wallets."
+---
+
+A standard integration sets one `referrer` address and one `referrerBps`. When the fee needs to go to more than one wallet, pass a `referrers` object instead.
+
+## Setting it up
+
+Pass `referrers` as the second argument to `fetchQuote`, keyed by network type, with a bps share per wallet.
+
+```typescript
+const referrers = {
+  evm:    [{ address: "FIRST_EVM_WALLET", bps: 10 }, { address: "SECOND_EVM_WALLET", bps: 5 }],
+  solana: [{ address: "FIRST_SOL_WALLET", bps: 10 }, { address: "SECOND_SOL_WALLET", bps: 5 }],
+};
+
+const quotes = await fetchQuote({ /* ... */ }, { referrers });
+```
+
+Pass the same object as `referrerAddresses` at swap time.
+
+## Rules
+
+- **Do not mix the two forms.** The SDK throws if `referrer` or `referrerBps` is set alongside `referrers`.
+- **The objects have to match.** The SDK throws at swap time if the object you pass differs from the one the quote was fetched with.
+- **POST flow only.** Multi-wallet referrers are not available on the `GET` quote endpoint.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Fees & Earning" icon="coins" href="/build/fees-earning">
+    Protocol fees, relayer fees, and how the referrer fee is collected.
+  </Card>
+
+  <Card title="Executing Swaps" icon="paper-plane" href="/build/sdk/executing-swaps">
+    Passing `referrerAddresses` at swap time.
+  </Card>
+</CardGroup>

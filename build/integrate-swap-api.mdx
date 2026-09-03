@@ -1,0 +1,92 @@
+---
+title: "Integrate the Swap API"
+description: "Build a cross-chain swap from scratch."
+---
+
+Most integrations should use the [SDK](/build/sdk), which builds the transaction for you on every supported chain.
+
+Go directly to the API when you are working in a language the SDK does not cover, running quotes on a backend that never touches a wallet, or building the transaction yourself for another reason. This page covers the API surface and what you are responsible for once you skip the SDK.
+
+## What you implement yourself
+
+Four things the SDK would otherwise handle:
+
+- Building the transaction for each source chain, including Solana instructions and Sui Move calls
+- ERC20 allowance against the Forwarder contract, or an EIP-2612 permit
+- Encoding the referrer addresses and verifying they match the quote
+- Reading route-specific fields off the quote and branching on `type`
+
+## Get a quote
+
+```bash
+curl 'https://price-api.mayan.finance/v3/quote?amountIn=100&fromToken=0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e&fromChain=avalanche&toToken=0x0000000000000000000000000000000000000000&toChain=solana&slippageBps=300&gasDrop=0&swift=true&mctp=true&fastMctp=true&wormhole=true'
+```
+
+The full parameter list is on the [Quote API](/integration/quote-api) page. The ones that matter most:
+
+| Param | Notes |
+| --- | --- |
+| `amountIn64` | Base units. `amountIn` takes a human-readable number instead. |
+| `slippageBps` | Basis points, max 500. |
+| `swift`, `mctp`, `fastMctp`, `wormhole` | Enable or disable route families. Omit to allow all. |
+| `fullList` | `true` returns every option, unsorted. Default returns at most two. |
+| `apiKey` | Raises the per-IP rate limit. |
+| `destinationAddress` | Improves accuracy, and is required for deposit addresses. |
+
+## Read the quote
+
+The response is `{ quotes: [...], minimumSdkVersion: [...] }`. For each quote:
+
+| Field | Use |
+| --- | --- |
+| `type` | `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. Determines which contract you interact with. |
+| `expectedAmountOut` | Display this to the user. |
+| `minAmountOut` | The floor. |
+| `minReceived` | The floor after relayer fees are deducted. |
+| `etaSeconds` / `clientEta` | Estimated settlement, in seconds and as a display string. |
+| `deadline64` | After this, the order can no longer be filled and becomes refundable. |
+| `swiftAuctionMode` | Swift only. `3` means [Guaranteed Price](/features/guaranteed-price): the user receives exactly `expectedAmountOut`. |
+| `protocolBps` / `referrerBps` | Fees applied to this quote. |
+| `swiftMayanContract` | Swift only. The contract to send to. |
+| `gasless` | Whether this quote executes without source-chain gas. |
+
+<Warning>
+  Do not assume every quote in the array is the same route type. Check `type` on the specific quote you selected before building anything.
+</Warning>
+
+## Approve the input token
+
+For an ERC20 input on EVM, approve the Mayan Forwarder contract for at least `effectiveAmountIn64` before sending the swap. The address is in `forwarderAddress` on the quote request, and documented on [Forwarder Contract](/integration/forwarder-contract).
+
+Tokens supporting [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) can use a permit signature instead, which saves the user a transaction.
+
+Native inputs need no approval.
+
+## Send the transaction
+
+The contract and calldata depend on `type`. Read the route page for the one you are using:
+
+- [Swift](/architecture/swift), the default for most pairs
+- [MCTP and Fast MCTP](/architecture/mctp), built around Circle's CCTP
+- [Wormhole Swap](/architecture/wh-swap)
+
+<Note>
+  `getSwapFromEvmTxPayload` returns the payload without sending it, and its `_forwarder` object gives you the method name and parameters for a contract-level call. See [manual transaction building](/build/sdk/manual-transactions).
+</Note>
+
+## Track it
+
+Poll the [Explorer API](/integration/explorer-api) with the source transaction hash and read `clientStatus`.
+
+```bash
+curl 'https://explorer-api.mayan.finance/v3/swap/trx/{sourceTxHash}'
+```
+
+`INPROGRESS`, `COMPLETED`, or `REFUNDED`. See [Track Transactions](/build/track-transactions) for handling each state.
+
+## Supported chains and tokens
+
+- `GET https://sia.mayan.finance/v10/init` returns every supported chain, with `originActive` and `destinationActive` telling you which direction each supports.
+- `GET https://price-api.mayan.finance/v3/tokens?chain=solana` returns the whitelisted token list. Drop `chain` for all chains. Any token with a contract address is routable, whitelisted or not, given liquidity.
+
+The API does not return a documented error-code enum. The [SDK](/build/sdk) handles quote and execution failures for you, so if you can use it, use it.

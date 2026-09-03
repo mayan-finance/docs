@@ -1,0 +1,151 @@
+---
+title: "Executing Swaps"
+description: "Build and send the swap transaction on EVM, Solana, and Sui."
+---
+
+Hand a quote to the function for its source chain. The user signs once, and delivery on the destination chain happens without further action from them.
+
+<Tabs>
+  <Tab title="From EVM">
+    ```typescript
+    import { swapFromEvm } from "@mayanfinance/swap-sdk";
+    
+    const tx = await swapFromEvm(
+      quotes[0],
+      swapperAddress,            // must match signer.getAddress()
+      destinationWalletAddress,
+      referrerAddresses,         // { evm, solana, sui } or null
+      signer,                    // ethers v6 Signer with provider
+      permit,                    // Erc20Permit or null
+      overrides,                 // ethers Overrides or null
+      payload,                   // Buffer | Uint8Array or null
+      options,                   // { swiftRefundAddress?, apiKey? }, optional
+    );
+    ```
+
+    **ERC20 allowance.** Approve the Mayan Forwarder contract before swapping an ERC20 input. The address is available as `addresses.MAYAN_FORWARDER_CONTRACT`.
+
+    Alternatively, pass an [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) permit if the input token supports it:
+
+    ```typescript
+    {
+      value: bigint,
+      deadline: number,
+      v: number,
+      r: string,
+      s: string,
+    }
+    ```
+  </Tab>
+  <Tab title="From Solana">
+    ```typescript
+    import { swapFromSolana } from "@mayanfinance/swap-sdk";
+    
+    const tx = await swapFromSolana(
+      quotes[0],
+      originWalletAddress,
+      destinationWalletAddress,
+      referrerAddresses,
+      signSolanaTransaction,
+      solanaConnection,
+    );
+    ```
+
+    For manual control over the transaction, `createSwapFromSolanaInstructions` returns the instructions instead. See [advanced](/build/sdk/manual-transactions).
+  </Tab>
+  <Tab title="From Sui">
+    ```typescript
+    import { createSwapFromSuiMoveCalls } from "@mayanfinance/swap-sdk";
+    
+    const tx = await createSwapFromSuiMoveCalls(
+      quote,
+      originWalletAddress,
+      destinationWalletAddress,
+      referrerAddresses,
+      customPayload,
+      suiClient,
+      options,
+    );
+    
+    const res = await suiClient.signAndExecuteTransaction({ signer, transaction: tx });
+    const digest = res.Transaction?.digest ?? res.FailedTransaction?.digest;
+    ```
+
+    Returns a Transaction containing the required Move calls, which you sign and broadcast yourself.
+
+    **Sui requires `@mysten/sui` v2 and a Core API client** as of SDK v15. A v1 `SuiClient` throws `core.listCoins is not a function`. `SuiGrpcClient` is recommended.
+  </Tab>
+</Tabs>
+
+## Referrer addresses
+
+`referrerAddresses` is an object keyed by network type, because the address that receives the fee depends on which chain it settles on.
+
+```typescript
+{ evm: "...", solana: "...", sui: "..." }
+```
+
+Pass `null` until you set one up. See [fees & earning](/build/fees-earning).
+
+## Custom refund address
+
+On Swift quotes only, `swiftRefundAddress` sends a refund to a different source-chain address than the wallet that signed.
+
+```typescript
+const tx = await swapFromEvm(
+  quote, swapperAddress, destinationWalletAddress, referrerAddresses,
+  signer, permit, overrides, payload,
+  { swiftRefundAddress: "REFUND_WALLET_ON_SOURCE_CHAIN" },
+);
+```
+
+- Request the quote with `gasless: false`. Gasless Swift orders require the refund address to match the signer, and the SDK throws otherwise.
+- Other quote types ignore it and refund to the swapper wallet. Filter on `quote.type === "SWIFT"` if this matters to your flow.
+- The address must be a valid wallet on the source chain. Zero addresses are rejected.
+
+See [refunds](/how-mayan-works/refunds).
+
+## Gasless swaps
+
+When the selected quote has `gasless: true`, `swapFromEvm` returns an **order hash string** rather than a transaction. Query it on the Explorer API exactly as you would a transaction hash.
+
+```typescript
+const result = await swapFromEvm(quote, /* ... */);
+// quote.gasless === true  ->  result is an order hash
+```
+
+See [gasless execution](/features/gasless-execution).
+
+## Depositing into HyperCore
+
+Fetch a quote with `toChain: "hypercore"`, then call the normal swap function for the source chain. No extra user signature is required.
+
+Pass the user's HyperCore address, an EVM-style `0x` address, as `destinationAddress`. Spot versus perps is encoded automatically from the `toToken` in the quote.
+
+<Note>
+  Sui to HyperCore is temporarily disabled. `createSwapFromSuiMoveCalls` throws on a HyperCore destination.
+</Note>
+
+See [HyperCore deposit & withdraw](/integration/hyperliquid).
+
+## React Native
+
+The SDK works in React Native. For Solana, pass a callback that wraps `transact` from the Solana Mobile SDK as `signSolanaTransaction`. For EVM, get a provider from WalletConnect and pass its signer to `swapFromEvm`.
+
+A [scaffold project](https://github.com/mayan-finance/react-native-scaffold) is available.
+
+<Warning>
+  Bundlers that cannot `require()` an ES module, including some Metro and React Native setups, are affected by the v15 ESM requirement. Import the SDK as ESM.
+</Warning>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Track Transactions" icon="radar" href="/build/track-transactions">
+    Follow the swap to a terminal status.
+  </Card>
+
+  <Card title="Manual Transaction Building" icon="wrench" href="/build/sdk/manual-transactions">
+    Get the payload or instructions and send the transaction yourself.
+  </Card>
+</CardGroup>

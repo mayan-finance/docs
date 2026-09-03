@@ -1,0 +1,49 @@
+---
+title: "Pay"
+description: "Pay from any asset, settle in stablecoins, on any chain."
+---
+
+An onchain payment has two requirements a trade does not. The amount has to be exact, because a business cannot bill one number and receive another. And it has to arrive now, because nobody waits at a checkout.
+
+Mayan covers both. Stablecoins are its most moved asset, with over **\$8B** moved cross-chain.
+
+## How it works
+
+Stablecoins move across chains on Mayan the way any asset does: one signature and settlement in seconds. Three things make them work as payments rather than trades.
+
+**The amount holds.** On eligible routes the output is locked before the swap executes, so the amount sent is the amount received. See [Guaranteed Price](/features/guaranteed-price) for which ones qualify.
+
+**The cost stays low at size.** Stablecoin transfers can run over Circle's CCTP, which carries up to around \$10M in a single transaction.
+
+**Neither side has to match.** The sender pays from the asset and chain they already hold, and the recipient is paid in the stablecoin they settle in. The conversion happens in transit, in the same move.
+
+## Repeat payments
+
+Where the same payer sends again and again, they can pay to a fixed address instead of signing each time. See [deposit addresses](/features/deposit-addresses).
+
+## Where it fits
+
+- A fintech accepts many assets and settles in one.
+- A payroll or remittance app pays recipients in the asset and on the chain they choose.
+- A merchant checkout displays a price and receives that exact amount.
+- A wallet adding payments lets users send without picking a chain first.
+
+## Case studies
+
+- [**PrimeVault**](https://mayan.finance/blog/mayan-unlocks-native-cross-chain-transfers-for-institutions-on-primevault) manages stablecoin treasury operations across any chain with Mayan, without assets leaving the vault.
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Guaranteed Price" icon="lock" href="/features/guaranteed-price">
+    Exact-out settlement and the assets that support it.
+  </Card>
+
+  <Card title="Deposit Addresses" icon="inbox" href="/features/deposit-addresses">
+    A fixed address for a payer who sends again and again.
+  </Card>
+
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Quote, sign and execute a first payment.
+  </Card>
+</CardGroup>

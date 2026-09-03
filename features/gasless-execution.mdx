@@ -1,0 +1,94 @@
+---
+title: "Gasless Execution"
+description: "Let users start a cross-chain move without holding the source chain's native token."
+---
+
+A user who wants to move USDC off Ethereum needs ETH to do it. A user bridging into a new ecosystem often holds the asset they want to move and nothing else. In both cases the swap is blocked by a token the user does not care about and did not plan to acquire.
+
+Gasless execution removes that requirement. Instead of sending a transaction, the user signs a message, and a Mayan relayer submits the transaction on their behalf. It covers swaps as well as withdrawals, on the routes that support it.
+
+## How it works
+
+<Steps>
+  <Step title="Request a gasless quote">
+    Pass `gasless: true` on the quote request. The quoter returns only routes that can be executed this way.
+  </Step>
+  <Step title="Check the response">
+    Eligible quotes come back with `gasless` set. Surface it before the user commits, because what they are about to approve is a signature rather than a transaction.
+  </Step>
+  <Step title="The user signs a message">
+    No native token is spent and nothing is broadcast from their wallet.
+  </Step>
+  <Step title="A relayer submits it">
+    Mayan's relayer puts the order onchain. From here the swap proceeds exactly like any other.
+  </Step>
+  <Step title="Track it by order hash">
+    Because no transaction was sent from the user's wallet, there is no source transaction hash. `swapFromEvm` returns an **order hash string** instead, which the Explorer API accepts in its place.
+  </Step>
+</Steps>
+
+## Key concepts
+
+- **A signature, not a transaction.** The user signs, and a Mayan relayer submits the transaction and pays the gas.
+- **The return value changes.** On a normal quote `swapFromEvm` returns a transaction. On a gasless quote it returns an order hash string. Code that assumes a transaction object will break, so branch on `quote.gasless`.
+- **Not every route supports it.** Requesting `gasless: true` narrows the routes the quoter will return. If nothing comes back for a pair, that pair cannot be executed gaslessly.
+- **Refunds go back to the signer.** A gasless Swift order requires the refund address to match the wallet that signed. `swiftRefundAddress` is rejected on a gasless quote, so request `gasless: false` if you need a refund to land somewhere else. See [executing swaps](/build/sdk/executing-swaps).
+
+## Requesting it
+
+```typescript
+const quotes = await fetchQuote({
+  amountIn64: "100000000",
+  fromChain: "ethereum",
+  fromToken: USDC_ETHEREUM,
+  toChain: "base",
+  toToken: USDC_BASE,
+  slippageBps: "auto",
+  gasless: true,
+});
+
+const quote = quotes[0];
+if (!quote) throw new Error("No gasless route for this pair.");
+```
+
+See the [Quote API](/integration/quote-api) for the full parameter list.
+
+## Tracking a gasless swap
+
+```typescript
+const orderHash = await swapFromEvm(quote, /* ... */);
+// quote.gasless === true  ->  orderHash is a string, not a transaction
+
+const res = await fetch(
+  `https://explorer-api.mayan.finance/v3/swap/trx/${orderHash}`
+);
+const swap = await res.json();
+
+console.log(swap.clientStatus); // INPROGRESS, COMPLETED, or REFUNDED
+```
+
+The status values and their meanings are the same as any other swap. See [track transactions](/build/track-transactions).
+
+## Where it is used
+
+**First-time users.** Someone arriving in an ecosystem for the first time holds one asset and no gas. Gasless removes the step where they have to go acquire the native token before they can do anything.
+
+**Withdrawals.** A user leaving an app should not need to top up gas on the chain they are leaving in order to leave it.
+
+**Consumer flows.** Any interface where you would rather not explain gas at all.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Executing Swaps" icon="paper-plane" href="/build/sdk/executing-swaps">
+    The swap call on EVM, Solana and Sui.
+  </Card>
+
+  <Card title="Track Transactions" icon="radar" href="/build/track-transactions">
+    Follow a swap, or a gasless order, to a terminal status.
+  </Card>
+
+  <Card title="Quote API" icon="code" href="/integration/quote-api">
+    Every quote parameter, including `gasless`.
+  </Card>
+</CardGroup>

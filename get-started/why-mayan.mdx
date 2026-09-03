@@ -1,0 +1,50 @@
+---
+title: "Why Mayan"
+description: "What sets Mayan apart on speed, price, and coverage."
+---
+
+## Speed
+
+Swaps complete in seconds, not minutes.
+
+[Swift](/architecture/swift) fills orders against capital drivers already hold on the destination chain, so the user is paid before the source chain has finalized. The money moves the moment it is asked for, which is what payments and trading actually require.
+
+## Price
+
+Every price is competed for.
+
+Mayan calls its solvers drivers, a nod to the team's roots in ride-sharing routing. They bid against each other in real time to fill each order, and the one offering the user the most wins it.
+
+That makes the price a market outcome at the moment of the fill, not a rate fixed when the quote was issued. There is no pool whose depth caps what the user receives, because the capital belongs to the drivers.
+
+## Direct execution
+
+Mayan is the execution layer itself, not a router sitting on top of one.
+
+A router quotes you and then hands the order to someone else to fill. Mayan runs the auction, the contracts, and the settlement, so there is no layer in between taking a cut or adding a hop.
+
+Fewer hops, fewer middlemen, and the [fee](/build/fees-earning) on every swap you route is yours.
+
+## Coverage
+
+Any token with a contract address, across every chain Mayan supports.
+
+Nothing to whitelist, nothing to add token by token. Three swap methods sit behind that surface, [Swift](/architecture/swift), [MCTP](/architecture/mctp) and [Wormhole Swap](/architecture/wh-swap), each suited to a different kind of move. Swift carries up to around \$1M in a single transaction depending on the chain, and MCTP up to around \$10M.
+
+## Simplicity
+
+One signature for the user, one integration for you.
+
+A cross-chain swap feels the same as a same-chain swap: the user signs once and everything else happens underneath. Wherever they need to go, whatever token they need to hold, and whatever they need to do onchain once they arrive, it runs through the same [SDK and API](/build/sdk). Nobody takes custody of their assets at any point.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Build your first cross-chain swap in five minutes.
+  </Card>
+
+  <Card title="SDK" icon="cube" href="/build/sdk">
+    The primary integration path for cross-chain swaps.
+  </Card>
+</CardGroup>

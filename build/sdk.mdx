@@ -1,0 +1,50 @@
+---
+title: "SDK"
+description: "The primary integration path for cross-chain swaps."
+sidebarTitle: "Overview"
+---
+
+The SDK wraps the Quote API and builds the swap transaction for each source chain, so you fetch a quote, hand it to one function, and send what comes back.
+
+Going straight to the [Quote API](/integration/quote-api) is also supported, and means building and signing the transaction yourself on every chain you integrate.
+
+## Install
+
+```bash
+npm install --save @mayanfinance/swap-sdk
+```
+
+**Requirements.** Node 20.19 or later, or 22.12 or later, if you consume the package with `require()`. The SDK eagerly loads ESM-only dependencies at import time, so on older Node a CommonJS `require` throws `ERR_REQUIRE_ESM` and the package fails to load regardless of which chains you use. Importing as ESM works on any modern runtime.
+
+## The shape of an integration
+
+Three calls, in order:
+
+1. **[Fetch a quote](/build/sdk/fetching-quotes).** `fetchQuote` returns the routes available for a pair.
+2. **[Execute the swap](/build/sdk/executing-swaps).** One of `swapFromEvm`, `swapFromSolana`, or `createSwapFromSuiMoveCalls` builds and sends the transaction.
+3. **[Track it](/build/track-transactions).** The Explorer API tells you when it finished.
+
+```typescript
+import {
+  fetchQuote,
+  swapFromEvm,
+  swapFromSolana,
+  createSwapFromSuiMoveCalls,
+} from "@mayanfinance/swap-sdk";
+```
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Fetching Quotes" icon="magnifying-glass" href="/build/sdk/fetching-quotes">
+    Every parameter, the response fields that matter, and gas drop ceilings.
+  </Card>
+
+  <Card title="Executing Swaps" icon="paper-plane" href="/build/sdk/executing-swaps">
+    EVM, Solana and Sui, plus allowances, gasless and HyperCore.
+  </Card>
+
+  <Card title="Track Transactions" icon="radar" href="/build/track-transactions">
+    Step three: knowing when the swap finished.
+  </Card>
+</CardGroup>

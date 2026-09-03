@@ -1,0 +1,63 @@
+---
+title: "Deposit & Withdraw"
+description: "Fund any account from any asset, and exit in any token on any chain."
+sidebarTitle: "Deposit & Withdraw"
+---
+
+A deposit funds an account inside your app. A withdrawal sends funds back out. On Mayan both are a single cross-chain transfer with the conversion built in.
+
+On the way in, a user funds from any supported token on any supported chain, and your app receives the asset it settles in. On the way out, they choose the chain and the token they receive, and it goes straight to their wallet.
+
+Neither direction asks the user to acquire your settlement asset or move to your chain first.
+
+## How it works
+
+Pass your app's address as `destinationAddress` and the asset your app accepts as `toToken`. Whatever the user holds is converted in transit and arrives as one transfer.
+
+```typescript
+const quotes = await fetchQuote({
+  amountIn64: "5000000000",
+  fromChain: "solana",
+  fromToken: SOL,            // whatever the user holds
+  toChain: "arbitrum",
+  toToken: USDC_ARBITRUM,    // the asset your app settles in
+  slippageBps: "auto",
+});
+```
+
+Withdrawals invert it: your app is the source, and the user supplies the destination chain and token.
+
+## Two ways to take deposits
+
+- **Per-transfer.** The standard flow above. The user requests a quote and signs once for each deposit.
+- **Permanent address.** For users who fund repeatedly, Mayan can issue an address that does not expire. They send to it like an ordinary transfer, with no wallet connection, signature or approval. Set `mpsDeposit: true` alongside your `destinationAddress` on the quote request, and the response returns an `mpsDepositAddress`. See [deposit addresses](/features/deposit-addresses).
+
+## Where it fits
+
+- A DEX lets users fund from the asset they already hold rather than the one it settles in.
+- An exchange with internal balances removes the conversion step users otherwise do by hand.
+- An onramp or checkout accepts whatever the user brings and settles in one asset.
+- A vault accepts deposits in assets it does not otherwise support.
+- A product that pays users out lets them receive in the asset and on the chain they choose.
+
+## Case studies
+
+- [**Hyperliquid**](https://mayan.finance/blog/mayan-powers-one-move-hyperliquid-deposits-and-withdrawals) takes deposits and withdrawals in one move, from any chain and any asset, with Mayan. See [HyperCore deposit & withdraw](/integration/hyperliquid) for the integration.
+- [**Predikt**](https://mayan.finance/blog/how-predikt-and-mayan-are-connecting-prediction-markets) funds prediction market trades from any chain instantly with Mayan.
+- [**Manic Trade**](https://mayan.finance/blog/mayan-powers-deposits-from-any-chain-into-manic-trade) unlocked deposits from any chain with Mayan.
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Deposit Addresses" icon="inbox" href="/features/deposit-addresses">
+    A permanent address for users who fund repeatedly.
+  </Card>
+
+  <Card title="HyperCore Deposit & Withdraw" icon="chart-line" href="/integration/hyperliquid">
+    The worked integration behind the Hyperliquid case study.
+  </Card>
+
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Quote, sign and execute a first transfer.
+  </Card>
+</CardGroup>

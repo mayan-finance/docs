@@ -3,8 +3,7 @@ title: "Examples"
 description: "Complete, runnable end-to-end examples — deposit ~5 USDC and watch it settle to the destination over the WebSocket."
 ---
 
-These are full, copy-paste examples: get a deposit address from a quote, have a user send **~5 USDC**,
-and watch it settle to the destination over the WebSocket.
+These are full, copy-paste examples: get a deposit address from a quote, have a user send **~5 USDC**, and watch it settle to the destination over the WebSocket.
 
 ## Setup
 
@@ -15,21 +14,17 @@ export PRICE_URL=https://price-api.mayan.finance   # optional (default) — quot
 export DEST_WALLET=0xYourMerchantWalletOnArbitrum  # optional — where you receive USDC on Arbitrum
 ```
 
-The API key is used for the [MPS panel](https://mps.mayan.finance) and the event WebSocket — getting
-the deposit address from a quote works **without** one. Need a key? Email
-[support@mayan.finance](mailto:support@mayan.finance).
+The API key is used for the [MPS panel](https://mps.mayan.finance) and the event WebSocket. Getting the deposit address from a quote works **without** one. Need a key? Email [support@mayan.finance](mailto:support@mayan.finance), or try the shared demo key `03b9969f-7c6a-4bd1-9ad4-c0e0e9f3dcb7` (for evaluation only).
 
 ## Shared listener (Socket.IO)
 
-The event stream is served over **Socket.IO**. The listener below resolves once a settlement is
-terminal (`completed` / `dead`) for a given wallet. Both examples import it. Install the client once:
+The event stream is served over **Socket.IO**. The listener below resolves once a settlement is terminal (`completed` / `dead`) for a given wallet. Both examples import it. Install the client once:
 
 ```bash
 bun add socket.io-client   # or: npm i socket.io-client
 ```
 
-Socket.IO handles the connection for you — a built-in heartbeat keeps it alive through idle gaps and it auto-reconnects on a drop, so
-there's no manual keepalive to maintain.
+Socket.IO handles the connection for you. A built-in heartbeat keeps it alive through idle gaps and it auto-reconnects on a drop, so there's no manual keepalive to maintain.
 
 ```typescript listen.ts
 // Connects to the MPS event stream (Socket.IO) and calls `onEvent` for every
@@ -80,9 +75,7 @@ export function watchSettlement(opts: {
 
 ## Shared quote helper
 
-The deposit address comes from a **Mayan quote** with `mpsDeposit` enabled — not a separate MPS call.
-The helper below fetches a quote and returns the `mpsDepositAddress` (the deterministic address on the
-quote's source chain). Both examples import it.
+The deposit address comes from a **Mayan quote** with `mpsDeposit` enabled, not a separate API call. The helper below fetches a quote and returns the `mpsDepositAddress` (the deterministic address on the quote's source chain). Both examples import it.
 
 ```typescript mps-quote.ts
 // Fetches a Mayan quote with mpsDeposit enabled and returns the MPS deposit
@@ -135,8 +128,7 @@ export async function getMpsDepositAddress(opts: {
 
 ## Base (EVM): deposit USDC on Base
 
-The user sends ~5 USDC to the quote's deposit address on Base; it's settled as USDC to your
-destination wallet on Arbitrum.
+The user sends ~5 USDC to the quote's deposit address on Base; it's settled as USDC to your destination wallet on Arbitrum.
 
 ```typescript evm-base.ts
 import { getMpsDepositAddress } from "./mps-quote";
@@ -217,8 +209,7 @@ WS connected
 
 ## Solana: deposit USDC on Solana
 
-A quote from a Solana source returns a **Solana vault** as its `mpsDepositAddress`. The user sends
-~5 USDC to it on Solana; it's settled as USDC to your destination wallet on Arbitrum.
+A quote from a Solana source returns a **Solana vault** as its `mpsDepositAddress`. The user sends ~5 USDC to it on Solana; it's settled as USDC to your destination wallet on Arbitrum.
 
 ```typescript solana.ts
 import { getMpsDepositAddress } from "./mps-quote";
@@ -297,7 +288,6 @@ WS connected
 ```
 
 <Note>
-  The status chain differs by source chain — EVM runs `pending_deploy → deploying → pending_swap →
-  swapping → completed`; Solana runs `pending_settle → settling → completed`. See
-  [Swap Statuses](/payment-service/statuses) for the full lifecycle and the `error` field.
+  The status chain differs by source chain. EVM runs `pending_deploy → deploying → pending_swap →
+  swapping → completed`; Solana runs `pending_settle → settling → completed`. See [Swap Statuses](/payment-service/statuses) for the full lifecycle and the `error` field.
 </Note>

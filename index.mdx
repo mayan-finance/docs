@@ -1,42 +1,73 @@
 ---
 title: "What is Mayan?"
+sidebarTitle: "What is Mayan"
+description: "Mayan lets you swap any asset to any chain instantly, powering the apps millions use."
 ---
 
 Mayan is how crypto moves. Through a simple swap interface and a powerful set of developer tools, it handles routing and execution behind the scenes so users get fast, competitive swaps and teams can build cross-chain movement into their products.
 
-With over **\$18 billion** in total volume processed, **8 million swaps completed**, and **3 million unique wallets** served, Mayan supports transfers between the major blockchains like Solana, Ethereum, Monad, BNB Chain, Base, Arbitrum, Optimism, Sui, HyperEVM, and many more.
+Over **\$20B** has moved through Mayan, across **9M+ swaps** and **3M+ users**, on Solana, Ethereum, Base, Arbitrum, BNB Smart Chain, Monad, Sui, HyperEVM and more.
 
-## Key Features
+Mayan powers some of the biggest apps in crypto and fintech, including MetaMask, Phantom, OKX Wallet, MoonPay, SwapKit and LI.FI.
 
-- **One place, three swap methods:** Swift, MCTP, and Wormhole Swap — whether you want to transfer pennies or millions of dollars, Mayan adapts to deliver an optimized experience balancing speed and price.
-- **Best rates, always:** Onchain auctions continuously find the optimal swap and bridge routes for maximum value.
-- **Blazing speed:** Swaps complete in just seconds — not minutes or hours.
-- **Developer-friendly:** Easy to integrate using the Mayan SDK and widget, with flexible options for fees.
-- **Secure and trustworthy:** Trustless, permissionless smart contracts, audited regularly and designed to keep assets safe.
+## Use cases
 
-## Transfer Methods
+<CardGroup cols={3}>
+  <Card title="Swap" icon="arrow-right-arrow-left" href="/use-cases/swap">
+    Trade any asset to any asset at the best price.
+  </Card>
 
-- ⚡ **Swift:** Our newest, fastest method. Intent-based transfers that complete at lightning speed with the best prices, thanks to a competitive auction system.
-- 🌐 **MCTP (Mayan-Circle Transfer Protocol):** Uses Circle's CCTP highway for value transfer, combined with Mayan's auction model for ideal pricing — perfect for high-value and stablecoin transfers.
-- 🔄 **Wormhole Swap:** Employs Wormhole’s Token Bridge for low-slippage, high-value transfers of BTC, SOL, and ETH.
+  <Card title="Bridge" icon="link" href="/use-cases/bridge">
+    Move any asset cross-chain in one transaction.
+  </Card>
 
-## Use Cases
+  <Card title="Pay" icon="credit-card" href="/use-cases/pay">
+    Send stablecoins globally, in any token, on any chain.
+  </Card>
 
-- Swap any asset to any asset on supported major chains effortlessly and instantly.
-- Bridge assets quickly with the best prices available.
-- Power wallets, dApps, and marketplaces with seamless cross-chain liquidity.
+  <Card title="Deposit & Withdraw" icon="wallet" href="/use-cases/deposit">
+    Fund and exit any onchain account in one move.
+  </Card>
 
-## The Mayan Product Suite
+  <Card title="Orchestrate" icon="wand-magic-sparkles" href="/use-cases/orchestrate">
+    Attach any onchain action to a single swap.
+  </Card>
+</CardGroup>
 
-- **Mayan App:** Simple, intuitive interface to execute swaps with a few clicks.
-- **Mayan API:** Comprehensive tools for developers to embed cross-chain capabilities into their platforms.
-- **Mayan Protocol:** Robust smart contracts and auction mechanisms ensuring trustless, efficient, and transparent swaps.
+## Key features
 
-## Trust and Reliability
+- **Speed.** Swaps settle in seconds, not minutes. Drivers pay the user from capital they already hold on the destination chain, so nobody waits on the source chain to finalize first.
+- **One place, three swap methods.** Swift, MCTP, and Wormhole Swap cover everything from pennies to millions. You pick the one that fits the order.
+- **Best rates, always.** Every order is filled competitively, so pricing moves in the user's favour rather than being fixed at quote time.
+- **Developer-friendly.** An [SDK](/build/sdk), an [API](/build/integrate-swap-api), and a drop-in [widget](/integration/swap-widget), with flexible fee options.
+- **Non-custodial.** Permissionless smart contracts, [audited](/resources/audits) by OtterSec and Sec3. No party can freeze or move user assets.
 
-Mayan provides industry-leading uptime, rigorous audits, and security measures designed to ensure your assets are safe, and your trades are executed smoothly — whether pennies or millions.
+## Transfer methods
 
-## Get Started
+| Method | Settles in | What it uses | Best for |
+| --- | --- | --- | --- |
+| [Swift](/architecture/swift) | As little as 2 seconds | Intent-based fills from driver capital already sitting on the destination chain. | Most swaps, up to around \$1M. |
+| [MCTP / Fast MCTP](/architecture/mctp) | As little as 5 seconds | Circle's CCTP as the highway. | High-value and stablecoin transfers, up to around \$10M. |
+| [Wormhole Swap](/architecture/wh-swap) | Under a minute | The Wormhole Token Bridge. | Low-slippage transfers of high-value SOL and ETH. |
 
-- Try the [**Mayan app**](https://mayan.finance/) for instant, cross-chain swaps.
-- Explore our [**developer guides**](https://docs.mayan.finance/) to build your own integrations.
+## The Mayan product suite
+
+- **Mayan app.** A simple, intuitive interface at [swap.mayan.finance](https://swap.mayan.finance), open to anyone.
+- **Mayan API.** The [SDK](/build/sdk), [API](/build/integrate-swap-api) and [widget](/integration/swap-widget) that embed cross-chain movement in your own product.
+- **Mayan Protocol.** The smart contracts and execution logic underneath both.
+
+## Get started
+
+<CardGroup cols={3}>
+  <Card title="Try the Mayan app" icon="bolt" href="https://swap.mayan.finance">
+    Instant cross-chain swaps, no integration needed.
+  </Card>
+
+  <Card title="Start integrating" icon="rocket" href="/get-started/quickstart">
+    Build your first cross-chain swap in five minutes.
+  </Card>
+
+  <Card title="Learn more" icon="book-open" href="/get-started/why-mayan">
+    Why teams build cross-chain movement on Mayan.
+  </Card>
+</CardGroup>

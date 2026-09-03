@@ -1,32 +1,36 @@
 ---
-title: "User Manual"
+title: "How to Use Mayan"
+sidebarTitle: "How to Use Mayan"
+description: "How to swap on swap.mayan.finance."
 ---
 
-# How to Swap Tokens with Mayan
+Swapping on [swap.mayan.finance](https://swap.mayan.finance) takes three steps, whether the tokens are on one chain or two.
 
-Swapping tokens on Mayan is designed to be as simple and seamless as possible. Whether performing a cross-chain swap or a same-chain swap, the process is straightforward:
+1. Choose the **token you are sending** and the chain it is on.
+2. Choose the **chain you want to receive on** and the **token you want**.
+3. Confirm and sign once. Mayan routes the swap and delivers the output to your wallet.
 
-1. Choose your **input token** and the blockchain it’s on.
-2. Select your **destination chain** and the desired **output token**.
-3. Mayan handles everything behind the scenes — from finding the best route and managing transactions to delivering the exact amount of tokens quoted to your wallet.
+Any major wallet works.
 
-No complex steps or manual operations are required. Just select your tokens and chains, confirm the quoted amount, and let Mayan do the rest.
+## Reading the quote
 
-## Wallet Support
+Every quote shows two numbers: the amount you can expect to receive, and the minimum you will accept. The swap will not execute below that minimum.
 
-To use Mayan, all that’s needed is any major wallet. Mayan supports all leading wallets to ensure a smooth, seamless swapping experience across chains.
+On some routes the amount is locked before you confirm, so the number you are shown is exactly the number you receive. See [Guaranteed Price](/features/guaranteed-price).
 
-## Example: Cross-Chain Swap from Solana to Base
+Check the price impact percentage before confirming. It shows how much your swap moves the price on that market, and a high number means you are not getting a good rate.
 
-- Connect your preferred wallet
+## Example: Solana to Base
+
+- Connect your wallet
 - Select Solana as the source chain and your input token
 - Select Base as the destination chain and your output token
-- Confirm and execute the swap
+- Confirm and execute
 
-Your tokens will arrive on Base once the swap completes, with the exact amount quoted at the start.
+Your tokens arrive on Base once the swap completes.
 
 <iframe className="w-full aspect-video rounded-xl" src="https://www.youtube.com/embed/nhBN6zy3Vys" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
 
-<Info>
-  Please pay attention to the price impact percentage, it shows how much your swap affects the price of tokens on that market, so if it's high, it means you are not getting an ideal deal.
-</Info>
+## Checking a swap
+
+Every swap is visible on [Mayan Explorer](/application/mayan-explorer), searchable by transaction hash or wallet address.

@@ -1,41 +1,41 @@
 ---
 title: "Wormhole Swap"
-description: "Permissionless, open-source cross-chain token swaps built on Wormhole primitives and powered by Mayan."
+description: "Low-slippage cross-chain transfers of high-value assets, routed over the Wormhole Token Bridge."
 ---
 
-**What it is:**\
-Wormhole Swap leverages the Wormhole Token Bridge’s mint-and-burn architecture enhanced by Wormhole’s generic message-passing capabilities to enable seamless cross-chain, one-click token swaps. Developed by Mayan, this protocol embeds swap-specific metadata alongside Token Bridge messages, making cross-chain swaps efficient and trustless.
+**What it is:**<br />Wormhole Swap leverages the Wormhole Token Bridge’s mint-and-burn architecture enhanced by Wormhole’s generic message-passing capabilities to enable seamless cross-chain, one-click token swaps. Developed by Mayan, this protocol embeds swap-specific metadata alongside Token Bridge messages, making cross-chain swaps efficient and trustless.
 
 **How it works:**
 
 - Users initiate a swap that sends tokens via the Wormhole Token Bridge using mint-and-burn.
 - Swap details are embedded in generic Wormhole messages delivered by relayers on Solana.
-- Drivers receive all swap information and participate in a Mayan on-chain auction to determine the best execution price.
-- The auction winner performs a flash swap on Solana, obtaining the funds and atomically sending the promised output amount within the same transaction.
+- Drivers receive all swap information and compete on Solana to determine the best execution price.
+- The winning driver performs a flash swap on Solana, obtaining the funds and atomically sending the promised output amount within the same transaction.
 - Post-swap, if the destination address is on Solana, the relayer directly transfers output tokens to the user's wallet. Otherwise, relayers send tokens to destination chains via the Token Bridge.
+
+Wormhole Swap settles in under a minute.
 
 **Key advantages:**
 
 - Atomic flash swaps ensure secure, simultaneous execution without intermediary risk.
 - Fully permissionless and open-source.
-- Efficient use of Wormhole messaging coupled with Mayan’s competitive auction to optimize pricing and execution.
+- Efficient use of Wormhole messaging coupled with Mayan’s competitive driver network to optimize pricing and execution.
 
 Here is an overview of what happens when a user executes a cross-chain transaction on Mayan:
 
 ![Mayan WH Swap.jpg](/images/MayanWHSwap.jpg)
 
-**Protocol fee:**\
-The Wormhole Swap fees are set at 10 basis points (0.10%).
+**Protocol fee:**<br />The Wormhole Swap fees are set at 10 basis points (0.10%).
 
 ### WH Swap Contract Addresses
 
-| Network   | Wormhole Chain ID | Contract Address                               |
-| --------- | ----------------- | ---------------------------------------------- |
-| Solana    | 1                 | `FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf` |
-| Ethereum  | 2                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
-| BSC       | 4                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
-| Polygon   | 5                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
-| Avalanche | 6                 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
-| Arbitrum  | 23                | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
-| Optimism  | 24                | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4`   |
-| Base      | 30                | `0x11AA521C888d84f374B63823d9b873CAa3591f55`   |
+| Network | Wormhole Chain ID | Contract Address |
+| --- | --- | --- |
+| Solana | 1 | `FC4eXxkyrMPTjiYUpp4EAnkmwMbQyZ6NDCh1kfLn6vsf` |
+| Ethereum | 2 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4` |
+| BSC | 4 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4` |
+| Polygon | 5 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4` |
+| Avalanche | 6 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4` |
+| Arbitrum | 23 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4` |
+| Optimism | 24 | `0xBF5f3f65102aE745A48BD521d10BaB5BF02A9eF4` |
+| Base | 30 | `0x11AA521C888d84f374B63823d9b873CAa3591f55` |

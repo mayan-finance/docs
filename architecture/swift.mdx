@@ -1,44 +1,114 @@
 ---
 title: "Swift"
-description: "Lightning fast, intent-based bridging and cross-chain swaps with Mayan."
+description: "Mayan's intent-based method for fast cross-chain swaps, filled from driver liquidity on the destination chain."
 ---
 
-<Warning>
-  Swift v1 will not be supported in the long term. New integrations should use [Swift v2](/architecture/swift-v2), and existing integrations are strongly encouraged to migrate.
-</Warning>
+Swift is Mayan's intent-based method for cross-chain swaps, and the path most orders take. Rather than bridging tokens or minting a wrapped asset, drivers deliver the user's output directly on the destination chain from liquidity they already hold, and Swift releases the user's original funds on the source chain afterwards.
 
-**What it is:**\
-Swift is Mayan’s intent-based protocol designed for rapid bridging and swaps. Users simply specify their input token and source chain, along with their desired output token and destination chain. All underlying complexities such as order creation and asset locking are fully handled by the protocol and hidden from users and integrators.
+That ordering is what makes it fast. Swift settles in as little as 2 seconds, because the user is paid before the cross-chain message is verified rather than after the source chain finalizes.
 
-**How it works:**
+## How it works
 
-- When a cross-chain swap is initiated, an auction is triggered onchain.
-- Drivers (solvers) bid competitively in this auction.
-- The highest bidder fulfills the order on the destination chain exactly as specified by the user, using liquidity (inventory) they already hold on that chain. This results in near-instant settlement with guaranteed output amount.
-- Upon fulfillment, the winning driver receives a receipt that enables the secure unlocking and transfer of assets on the source chain.
-- The entire process from order initiation to final settlement typically completes within seconds.
+<Steps>
+  <Step title="The user signs on the source chain">
+    The source contract locks the input tokens. The input may first be swapped into the primary locked asset on that chain, typically USDC or ETH.
+  </Step>
+  <Step title="Drivers compete to fill it">
+    Drivers submit offers on Solana based on the output they can deliver on the destination chain. The best offer wins.
+  </Step>
+  <Step title="The winning driver pays the user">
+    They fulfil the swap directly on the destination chain from their own liquidity. The user has their funds at this point.
+  </Step>
+  <Step title="The driver is reimbursed">
+    The destination contract posts fulfilment data, which is executed on the source chain, and Swift emits an unlock message releasing the locked funds.
+  </Step>
+</Steps>
 
-![Mayan-Swift.jpg](/images/Mayan-Swift.jpg)
+For payload-enabled swaps the destination contract stages the payout and completes it after a settlement step, which lets the payload be validated before final payout. The source unlock still happens after the VAA.
 
-**User experience:**\
-Swift abstracts all technical steps—and there is no need for users or integrators to manually interact with contracts or manage asset locking. Mayan automatically orchestrates the flow to ensure a smooth experience.
+## What it gives you
 
-**Protocol fee:**\
-Swift charges a fee of 3 basis points (0.03%).
+- Settlement in as little as 2 seconds, because the driver fronts the delivery rather than waiting on the source chain.
+- No bridge liquidity to seed, no wrapping, and no mint or burn mechanics.
+- Exact-out settlement on eligible assets. See [Guaranteed Price](/features/guaranteed-price).
+- Integration through the [SDK](/build/sdk), with minimal onchain assumptions.
+- Optional referrer fees for integrators. See [Fees & Earning](/build/fees-earning).
 
-### Swift Contract Addresses
+## Transaction size
 
-| Network | Wormhole Chain ID | Contract Address |
-| --- | --- | --- |
-| Solana | 1 | `BLZRi6frs4X4DNLw56V4EXai1b6QVESN1BhHBTYM9VcY` |
-| Ethereum | 2 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| BSC | 4 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Polygon | 5 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Avalanche | 6 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Arbitrum | 23 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Optimism | 24 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Base | 30 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Linea | 38 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Unichain | 44 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| HyperEVM | 47 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
-| Monad | 48 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+Swift carries single transfers up to around \$1M, depending on the chain. For larger transfers you can select [MCTP](/architecture/mctp) instead, which carries up to around \$10M.
+
+## Protocol fee
+
+**Swift has no protocol fee.** The live value for any quote is still returned in the quote response, so read it rather than hardcoding.
+
+## Refunds
+
+If the input was converted into the primary locked asset before the order opened, a refunded order returns that converted asset rather than the token the user sent. Surface this in your interface. See [Refunds](/how-mayan-works/refunds).
+
+## Contract addresses
+
+<Tabs>
+  <Tab title="Source Contracts">
+    | Network | Wormhole Chain ID | Source Contract Address |
+    | --- | --- | --- |
+    | **Solana** | 1 | `mayan34VedncxdK2XobtvWFDXQASUTBXhUVzt2kKgny` |
+    | **Ethereum** | 2 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **BSC** | 4 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Polygon** | 5 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Avalanche** | 6 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Arbitrum** | 23 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Optimism** | 24 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Base** | 30 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Linea** | 38 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Unichain** | 44 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **HyperEVM** | 47 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+    | **Monad** | 48 | `0x40fFE85A28DC9993541449464d7529a922142960` |
+  </Tab>
+  <Tab title="Destination Contracts">
+    | Network | Wormhole Chain ID | Destination Contract Address |
+    | --- | --- | --- |
+    | **Solana** | 1 | `mayan34VedncxdK2XobtvWFDXQASUTBXhUVzt2kKgny` |
+    | **Ethereum** | 2 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **BSC** | 4 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Polygon** | 5 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Avalanche** | 6 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Arbitrum** | 23 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Optimism** | 24 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Base** | 30 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Linea** | 38 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Unichain** | 44 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **HyperEVM** | 47 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+    | **Monad** | 48 | `0xD78D199f8C402e7B5Cc2abE278dF0412400a3BAe` |
+  </Tab>
+</Tabs>
+
+## Earlier versions
+
+Everything above describes Swift as it works today. The detail below matters only if you integrated before the current version and have not migrated.
+
+<Accordion title="Migrating from the original Swift contracts">
+  The original Swift used a single contract per chain. The current version splits that into a source contract and a destination contract, which is what allows the staging and settle step for payload swaps and gives more consistent settlement across chains.
+
+  Two changes affect integrators:
+
+  - **Referrer fees moved.** They were collected from the output token on the destination chain. They are now collected from the locked source assets and paid on the source chain.
+  - **Payload handling changed.** Payload swaps are now staged and settled in two steps, so the payload is validated before final payout.
+
+  The original contracts are not supported long term. Existing integrations should migrate.
+
+  | Network | Wormhole Chain ID | Contract Address |
+  | --- | --- | --- |
+  | Solana | 1 | `BLZRi6frs4X4DNLw56V4EXai1b6QVESN1BhHBTYM9VcY` |
+  | Ethereum | 2 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | BSC | 4 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Polygon | 5 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Avalanche | 6 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Arbitrum | 23 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Optimism | 24 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Base | 30 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Linea | 38 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Unichain | 44 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | HyperEVM | 47 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+  | Monad | 48 | `0xC38e4e6A15593f908255214653d3D947CA1c2338` |
+</Accordion>

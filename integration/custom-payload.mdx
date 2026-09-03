@@ -1,6 +1,7 @@
 ---
 title: "Zaps (Custom Payloads) "
 description: "Learn how to attach custom payloads, to Mayan swaps, which routes support them, and how to pass raw payload bytes through the EVM, Solana, and Sui SDK integrations."
+sidebarTitle: "Zaps (Custom Payloads)"
 ---
 
 ## Overview
@@ -34,13 +35,29 @@ Only specific swap routes support caller-supplied payloads; others will reject o
 
 ## Use custom payloads in the Swap SDK
 
-You can attach a custom payload from EVM, Solana, or Sui by passing a `Buffer` or `Uint8Array` to the relevant SDK call. Payload support depends on the chain and the route type, so refer to the sections below for precise behavior.
+You can attach a custom payload from EVM, Solana, or Sui by passing a `Buffer` or `Uint8Array` to the relevant SDK call. Payload support depends on the chain and the route type, so confirm the quote type and route before attaching one, and make sure your destination logic can decode what you send.
 
 Payloads should stay small. Each chain and route has its own message-size limits, and larger payloads may increase fees or cause the swap to fail if the underlying protocol rejects the message.
 
 ### Fetching quote
 
-To ensure you receive a quote that supports custom payloads, you must pass `payload: 'true'` in the `quoteOptions` parameter when using `fetchQuote` or `generateFetchQuoteUrl`.
+To receive only routes that carry a custom payload, pass `payload: 'true'` in the second argument (`quoteOptions`) of `fetchQuote` or `generateFetchQuoteUrl`.
+
+```typescript ts
+import { fetchQuote } from '@mayanfinance/swap-sdk';
+
+const quotes = await fetchQuote(
+  {
+    amountIn64: '100000000',
+    fromChain: 'arbitrum',
+    fromToken: USDC_ARBITRUM,
+    toChain: 'base',
+    toToken: USDC_BASE,
+    slippageBps: 'auto',
+  },
+  { payload: 'true' },
+);
+```
 
 > **Important**
 >
@@ -56,7 +73,7 @@ On EVM, a [custom payload](https://github.com/mayan-finance/swap-sdk/blob/main/s
 import { swapFromEvm } from '@mayanfinance/swap-sdk';
 
 const customPayload = Buffer.from('hello-world');
-
+const quotes = await fetchQuote(params, { payload: 'true' });
 const tx = await swapFromEvm(
   quote,
   fromAddress,
@@ -114,7 +131,3 @@ const tx = await createSwapFromSuiMoveCalls(
   suiClient
 );
 ```
-
-## Summary
-
-Zaps let you attach application-specific data to supported Mayan swap routes. Only specific paths accept payloads, and each chain has its own conditions. Always confirm the quote type and route before attaching a payload, and ensure your destination logic is prepared to decode the data you send.

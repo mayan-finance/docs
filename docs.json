@@ -52,61 +52,122 @@
     },
     "groups": [
       {
-        "group": " ",
+        "group": "GET STARTED",
         "pages": [
-          "index"
+          "index",
+          "get-started/quickstart",
+          "get-started/why-mayan",
+          "application/user-manual"
         ]
       },
       {
-        "group": "ARCHITECTURE",
+        "group": "USE CASES",
         "pages": [
-          "architecture/swift-v2",
-          "architecture/swift",
-          "architecture/auction",
+          "use-cases/swap",
+          "use-cases/bridge",
+          "use-cases/deposit",
+          "use-cases/pay",
+          "use-cases/orchestrate"
+        ]
+      },
+      {
+        "group": "SOLUTIONS",
+        "pages": [
+          "solutions/wallets",
+          "solutions/applications",
+          "solutions/chains",
+          "solutions/commerce"
+        ]
+      },
+      {
+        "group": "HOW MAYAN WORKS",
+        "pages": [
+          "how-mayan-works/intent-based-swaps",
+          {
+            "group": "Routes",
+            "pages": [
+              "architecture/swift",
+              "architecture/mctp",
+              "architecture/wh-swap"
+            ]
+          },
           "architecture/relayers",
-          "architecture/mctp",
-          "architecture/wh-swap"
+          "how-mayan-works/refunds",
+          "application/mayan-explorer"
+        ]
+      },
+      {
+        "group": "FEATURES",
+        "pages": [
+          "features/guaranteed-price",
+          {
+            "group": "Deposit Addresses",
+            "pages": [
+              "features/deposit-addresses",
+              "payment-service/quickstart",
+              "payment-service/statuses",
+              "payment-service/events",
+              "payment-service/api-reference",
+              "payment-service/examples"
+            ]
+          },
+          "integration/hyperliquid",
+          "integration/custom-payload",
+          "application/gas-on-destination",
+          "features/gasless-execution"
         ]
       },
       {
         "group": "INTEGRATION",
         "pages": [
-          "integration/quote-api",
-          "integration/explorer-api",
-          "integration/forwarder-contract",
-          "integration/custom-payload",
-          "integration/hyperliquid",
-          "integration/referral",
+          {
+            "group": "SDK",
+            "pages": [
+              "build/sdk",
+              "build/sdk/fetching-quotes",
+              "build/sdk/executing-swaps",
+              "link/swap",
+              "build/fees-earning",
+              "build/sdk/fee-splitting",
+              "build/sdk/manual-transactions",
+              "integration/forwarder-contract"
+            ]
+          },
           "integration/swap-widget",
-          "link/swap"
-        ]
-      },
-      {
-        "group": "PAYMENT SERVICE",
-        "pages": [
-          "payment-service/overview",
-          "payment-service/quickstart",
-          "payment-service/api-reference",
-          "payment-service/statuses",
-          "payment-service/events",
-          "payment-service/examples"
-        ]
-      },
-      {
-        "group": "APPLICATION",
-        "pages": [
-          "application/user-manual",
-          "application/mayan-explorer",
+          {
+            "group": "APIs",
+            "pages": [
+              "build/integrate-swap-api",
+              "integration/quote-api",
+              "integration/explorer-api"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "build/track-transactions",
+              "build/direct-route-linking"
+            ]
+          },
           "application/relayer-fees",
-          "application/gas-on-destination"
+          "resources/chains-contracts",
+          "resources/technical-faq",
+          "resources/compliance"
         ]
       },
       {
         "group": "RESOURCES",
         "pages": [
+          "link/brand",
           "resources/audits",
-          "link/github",
-          "link/brand"
+          "link/github"
+        ]
+      },
+      {
+        "group": "AI AGENTS",
+        "pages": [
+          "ai-agents/llms-txt",
+          "ai-agents/agents-md"
         ]
       }
     ]
@@ -140,7 +201,39 @@
     "socials": {
       "x": "https://x.com/mayan",
       "discord": "https://discord.com/invite/MayanFinance"
-    }
+    },
+    "links": [
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "GitHub",
+            "href": "https://github.com/mayan-finance"
+          },
+          {
+            "label": "Brand Kit",
+            "href": "https://drive.google.com/drive/folders/1rTsnJrREco-ygz37ZzFNPHN68mIPeAby"
+          },
+          {
+            "label": "Mayan Explorer",
+            "href": "https://explorer.mayan.finance/"
+          }
+        ]
+      },
+      {
+        "header": "Product",
+        "items": [
+          {
+            "label": "Mayan App",
+            "href": "https://swap.mayan.finance/"
+          },
+          {
+            "label": "Blog",
+            "href": "https://mayan.finance/blog"
+          }
+        ]
+      }
+    ]
   },
   "banner": {
     "content": "\ud83d\udd14 **Integrators:** Swift v1 is now deprecated. Update the SDK to the latest version to run on Swift v2.",
@@ -150,5 +243,26 @@
       "dark": "#6C2A87"
     }
   },
-  "integrations": { "mixpanel": { "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc" } }
+  "integrations": {
+    "mixpanel": {
+      "projectToken": "f4732326d84c14f00a5dc597ae8dc8dc"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/architecture/swift-v2",
+      "destination": "/architecture/swift",
+      "permanent": true
+    },
+    {
+      "source": "/architecture/auction",
+      "destination": "/how-mayan-works/intent-based-swaps",
+      "permanent": true
+    },
+    {
+      "source": "/integration/referral",
+      "destination": "/build/fees-earning",
+      "permanent": true
+    }
+  ]
 }

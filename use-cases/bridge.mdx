@@ -1,0 +1,70 @@
+---
+title: "Bridge"
+description: "Move any asset cross-chain in one transaction."
+---
+
+Bridging means moving an asset from one chain to another. It used to be a task of its own: find a bridge, wait for it to clear, then swap into the asset the user actually wanted once it arrived.
+
+On Mayan it is a swap. The user says where their assets are and where they need to be, signs once, and the asset arrives on the other side in seconds.
+
+## How it works
+
+A bridge transfer is a quote where the source and destination chains differ. The asset can stay the same or change in transit.
+
+```typescript
+const quotes = await fetchQuote({
+  amountIn64: "1000000000",
+  fromChain: "ethereum",
+  fromToken: USDC_ETHEREUM,
+  toChain: "base",
+  toToken: USDC_BASE,        // same asset here, but it can change
+  slippageBps: "auto",
+});
+```
+
+`fetchQuote` returns the routes available for the pair, and each one is tagged with the transfer method it uses as `type`. You choose which route to execute:
+
+- **Swift** for speed. See [Swift](/architecture/swift).
+- **MCTP** for high-value stablecoin transfers, routed over Circle's CCTP. See [MCTP](/architecture/mctp).
+- **Wormhole Swap** for low-slippage transfers of assets such as SOL and ETH. See [Wormhole Swap](/architecture/wh-swap).
+
+Swift carries single transfers up to around \$1M depending on the chain, and MCTP and Fast MCTP up to around \$10M.
+
+## Gas on the destination chain
+
+A user arriving on a chain they have not used holds none of its native token, so they cannot transact once they land. Two features address this:
+
+- [Gas on destination](/application/gas-on-destination) delivers native gas alongside the output. The amount is returned as `gasDrop` on the quote.
+- [Gasless execution](/features/gasless-execution) removes the gas requirement on the source chain. On supported routes the user signs a message rather than a transaction, and the fee comes out of the input amount.
+
+## Message verification
+
+A cross-chain transfer requires the destination chain to know what happened on the source chain. Mayan uses [Wormhole](https://wormhole.com) for that: its Guardian network attests each message, with 13 of 19 independent organizations signing before it is valid.
+
+Contracts are public and audited. See [security & audits](/resources/audits).
+
+## Where it fits
+
+- A wallet lets users move holdings between chains without leaving the app.
+- A new chain becomes reachable from every major ecosystem on day one.
+- An app accepts users who hold assets in a different ecosystem.
+
+## Case studies
+
+- [**Superbridge**](https://mayan.finance/blog/mayan-is-live-on-superbridge) moves any asset across any chain in seconds with Mayan.
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Swift" icon="bolt" href="/architecture/swift">
+    The fast route, how it fills, and its size limit.
+  </Card>
+
+  <Card title="MCTP / Fast MCTP" icon="circle-dollar-to-slot" href="/architecture/mctp">
+    The high-value stablecoin route over Circle's CCTP.
+  </Card>
+
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Quote, sign and execute a first transfer.
+  </Card>
+</CardGroup>

@@ -1,0 +1,64 @@
+---
+title: "Intents"
+description: "What an intent is and how Mayan fills one."
+sidebarTitle: "Intents"
+---
+
+An intent is an order where the user states the outcome instead of the steps.
+
+The user says what they are sending, what they want to receive, where it should land, and the least they will accept. Mayan works out everything in between.
+
+## What Mayan handles
+
+The user states the outcome. Everything needed to produce it happens on Mayan's side:
+
+- **Finding the route.** Which chains, and which liquidity fills the order.
+- **Executing the move.** The user approves it once, at the start, and there is nothing to come back to.
+- **Delivering the right asset.** The token they asked for, on the chain they asked for, ready to use.
+- **Gas to use it.** Native gas can be delivered alongside the output, so they can transact as soon as it lands.
+
+## How an order is filled
+
+<Steps>
+  <Step title="The user signs an intent">
+    The asset being sent, the destination chain, the token to receive, and the minimum they will accept.
+  </Step>
+  <Step title="The network competes to fill it">
+    Drivers compete against each other to fill it, and the best offer wins.
+  </Step>
+  <Step title="The winning driver fills it from their own capital">
+    They pay the user on the destination chain from assets they already hold there, rather than waiting for the user's funds to cross.
+  </Step>
+  <Step title="The user receives their funds">
+    Typically in seconds. The swap is finished from their side.
+  </Step>
+</Steps>
+
+Reimbursement happens afterwards: [Wormhole](https://wormhole.com) attests the source-chain deposit, and the driver reclaims the funds once that attestation lands. The user is not waiting on any of it.
+
+## Why it settles in seconds
+
+The slow part of a cross-chain transfer is waiting for the source chain to finalize and for a message to be verified on the other side.
+
+An intent moves that wait off the user. The driver fronts the delivery and absorbs the wait, because they are the one being reimbursed at the end.
+
+## What competition produces
+
+Every order is contested, and the effects compound:
+
+- **Better prices**, because drivers win by offering more, not by being the only option available.
+- **Faster fills**, because a driver who is slow loses the next order.
+- **Wider coverage**, because any driver willing to hold a long-tail asset can win orders in it.
+- **No liquidity to configure**, because the capital belongs to the drivers rather than to a pool you have to seed.
+
+## Transaction sizes
+
+The method that fills an order sets how much it can carry. Swift handles up to around \$1M in a single transaction depending on the chain. MCTP and Fast MCTP carry up to around \$10M.
+
+## Which route fills it
+
+Three transfer methods sit underneath: [Swift](/architecture/swift), [MCTP and Fast MCTP](/architecture/mctp), and [Wormhole Swap](/architecture/wh-swap). A quote request returns the routes available for the pair, each tagged with the method it uses, and you choose which one to execute. Having all three under one integration is what lets it serve a small trade and a large one equally well.
+
+## If an order is not filled
+
+The minimum the user signed is part of the instruction, so an order cannot fill below it. An order that no driver takes before its deadline is refunded and the input returns to the sender. Mayan does not take custody at any point. See [refunds](/how-mayan-works/refunds).

@@ -3,25 +3,20 @@ title: "Events"
 description: "Real-time Socket.IO events across the settlement lifecycle, plus replay after disconnects."
 ---
 
-MPS emits two event types across its whole lifecycle. Consume them live over **Socket.IO**, and catch
-up on anything missed after a disconnect with the [`GET /events`](#delivery-and-replay) replay
-endpoint.
+The deposit address service emits two event types across its whole lifecycle. Consume them live over **Socket.IO**, and catch up on anything missed after a disconnect with the [`GET /events`](#delivery-and-replay) replay endpoint.
 
 ## Event types
 
 | Type | Trigger |
-|------|---------|
+| --- | --- |
 | `deposit_detected` | A deposit was observed on-chain (fires whether or not it gets queued) |
-| `status_changed` | A swap moved between [statuses](/payment-service/statuses) — covers deploy/swap/settle progress, **every retry, deferrals, success, and terminal failure** |
+| `status_changed` | A swap moved between [statuses](/payment-service/statuses). Covers deploy/swap/settle progress, **every retry, deferrals, success, and terminal failure** |
 
-`status_changed` is the single lifecycle signal: a completed payment is `status_changed` with
-`status: "completed"`, and a freshly deployed wallet rides on the `status_changed` into
-`pending_swap` (carrying its deploy `txHash`).
+`status_changed` is the single lifecycle signal: a completed payment is `status_changed` with `status: "completed"`, and a freshly deployed wallet rides on the `status_changed` into `pending_swap` (carrying its deploy `txHash`).
 
 ## Socket.IO
 
-The live stream is served over [Socket.IO](https://socket.io) (`bun add socket.io-client`). Connect
-to the base URL and pass your API key in the handshake `auth`:
+The live stream is served over [Socket.IO](https://socket.io) (`bun add socket.io-client`). Connect to the base URL and pass your API key in the handshake `auth`:
 
 ```typescript
 import * as io from "socket.io-client";
@@ -48,11 +43,9 @@ On a successful connection the server emits a `connected` event with your integr
 { "integratorName": "your-name" }
 ```
 
-Socket.IO keeps the connection alive with its own heartbeat and **auto-reconnects** on a drop, so you
-don't manage pings yourself. Fan-out is still best-effort — after a reconnect, catch up on anything
-missed via [`GET /events`](#delivery-and-replay).
+Socket.IO keeps the connection alive with its own heartbeat and **auto-reconnects** on a drop, so you don't manage pings yourself. Fan-out is still best-effort. After a reconnect, catch up on anything missed via [`GET /events`](#delivery-and-replay).
 
-### deposit_detected
+### deposit\_detected
 
 ```json
 {
@@ -68,13 +61,9 @@ missed via [`GET /events`](#delivery-and-replay).
 }
 ```
 
-`queued` tells you whether the deposit entered the settlement queue. If `false`, `ignoredReason`
-explains why (`below_token_min`, `below_min`, `no_adapter`, `enqueue_error`) — so a dust/spam deposit
-that will never produce a swap is an explicit signal, not a detection with no follow-up. `below_token_min`
-is the per-token minimum (see [`GET /source-config`](/payment-service/api-reference#source-config));
-`below_min` is the chain-level USD floor.
+`queued` tells you whether the deposit entered the settlement queue. If `false`, `ignoredReason` explains why (`below_token_min`, `below_min`, `no_adapter`, `enqueue_error`), so a dust/spam deposit that will never produce a swap is an explicit signal, not a detection with no follow-up. `below_token_min` is the per-token minimum (see [`GET /source-config`](/payment-service/api-reference#source-config)); `below_min` is the chain-level USD floor.
 
-### status_changed
+### status\_changed
 
 ```json
 {
@@ -104,22 +93,18 @@ is the per-token minimum (see [`GET /source-config`](/payment-service/api-refere
 
 - `queueItemId` is the settlement id (matches [`GET /swaps`](/payment-service/api-reference#list-swaps) `id`).
 - `error` is `null` except on failing/deferred states (see the [error model](/payment-service/api-reference#errors)).
-- `txHash` carries the wallet-deployment tx on the transition into `pending_swap`, and the
-  swap/settle tx on the transition into `completed`.
+- `txHash` carries the wallet-deployment tx on the transition into `pending_swap`, and the swap/settle tx on the transition into `completed`.
 - To react only to final outcomes, filter on `terminal: true` (`completed` = success, `dead` = failure).
 
 ## Delivery and replay
 
-Socket.IO fan-out is **live and best-effort**: events are pushed only to currently-connected sockets
-and are not buffered per connection. Socket.IO auto-reconnects, but events that fired while you were
-disconnected are not resent — **catch up with the replay endpoint** rather than relying on the socket.
+Socket.IO fan-out is **live and best-effort**: events are pushed only to currently-connected sockets and are not buffered per connection. Socket.IO auto-reconnects, but events that fired while you were disconnected are not resent. **Catch up with the replay endpoint** rather than relying on the socket.
 
-```
+```text
 GET /events?since=<ISO timestamp>&limit=50&type=status_changed
 ```
 
-Returns your events in **chronological (ascending)** order strictly after `since` (omit `since` to
-start from the oldest retained event). Page forward with `nextCursor` until it is `null`.
+Returns your events in **chronological (ascending)** order strictly after `since` (omit `since` to start from the oldest retained event). Page forward with `nextCursor` until it is `null`.
 
 <CodeGroup>
 
@@ -165,7 +150,5 @@ def drain(since_iso: str | None = None):
 </CodeGroup>
 
 <Note>
-  Events are retained for **30 days** and pruned afterwards, so replay only reaches back over the
-  retention window. Treat events as **idempotent** — dedupe on the event `id` (from `GET /events`),
-  or on `data.queueItemId` + `data.status`.
+  Events are retained for **30 days** and pruned afterwards, so replay only reaches back over the retention window. Treat events as **idempotent**: dedupe on the event `id` (from `GET /events`), or on `data.queueItemId` \+ `data.status`.
 </Note>
