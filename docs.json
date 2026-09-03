@@ -91,7 +91,6 @@
               "architecture/wh-swap"
             ]
           },
-          "architecture/relayers",
           "how-mayan-works/refunds",
           "application/mayan-explorer"
         ]
@@ -249,6 +248,11 @@
     }
   },
   "redirects": [
+    {
+      "source": "/architecture/relayers",
+      "destination": "/architecture/wh-swap",
+      "permanent": true
+    },
     {
       "source": "/architecture/swift-v2",
       "destination": "/architecture/swift",
