@@ -169,7 +169,7 @@ GET /swaps?limit=20&cursor=<ISO timestamp>
 
 ## Request index
 
-Trigger settlement for a token the scanner doesn't auto-detect. Only [whitelisted tokens](/payment-service/api-reference#source-config) (native \+ USDC on EVM; USDC/USDT/WETH on Solana) are detected automatically. For any other token, call this with one of **your deposit addresses** (an `mpsDepositAddress` from a quote), the token, and the chain. Mayan queues a settlement and the worker sweeps the wallet's live balance. If a settlement for that wallet\+token is already active, the call is deduped.
+Trigger settlement for a token the scanner doesn't auto-detect. Only [whitelisted tokens](/payment-service/api-reference#source-config) (native \+ USDC on EVM; SOL/USDC/USDT/WETH/WSOL on Solana) are detected automatically. For any other token, call this with one of **your deposit addresses** (an `mpsDepositAddress` from a quote), the token, and the chain. Mayan queues a settlement and the worker sweeps the wallet's live balance. If a settlement for that wallet\+token is already active, the call is deduped.
 
 ```text
 POST /request-index
@@ -254,8 +254,8 @@ GET /source-config
       "name": "base",
       "kind": "evm",
       "tokens": [
-        { "address": "0x0000000000000000000000000000000000000000", "symbol": "BASE", "standard": "native", "minDeposit": "0.0003", "decimals": 18 },
-        { "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", "symbol": "USDC", "standard": "erc20", "minDeposit": "1", "decimals": 6 }
+        { "address": "0x0000000000000000000000000000000000000000", "symbol": "BASE", "standard": "native", "minDeposit": "0.002", "decimals": 18 },
+        { "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", "symbol": "USDC", "standard": "erc20", "minDeposit": "3", "decimals": 6 }
       ]
     },
     {
@@ -263,9 +263,11 @@ GET /source-config
       "name": "solana",
       "kind": "svm",
       "tokens": [
-        { "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "symbol": "USDC", "standard": "spl", "minDeposit": "1", "decimals": 6 },
-        { "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "standard": "spl", "minDeposit": "1", "decimals": 6 },
-        { "address": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", "symbol": "WETH", "standard": "spl", "minDeposit": "0.0003", "decimals": 8 }
+        { "address": "11111111111111111111111111111111", "symbol": "SOL", "standard": "native", "minDeposit": "0.02", "decimals": 9 },
+        { "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "symbol": "USDC", "standard": "spl", "minDeposit": "3", "decimals": 6 },
+        { "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "standard": "spl", "minDeposit": "3", "decimals": 6 },
+        { "address": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", "symbol": "WETH", "standard": "spl", "minDeposit": "0.002", "decimals": 8 },
+        { "address": "So11111111111111111111111111111111111111112", "symbol": "WSOL", "standard": "spl", "minDeposit": "0.02", "decimals": 9 }
       ]
     }
   ]
@@ -277,11 +279,15 @@ GET /source-config
 | `chains[].chainId` | number | Source **Wormhole chain ID** |
 | `chains[].name` | string | Chain name |
 | `chains[].kind` | string | `"evm"` or `"svm"` |
-| `chains[].tokens[].address` | string | Contract/mint address; the native coin uses the zero address `0x0000…0000` |
-| `chains[].tokens[].symbol` | string? | Token symbol, when known (the native coin's symbol is the chain name uppercased) |
+| `chains[].tokens[].address` | string | Contract/mint address. The native coin uses that chain's zero/default address: `0x0000…0000` on EVM, the system program `1111…1111` on Solana |
+| `chains[].tokens[].symbol` | string? | Token symbol, when known (each EVM native coin's symbol is the chain name uppercased; Solana's native coin is `SOL`) |
 | `chains[].tokens[].standard` | string | `"native"`, `"erc20"`, or `"spl"` |
 | `chains[].tokens[].minDeposit` | string? | Minimum deposit in the token's own units (human-readable, e.g. `"10"` USDC). Present only when a minimum is configured. |
 | `chains[].tokens[].decimals` | number? | Token decimals, paired with `minDeposit` to convert an on-chain (base-unit) balance for comparison. |
+
+<Note>
+  **SOL vs. WSOL on Solana.** Both are auto-detected, as two separate entries pointing at two different balances. `SOL` (`standard: "native"`, address `1111…1111`) is native lamports sent to the vault address with a plain system transfer. `WSOL` (`standard: "spl"`, address `So1111…1112`) is the wrapped-SOL SPL token held in the vault's token account. Match the entry to what you actually send, and pass that same `address` to [`POST /request-index`](#request-index) if you ever need to trigger one manually.
+</Note>
 
 <Info>
   A deposit below the advertised minimum is detected but not settled. You still get a `deposit_detected` event with `queued: false` and `ignoredReason: "below_token_min"` (or `"below_min"` for the chain-level USD floor). See [deposit\_detected](/payment-service/events#deposit_detected).
