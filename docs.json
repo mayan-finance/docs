@@ -267,6 +267,36 @@
       "source": "/integration/referral",
       "destination": "/build/fees-earning",
       "permanent": true
+    },
+    {
+      "source": "/payment-service/overview",
+      "destination": "/features/deposit-addresses",
+      "permanent": true
+    },
+    {
+      "source": "/payment-service/overview.md",
+      "destination": "/features/deposit-addresses.md",
+      "permanent": true
+    },
+    {
+      "source": "/architecture/swift-v2.md",
+      "destination": "/architecture/swift.md",
+      "permanent": true
+    },
+    {
+      "source": "/architecture/auction.md",
+      "destination": "/how-mayan-works/intent-based-swaps.md",
+      "permanent": true
+    },
+    {
+      "source": "/integration/referral.md",
+      "destination": "/build/fees-earning.md",
+      "permanent": true
+    },
+    {
+      "source": "/architecture/relayers.md",
+      "destination": "/architecture/wh-swap.md",
+      "permanent": true
     }
   ]
 }
