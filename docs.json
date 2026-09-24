@@ -298,5 +298,15 @@
       "destination": "/architecture/wh-swap.md",
       "permanent": true
     }
-  ]
+  ],
+  "seo": {
+    "metatags": {
+      "og:image": "https://docs.mayan.finance/images/docs.mayan.finance.png",
+      "og:image:height": "630",
+      "og:image:width": "1200",
+      "og:type": "website",
+      "twitter:card": "summary_large_image",
+      "twitter:image": "https://docs.mayan.finance/images/docs.mayan.finance.png"
+    }
+  }
 }
