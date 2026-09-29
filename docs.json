@@ -192,7 +192,7 @@
     ],
     "primary": {
       "type": "button",
-      "label": "Start Bridging",
+      "label": "Start Swapping",
       "href": "https://swap.mayan.finance/"
     }
   },
