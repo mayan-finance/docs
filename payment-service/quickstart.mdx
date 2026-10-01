@@ -104,16 +104,18 @@ print(deposit_address)  # address on Arbitrum (the source chain)
   "quotes": [
     {
       "type": "SWIFT",
+      "effectiveAmountIn64": "5000000",
+      "swapRelayerFee64": "149700",
       "mpsDepositAddress": "0xafb7e27de13e435a7f1d1a21d33b26edff17bc8b",
       "mpsIntegratorId": "12",
       "mpsUserId": "0x3a1f…",
-      "expectedAmountOut": 4.999
+      "expectedAmountOut": 4.849
     }
   ]
 }
 ```
 
-Read `mpsDepositAddress` from any eligible quote (`SWIFT`, `MONO_CHAIN`, or a direct `FAST_MCTP`). They all share the same address. Quotes that aren't eligible return `mpsDepositAddress: null`.
+When a deposit address is offered, every quote in the response is a `SWIFT` or `MONO_CHAIN` route and carries the same `mpsDepositAddress`. The quotes are already priced for the deposit minus Mayan's settlement cost: `effectiveAmountIn64` is what the user sends, `swapRelayerFee64` is that cost in source-token base units, and `expectedAmountOut` is what the merchant receives.
 
 <Info>
   The address is deterministic and permanent for a given recipient + `mpsUserId`. Requesting another quote returns the same address, so it's safe to call on every checkout. It's `null` unless `destinationAddress` is set and the amount clears the token's [minimum](/payment-service/api-reference#source-config).

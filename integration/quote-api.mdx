@@ -161,8 +161,9 @@ The following table shows the common fields of response:
 | price | Number | The amount of output token that user receives per 1 unit of input token |
 | solanaRelayerFee | Number | For "WH" type this fee is denominated in input token. For "MCTP" type the fee is denominated in USDC. For "SWIFT" type the fee is zero. |
 | redeemRelayerFee | Number | For "WH" type this fee is denominated in output token. For "MCTP" type the fee is denominated in USDC. For "SWIFT" type the fee is zero. |
+| swapRelayerFee | Number | For "WH" type this fee is denominated in input token. On deposit-address quotes (`mpsDepositAddress` set) it is Mayan's settlement cost already deducted from the deposit, in input token; `swapRelayerFee64` gives it in base units. |
 | RefundRelayerFee | Number | For "WH" and "SWIFT" types this fee is denominated in input token. For "MCTP" type the fee is denominated in USDC. |
-| clientRelayerFeeSuccess | Number | Total dollar value of relayer fees in the success scenario |
+| clientRelayerFeeSuccess | Number | Total dollar value of relayer fees in the success scenario. On deposit-address quotes it includes Mayan's settlement cost. |
 | clientRelayerFeeRefund | Number | Total dollar value of relayer fee in the refund scenario |
 | eta | Number | estimated time of arrival in minutes |
 | client eta | String | human readable string of eta |
@@ -170,7 +171,7 @@ The following table shows the common fields of response:
 | fromChain | String | Source network name |
 | toToken | Object | Output token details |
 | toChain | String | Destination network name |
-| mpsDepositAddress | String | Returned when `mpsDeposit` was requested and the quote is eligible: a deterministic deposit address on the **source** chain (`null` otherwise). Sending the input token to it settles the swap via [deposit addresses](/features/deposit-addresses), no signature required. See [deposit address](#deposit-address-mpsdeposit). |
+| mpsDepositAddress | String | Returned when `mpsDeposit` was requested and the quote is eligible: a deterministic deposit address on the **source** chain (`null` otherwise). Sending the input token to it settles the swap via [deposit addresses](/features/deposit-addresses), no signature required. See [deposit address](#deposit-address-mpsdeposit). When set, the quote's amounts are net of Mayan's settlement cost. |
 | mpsIntegratorId | String | The integrator the deposit address was minted under, keyed to your API key. `null` unless `mpsDepositAddress` is set. |
 | mpsUserId | String | Echoes the integrator-scoped `mpsUserId` used to derive the address (the value you sent, or the one derived from your API key). `null` unless `mpsDepositAddress` is set. |
 | swiftAuctionMode | Number | Swift quotes only. Settlement mode of the order (see note below). |
@@ -191,8 +192,10 @@ Requirements and behavior:
 - **`destinationAddress` is required.** Without it `mpsDepositAddress` is `null` (the address is keyed to the final recipient).
 - **Deposit addresses must be enabled for your API key.** The address is minted under your integrator identity, so pass your `apiKey`; without an enabled key the field comes back `null`. Contact [support@mayan.finance](mailto:support@mayan.finance) to enable it.
 - **`mpsUserId` is optional.** It's an integrator-scoped identity (a `0x`-prefixed hex string whose value fits in 20 bytes, e.g. `0x1`); the same id always yields the same deposit address. When omitted, it is derived from your `apiKey`, so deposits still bucket by caller. The value used is echoed back as `mpsUserId`.
-- **Only eligible quotes get an address.** Mayan attaches it to Swift, mono-chain, and _direct_ (no source swap) Fast MCTP quotes whose source chain and token are indexed for deposit addresses (see [supported tokens](/payment-service/api-reference#source-config)), and only when the amount clears the token's minimum. Other quotes in the same response return `mpsDepositAddress: null`.
-- **Best-effort.** If the address can't be derived for any reason, the quote is still returned with `mpsDepositAddress: null`. Never treat a `null` as an error.
+- **Only Swift and mono-chain routes.** A deposit address is offered on Swift (V2) and mono-chain quotes whose source chain and token are indexed for deposit addresses (see [supported tokens](/payment-service/api-reference#source-config)), and only when the amount clears the token's minimum. When it is offered, the response contains only those quotes, all with the same address. If neither route serves the pair, the request returns `ROUTE_NOT_FOUND`.
+- **The settlement cost is already deducted.** Mayan settles a deposit by swapping the deposit minus its settlement cost (gas for the swap, plus the wallet deployment on the first deposit on that chain), so deposit-address quotes are priced on that reduced amount. `effectiveAmountIn64` stays the full deposit the payer sends. `swapRelayerFee64` (source-token base units) and `swapRelayerFee` state the deducted cost, and `clientRelayerFeeSuccess` includes it in USD. `expectedAmountOut` and `minReceived` are what the recipient gets. The cost is estimated at quote time; the amount charged at settlement follows the gas price then. On a first native SOL deposit it also includes the rent-exempt reserve that stays in the deposit address.
+- **Deposit flow only.** A quote carrying `mpsDepositAddress` is meant to be paid by a transfer to that address. To swap directly, request the quote without `mpsDeposit`.
+- **Best-effort.** If an address can't be offered (for example the amount is below the minimum or the cost can't be priced), the quotes come back as usual, with nothing deducted and `mpsDepositAddress: null`. Never treat a `null` as an error.
 
 <Note>
   The [Mayan SDK](https://github.com/mayan-finance/swap-sdk) (v15+) exposes this as `fetchQuote` options `mpsDeposit` and `mpsUserId`, and reads it back as `quote.mpsDepositAddress`. Passing `mpsDeposit` forces the SDK's POST-body request path.
