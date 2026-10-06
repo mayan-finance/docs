@@ -9,14 +9,14 @@ Every deposit that enters the settlement queue moves through a status machine. T
 
 Depending on the source chain, a deposit flows through one of two machines: **EVM** (deploy → swap) or **Solana** (settle). So each item carries three fields that let you react to _meaning_ rather than memorizing every string:
 
-- **`phase`:** which leg of the lifecycle: `deploy` | `swap` | `settle` | `done`
+- **`phase`:** which leg of the lifecycle: `deploy` | `swap` | `settle` | `done`.
 - **`category`:** the integrator-facing meaning, independent of chain:
-  - `waiting`: queued, will be picked up automatically
-  - `active`: a transaction is in flight right now
-  - `retrying`: the last attempt failed or was deferred; will retry after backoff
-  - `success`: terminal, funds delivered
-  - `failed`: terminal, gave up
-- **`terminal`:** `true` once no further automatic transition will happen (`completed` or `dead`)
+  - `waiting`: queued, will be picked up automatically.
+  - `active`: a transaction is in flight right now.
+  - `retrying`: the last attempt failed or was deferred; will retry after backoff.
+  - `success`: terminal, funds delivered.
+  - `failed`: terminal, gave up.
+- **`terminal`:** `true` once no further automatic transition will happen (`completed` or `dead`).
 
 The simplest integration: **watch for `terminal: true`**. `completed` is success, `dead` is failure. Everything else is in-progress.
 
