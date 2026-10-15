@@ -68,7 +68,22 @@ On Wormhole Swap the rate is set onchain instead. Use [Referrer Fee Management](
 
 ### Collecting
 
-Fees transfer to your address automatically on every route except **Swift with an EVM source chain**. Those accumulate in the [fee manager contract](https://etherscan.io/address/0x26227ACE40de5671e8355fCAFf65a0522aa7b303), and you withdraw them at [explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift).
+With a single referrer wallet, the fee transfers straight to your address when the order completes, except on two routes that credit it to the [fee manager contract](/resources/chains-contracts#evm-contracts) instead:
+
+- **Swift with an EVM source chain.** The fee is credited when the order is unlocked on the source chain, in the locked source asset.
+- **Same-chain swaps on EVM chains.**
+
+Mayan pays out fee manager balances once a day. A balance is paid out when all of these hold:
+
+- The token is USDC, USDT or ETH.
+- The balance is at least 10 USDC, 10 USDT or 0.01 ETH.
+- You earned a fee in that token on that chain in the last 24 hours.
+
+Anything else stays in the fee manager until you withdraw it yourself. You can also withdraw a balance manually at any time rather than wait for the daily payout. Connect your referrer wallet at [explorer.mayan.finance/withdraw-fee-swift](https://explorer.mayan.finance/withdraw-fee-swift), or call `withdrawFee(token, amount)` on the fee manager from that wallet, with the zero address as `token` for ETH.
+
+If you [split the fee across wallets](#splitting-across-wallets), it is credited to a shared address derived from your wallet list rather than to any one wallet. The same daily payout divides it among the wallets by their bps share, under the same conditions.
+
+To track all of this, sign in with your referrer wallet, EVM or Solana, at [explorer.mayan.finance/referrer-dashboard](https://explorer.mayan.finance/referrer-dashboard). It sums your balances across every chain, including your share of any split, and shows what has been paid out and why any balance is not being paid out.
 
 <Warning>
   Your Solana referrer address needs associated token accounts for USDC, USDT and WETH. Without them you can lose the referrer fee on routes that pay out in those tokens. Create them by sending a dust amount of each token to the address.

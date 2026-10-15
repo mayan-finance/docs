@@ -33,11 +33,14 @@ Support differs by direction. `GET https://sia.mayan.finance/v10/init` returns t
 
 ## EVM contracts
 
-The Forwarder is the single entry point for EVM swaps, and is deployed at the same address on every supported EVM chain.
+The Forwarder is the single entry point for EVM swaps. It and the fee manager are each deployed at the same address on every supported EVM chain.
 
 | Contract | Address |
 | --- | --- |
 | Mayan Forwarder | `0x337685fdaB40D39bd02028545a4FfA7D287cC3E2` |
+| Fee manager | `0x54914A963c4197172130C26D496a367bD6609D88` |
+
+The fee manager holds referrer fees on the routes that do not pay them out directly. See [Fees & Earning](/build/fees-earning#collecting).
 
 Approve the Forwarder for ERC20 inputs before swapping. See [Forwarder Contract](/integration/forwarder-contract).
 
