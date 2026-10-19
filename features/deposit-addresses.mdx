@@ -12,13 +12,13 @@ Give each user an address that never expires. They send any supported token from
 
 <Steps>
   <Step title="Get a deposit address from a quote">
-    Request a [quote](/integration/quote-api#deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off an eligible quote. It is a deterministic address on the source chain of that quote, permanent and reusable for the same recipient.
+    Request a [quote](/integration/quote-api#deposit-address-mpsdeposit) with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off an eligible quote. It is a deterministic address on the source chain of that quote, permanent and reusable for the same API key, `mpsUserId` and destination.
   </Step>
   <Step title="The user deposits">
     Show the address to your user. They send the input token on the source chain, with no signature and no transaction to build.
   </Step>
   <Step title="Mayan detects and settles">
-    The deposit is detected and its USD value checked. The user's smart wallet is deployed the first time only, then the swap executes through Mayan.
+    The deposit is detected and its USD value checked. The user's smart wallet is deployed on the first deposit on each chain, then the swap executes through Mayan.
   </Step>
   <Step title="Funds delivered">
     The destination token arrives at the destination wallet on the destination chain, and the swap reaches `status: "completed"`.
@@ -36,7 +36,7 @@ Track every step in real time through [events](/payment-service/events), or by p
 
 ## Supported chains
 
-Deposits are accepted on a fixed set of source chains, and settle to any chain Mayan supports as the destination. Chains are identified by their **Wormhole chain ID** (the EVM chain ID is shown for reference only).
+Deposits are accepted on a fixed set of source chains, and settle to the same set of chains as the destination. Chains are identified by their **Wormhole chain ID** (the EVM chain ID is shown for reference only).
 
 ### Deposit (source) chains
 
@@ -54,7 +54,7 @@ Deposits are accepted on a fixed set of source chains, and settle to any chain M
 
 ### Destination chains
 
-The destination (`destChain`) can be any chain Mayan supports, including chains beyond the deposit set above. See [Chains & Contracts](/resources/chains-contracts) for the full list.
+The destination (`destChain`) can be any chain in the table above: Solana, Ethereum, BSC, Polygon, Avalanche, Arbitrum, Optimism, Base or Monad. Other destinations are not supported, and the quote comes back without a deposit address.
 
 <Warning>
   Always pass the **Wormhole chain ID** in `destChain` and read it in `chainId`. Base is `30`, not `8453`. Passing an EVM chain ID will produce a different, wrong deposit address or be rejected.
@@ -62,31 +62,31 @@ The destination (`destChain`) can be any chain Mayan supports, including chains 
 
 ## Supported tokens
 
-A deposit address can receive any token, but the scanner auto-detects and settles this whitelist per source chain with no action from you. `Min deposit` is in the token's own units, and a deposit below it is detected but not settled.
+A deposit address can receive any token, but the scanner auto-detects and settles this whitelist per source chain with no action from you. Each token has a minimum deposit that moves with gas and prices; read it live from [`GET /source-config`](/payment-service/api-reference#source-config). A deposit below it is detected but not settled yet.
 
-| Chain | Token | Contract / mint address | Min deposit |
-| --- | --- | --- | --- |
-| Solana | SOL | native (`11111111111111111111111111111111`) | 0.02 |
-| Solana | USDC | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | 3 |
-| Solana | USDT | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` | 3 |
-| Solana | WETH | `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs` | 0.002 |
-| Solana | WSOL | `So11111111111111111111111111111111111111112` | 0.02 |
-| Ethereum | ETH | native | 0.004 |
-| Ethereum | USDC | `0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` | 10 |
-| BSC | BNB | native | 0.01 |
-| BSC | USDC | `0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d` | 3 |
-| Polygon | POL | native | 200 |
-| Polygon | USDC | `0x3c499c542cef5e3811e1192ce70d8cc03d5c3359` | 3 |
-| Avalanche | AVAX | native | 1 |
-| Avalanche | USDC | `0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e` | 3 |
-| Arbitrum | ETH | native | 0.002 |
-| Arbitrum | USDC | `0xaf88d065e77c8cc2239327c5edb3a432268e5831` | 3 |
-| Optimism | ETH | native | 0.002 |
-| Optimism | USDC | `0x0b2c639c533813f4aa9d7837caf62653d097ff85` | 3 |
-| Base | ETH | native | 0.002 |
-| Base | USDC | `0x833589fcd6edb6e08f4c7c32d4f71b54bda02913` | 3 |
-| Monad | MON | native | 200 |
-| Monad | USDC | `0x754704bc059f8c67012fed69bc8a327a5aafb603` | 3 |
+| Chain | Token | Contract / mint address |
+| --- | --- | --- |
+| Solana | SOL | native (`11111111111111111111111111111111`) |
+| Solana | USDC | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| Solana | USDT | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` |
+| Solana | WETH | `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs` |
+| Solana | WSOL | `So11111111111111111111111111111111111111112` |
+| Ethereum | ETH | native |
+| Ethereum | USDC | `0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` |
+| BSC | BNB | native |
+| BSC | USDC | `0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d` |
+| Polygon | POL | native |
+| Polygon | USDC | `0x3c499c542cef5e3811e1192ce70d8cc03d5c3359` |
+| Avalanche | AVAX | native |
+| Avalanche | USDC | `0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e` |
+| Arbitrum | ETH | native |
+| Arbitrum | USDC | `0xaf88d065e77c8cc2239327c5edb3a432268e5831` |
+| Optimism | ETH | native |
+| Optimism | USDC | `0x0b2c639c533813f4aa9d7837caf62653d097ff85` |
+| Base | ETH | native |
+| Base | USDC | `0x833589fcd6edb6e08f4c7c32d4f71b54bda02913` |
+| Monad | MON | native |
+| Monad | USDC | `0x754704bc059f8c67012fed69bc8a327a5aafb603` |
 
 <Note>
   On Solana, **SOL** and **WSOL** are separate entries. `SOL` is native lamports sent to the vault address, and `WSOL` is the wrapped-SOL SPL token. Both are auto-detected, but they are different balances, so use the address matching what you actually send.
@@ -98,9 +98,26 @@ The table above is a convenience snapshot. The authoritative, live list, with cu
   **Need another token whitelisted?** Email [support@mayan.finance](mailto:support@mayan.finance) with the chain and token contract, and we add tokens in under 12 hours, 24/7. Until then, any other token can still be settled on demand via [`POST /request-index`](/payment-service/api-reference#request-index), which sweeps the wallet's balance and settles it if Mayan can route the token.
 </Note>
 
+## Fees
+
+Mayan takes a small settlement cost from each deposit to pay for gas: the swap transaction, plus deploying the user's wallet on the first deposit on each EVM chain. On Solana it is a flat fee of about 0.004 SOL, and USDC, USDT and WETH going cross-chain from Solana pay none. The cost is capped at 5% of the deposit. Quotes requested with `mpsDeposit: true` already show the amount after this cost.
+
+Any referrer fee you set on the quote is charged on top, and is saved on the deposit address. See [referrer fees](/integration/quote-api#deposit-address-mpsdeposit).
+
+## Unsettled funds
+
+Mayan never sends a deposit back on its own. Anything that isn't settled stays in the deposit address:
+
+- **Below the minimum:** settled with the next deposit, once the total clears the minimum.
+- **Token not auto-detected:** call [`POST /request-index`](/payment-service/api-reference#request-index) to settle it.
+- **`dead` after retries:** the next deposit, or a `POST /request-index` call, starts a new settlement for the full balance.
+- **Refunded cross-chain order:** the funds come back to the deposit address and are settled again, without charging the cost a second time.
+
+To get funds sent back from an EVM deposit address instead, contact [support@mayan.finance](mailto:support@mayan.finance).
+
 ## Getting access
 
-You need an API key, a UUID, to call the tracking API, connect to the event stream, and log in to the [MPS panel](https://mps.mayan.finance). Getting a deposit address from a quote works without one. To request a key, email [support@mayan.finance](mailto:support@mayan.finance) or reach the team in [Discord](https://discord.com/invite/MayanFinance).
+You need an API key, a UUID, to call the tracking API, connect to the event stream, and log in to the [MPS panel](https://mps.mayan.finance). Pass the same key when you request the quote: the deposit address is tied to it, so only that key can track its payments. To request a key, email [support@mayan.finance](mailto:support@mayan.finance) or reach the team in [Discord](https://discord.com/invite/MayanFinance).
 
 <Tip>
   **Want to try it right away?** Use the shared demo key:

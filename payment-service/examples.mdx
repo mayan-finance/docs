@@ -14,7 +14,7 @@ export PRICE_URL=https://price-api.mayan.finance   # optional (default) — quot
 export DEST_WALLET=0xYourMerchantWalletOnArbitrum  # optional — where you receive USDC on Arbitrum
 ```
 
-The API key is used for the [MPS panel](https://mps.mayan.finance) and the event WebSocket. Getting the deposit address from a quote works **without** one. Need a key? Email [support@mayan.finance](mailto:support@mayan.finance).
+The API key is used for the quote, the [MPS panel](https://mps.mayan.finance) and the event WebSocket. The deposit address is tied to the key you quote with, so use the same one everywhere. Need a key? Email [support@mayan.finance](mailto:support@mayan.finance).
 
 ## Shared listener (Socket.IO)
 
@@ -84,7 +84,7 @@ The deposit address comes from a **Mayan quote** with `mpsDeposit` enabled, not 
 
 export async function getMpsDepositAddress(opts: {
   priceUrl: string;           // e.g. https://price-api.mayan.finance
-  apiKey: string;             // your Mayan API key (used for event tracking; the quote works without it)
+  apiKey: string;             // your Mayan API key (the deposit address is tied to it)
   amountIn64: string;         // input amount in base units
   fromChain: string;          // source chain name, e.g. "base" | "solana"
   fromToken: string;          // input token address/mint
@@ -225,7 +225,7 @@ const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"; // USDC on Arbitr
 const DEST_WALLET = process.env.DEST_WALLET || "0xEab4Fb2De5a05Ba392eB2614bd2293592d455A4f";
 
 // 1. Get the MPS deposit address from a quote (source = Solana → a Solana vault).
-//    The destination can be any Mayan-supported chain; here it's Arbitrum.
+//    The destination can be any supported deposit-address chain; here it's Arbitrum.
 const depositAddress = await getMpsDepositAddress({
   priceUrl: PRICE_URL,
   apiKey: API_KEY,

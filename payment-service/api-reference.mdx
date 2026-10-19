@@ -17,7 +17,7 @@ Every authenticated request must include your API key (a UUID) in the `x-api-key
 x-api-key: your-uuid-api-key
 ```
 
-`GET /chains` and `GET /source-config` are public and do not require a key. A missing key returns `401 UNAUTHORIZED`; an invalid key returns `403 FORBIDDEN`.
+`GET /chains` and `GET /source-config` are public and do not require a key. A missing or invalid key returns `401` with `code: "UNAUTHORIZED"`, and too many requests return `429` with `code: "RATE_LIMITED"`. These two come from the API gateway, so their body is `{ "success": false, "error": "...", "code": "..." }` instead of the error shape below.
 
 ## Pagination
 
@@ -34,7 +34,7 @@ Each response includes `nextCursor`; pass it back as `cursor` for the next page.
 
 ### Error shape
 
-All API errors, plus the `error` field on a swap and on a `status_changed` event, share one structured shape:
+The `error` field on a swap and on a `status_changed` event has this shape:
 
 ```json
 {
@@ -45,43 +45,39 @@ All API errors, plus the `error` field on a swap and on a `status_changed` event
 }
 ```
 
-API error responses wrap it as `{ "error": { ... } }` with an appropriate HTTP status. Always branch on `code` (a stable enum) rather than `message` (which may be reworded). `details`, when present, holds only safe, parameterized context (numbers, ids, thresholds), never raw internal exception text.
+API error responses use the same fields without `retryable`, wrapped as `{ "error": { "code", "message", "details" } }` with an appropriate HTTP status. Always branch on `code` (a stable enum) rather than `message` (which may be reworded). `details`, when present, holds extra context such as the field name or a short reason.
 
 ### Error codes
 
 | Code | Retryable | Meaning |
 | --- | --- | --- |
 | `VALIDATION_ERROR` | no | Bad or missing request parameters |
-| `UNAUTHORIZED` | no | Missing `x-api-key` |
-| `FORBIDDEN` | no | Invalid API key |
+| `UNAUTHORIZED` | no | Missing or invalid API key |
 | `UNSUPPORTED_CHAIN` | no | Unknown chain id in the request |
-| `RESOLVE_FAILED` | yes | Could not fetch/decode the transaction (e.g. RPC) |
 | `NOT_CONFIGURED` | no | A server feature is not configured |
 | `NOT_FOUND` | no | Resource does not exist |
 | `INSUFFICIENT_BALANCE` | yes | Relayer/wallet lacked funds to send the tx |
-| `AMOUNT_TOO_SMALL` | yes | Deposit value below what the route/fees allow |
 | `FEE_NOT_COVERED` | yes | Collected fee does not cover settlement cost |
 | `NO_ROUTE` | yes | No quote/route available for this pair right now |
 | `QUOTE_INVALID` | yes | A quote was returned but failed validation |
-| `UNSUPPORTED_ROUTE` | no | This source/destination combination is not supported |
 | `UNSUPPORTED_DEST` | no | Destination chain is not supported |
+| `INVALID_TOKEN` | no | The token address is not a valid token on that chain |
 | `TX_REVERTED` | yes | An on-chain transaction reverted |
 | `SIMULATION_REVERTED` | yes | Pre-flight simulation reverted |
 | `RPC_UNAVAILABLE` | yes | RPC timeout / connection / rate-limit |
 | `PRICE_UNAVAILABLE` | yes | Token could not be priced |
 | `REORG` | yes | A prior on-chain step was re-orged away |
-| `CONFIG_MISSING` | yes | A required config is missing (recovers once set) |
 | `INTERNAL` | yes | Unclassified failure (message is generic; cause is logged server-side) |
 
 <Info>
-  On a swap, `error.retryable` also reflects state: a `dead` (terminal) item always reports `retryable: false`, because the worker will not try it again regardless of the code.
+  On [`/swaps`](#list-swaps), `error.retryable` also reflects state: a `dead` (terminal) item always reports `retryable: false`, because the worker will not try it again regardless of the code.
 </Info>
 
 ---
 
 ## Get a deposit address
 
-You don't call the deposit address service to mint a deposit address. You get one from the **Mayan Quote API**. Request a quote with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off any eligible quote. The address is deterministic and permanent for a given recipient, and Mayan settles anything sent to it automatically.
+You don't call the deposit address service to mint a deposit address. You get one from the **Mayan Quote API**. Request a quote with `mpsDeposit: true` and a `destinationAddress`, then read `mpsDepositAddress` off any eligible quote. The address is deterministic and permanent for the same API key, `mpsUserId`, recipient, destination chain and destination token, and Mayan settles anything sent to it automatically.
 
 See [Deposit address on the Quote API](/integration/quote-api#deposit-address-mpsdeposit) for the request/response shape and eligibility rules.
 
@@ -89,7 +85,7 @@ See [Deposit address on the Quote API](/integration/quote-api#deposit-address-mp
 
 ## List deposit addresses
 
-Paginated deposit addresses that have been created for the authenticated integrator (each is minted the first time you request a quote with `mpsDeposit: true` for a new recipient).
+Paginated deposit addresses that have been created for the authenticated integrator (each is minted the first time you request a quote with `mpsDeposit: true` for a new recipient). A destination usually has two entries, one with `chainType: "evm"` and one with `"svm"` (Solana).
 
 ```text
 GET /deposit-addresses?limit=20&cursor=<ISO timestamp>
@@ -180,7 +176,7 @@ POST /request-index
 | Field | Type | Description |
 | --- | --- | --- |
 | `walletAddress` | string | one of your deposit addresses (an `mpsDepositAddress` from a quote) |
-| `tokenAddress` | string | the token to index: a contract/mint address, or `"native"` for the gas token |
+| `tokenAddress` | string | the token to index: a contract/mint address, or `"native"` for the gas token. An address that is not a token returns `400 VALIDATION_ERROR` |
 | `chain` | number | the **Wormhole chain ID** the wallet holds the token on |
 
 **Example**
@@ -210,7 +206,8 @@ curl -X POST https://mps-api.mayan.finance/request-index \
 ```
 
 - `queueItemId` is the settlement id (`null` when not queued). Track it via [`GET /swaps`](#list-swaps) and `status_changed` events.
-- When `queued` is `false`, `reason` explains why: `"already_queued"` (a settlement for this wallet\+token is already active; the in-flight one will sweep the new balance too), `"below_token_min"` (below the token's configured minimum), or `"below_min"` (below the chain's USD floor).
+- If a settlement for this wallet\+token is already active, you get `queued: true`, its `queueItemId` and `reason: "already_queued"`. The in-flight one will sweep the new balance too.
+- When `queued` is `false`, `reason` explains why (for example `"no_adapter"`).
 - Returns `404 NOT_FOUND` if `walletAddress` is not one of your registered deposit addresses.
 
 ---
@@ -238,7 +235,7 @@ GET /chains
 
 ## Source config
 
-The **source chains and tokens the scanner auto-detects and settles**, with the minimum deposit advertised per token. **No authentication required.** Poll this instead of hardcoding a list. Each `minDeposit` is live, recomputed at most every 30 seconds: the higher of a small static floor and the deposit at which Mayan's settlement cost (at current gas and prices, first-deposit wallet deployment included) would be 5% of it, plus a 1.5x safety margin. The deposit gate enforces the same floor without the margin, so a deposit of `minDeposit` is still accepted if gas rises a little before it lands. Deposits below the enforced minimum, counting earlier deposits still in the address, are detected but not queued (`reason: "below_token_min"`). Any token _not_ listed can still be settled on demand via [`POST /request-index`](#request-index).
+The **source chains and tokens the scanner auto-detects and settles**, with the minimum deposit advertised per token. **No authentication required.** Poll this instead of hardcoding a list. Each `minDeposit` is live, recomputed at most every 30 seconds: the higher of a small static floor and the deposit at which Mayan's settlement cost (at current gas and prices, first-deposit wallet deployment included) would be 5% of it, plus a 1.5x safety margin. The deposit gate enforces the same floor without the margin, so a deposit of `minDeposit` is still accepted if gas rises a little before it lands. Deposits below the enforced minimum, counting earlier deposits still in the address, are detected but not queued (`ignoredReason: "below_token_min"`). Any token _not_ listed can still be settled on demand via [`POST /request-index`](#request-index).
 
 ```text
 GET /source-config
@@ -292,7 +289,7 @@ The values above are illustrative; they move with gas and prices.
 </Note>
 
 <Info>
-  A deposit below the advertised minimum is detected but not settled. You still get a `deposit_detected` event with `queued: false` and `ignoredReason: "below_token_min"` (or `"below_min"` for the chain-level USD floor). See [deposit\_detected](/payment-service/events#deposit_detected).
+  A deposit below the minimum is detected but not settled yet. You still get a `deposit_detected` event with `queued: false` and `ignoredReason: "below_token_min"` (or `"below_min"` for the chain-level USD floor). The funds stay in the address and are settled with the next deposit. See [deposit\_detected](/payment-service/events#deposit_detected).
 </Info>
 
 ---

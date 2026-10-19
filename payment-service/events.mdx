@@ -16,14 +16,14 @@ The deposit address service emits two event types across its whole lifecycle. Co
 
 ## Socket.IO
 
-The live stream is served over [Socket.IO](https://socket.io) (`bun add socket.io-client`). Connect to the base URL and pass your API key in the handshake `auth`:
+The live stream is served over [Socket.IO](https://socket.io) (`bun add socket.io-client`). Connect to the base URL and pass your API key as the `apiKey` query parameter (or the `x-api-key` header):
 
 ```typescript
 import * as io from "socket.io-client";
 
 const socket = io.connect("https://mps-api.mayan.finance", {
   transports: ["websocket"],
-  auth: { apiKey: process.env.MAYAN_API_KEY }, // or query: { apiKey } for browser clients
+  query: { apiKey: process.env.MAYAN_API_KEY },
 });
 
 socket.on("connect", () => console.log("connected"));
@@ -93,7 +93,7 @@ Socket.IO keeps the connection alive with its own heartbeat and **auto-reconnect
 
 - `queueItemId` is the settlement id (matches [`GET /swaps`](/payment-service/api-reference#list-swaps) `id`).
 - `error` is `null` except on failing/deferred states (see the [error model](/payment-service/api-reference#errors)).
-- `txHash` carries the wallet-deployment tx on the transition into `pending_swap`, and the swap/settle tx on the transition into `completed`.
+- `txHash` carries the wallet-deployment tx on the transition into `pending_swap`, and the swap/settle tx on the transition into `completed`. It is `null` on a `completed` with nothing left to settle (for example, the balance was already swept by an earlier settlement).
 - To react only to final outcomes, filter on `terminal: true` (`completed` = success, `dead` = failure).
 
 ## Delivery and replay
