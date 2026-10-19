@@ -64,7 +64,7 @@ Failed attempts are retried automatically with exponential backoff:
 15s → 30s → 45s → 1m → 5m → 15m
 ```
 
-After **7** failed attempts, or immediately for a non-retryable error such as `UNSUPPORTED_DEST`, the item becomes `dead`. A `dead` item's funds stay in the deposit address; see [unsettled funds](/features/deposit-addresses#unsettled-funds). Every attempt emits a `status_changed` event carrying the incremented `retryCount` and the current `error`, so you can surface retry progress in real time.
+After **7** failed attempts, or immediately for a non-retryable error such as `UNSUPPORTED_DEST`, the item becomes `dead`. The funds of a `dead` item stay in the deposit address, as described in [Unsettled funds](/features/deposit-addresses#unsettled-funds). Every attempt emits a `status_changed` event carrying the incremented `retryCount` and the current `error`, so you can surface retry progress in real time.
 
 <Info>
   `deferred` (Solana) is not a failure. It means settlement is temporarily blocked (e.g. no quote yet, or the accumulated balance is still too small) and will be retried. It shares the same backoff and `dead` cap as the failing states.

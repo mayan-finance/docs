@@ -100,24 +100,21 @@ The table above is a convenience snapshot. The authoritative, live list, with cu
 
 ## Fees
 
-Mayan takes a small settlement cost from each deposit to pay for gas: the swap transaction, plus deploying the user's wallet on the first deposit on each EVM chain. On Solana it is a flat fee of about 0.004 SOL, and USDC, USDT and WETH going cross-chain from Solana pay none. The cost is capped at 5% of the deposit. Quotes requested with `mpsDeposit: true` already show the amount after this cost.
+Mayan takes a small settlement cost from each deposit to pay for gas. On EVM chains it covers the swap transaction and, on the first deposit on each chain, the deployment of the user's wallet. On Solana it is a flat fee of about 0.004 SOL, and USDC, USDT and WETH sent cross-chain from Solana are not charged. The cost is capped at 5% of the deposit, and quotes requested with `mpsDeposit: true` already show the amount after it is deducted.
 
-Any referrer fee you set on the quote is charged on top, and is saved on the deposit address. See [referrer fees](/integration/quote-api#deposit-address-mpsdeposit).
+Any referrer fee you set on the quote is charged on top of this cost and is saved on the deposit address. The [Quote API](/integration/quote-api#deposit-address-mpsdeposit) page explains how it is applied.
 
 ## Unsettled funds
 
-Mayan never sends a deposit back on its own. Anything that isn't settled stays in the deposit address:
+Mayan never sends a deposit back on its own. Anything that isn't settled stays in the deposit address until it can be settled.
 
-- **Below the minimum:** settled with the next deposit, once the total clears the minimum.
-- **Token not auto-detected:** call [`POST /request-index`](/payment-service/api-reference#request-index) to settle it.
-- **`dead` after retries:** the next deposit, or a `POST /request-index` call, starts a new settlement for the full balance.
-- **Refunded cross-chain order:** the funds come back to the deposit address and are settled again, without charging the cost a second time.
+A deposit below the minimum is settled together with the next deposit, once the total clears the minimum. A token that is not auto-detected is settled when you call [`POST /request-index`](/payment-service/api-reference#request-index). When an item becomes `dead` after its retries, the next deposit or a `POST /request-index` call starts a new settlement for the full balance. If a cross-chain order is refunded, the funds return to the deposit address and are settled again without charging the cost a second time.
 
-To get funds sent back from an EVM deposit address instead, contact [support@mayan.finance](mailto:support@mayan.finance).
+To have funds sent back from an EVM deposit address instead, contact [support@mayan.finance](mailto:support@mayan.finance).
 
 ## Getting access
 
-You need an API key, a UUID, to call the tracking API, connect to the event stream, and log in to the [MPS panel](https://mps.mayan.finance). Pass the same key when you request the quote: the deposit address is tied to it, so only that key can track its payments. To request a key, email [support@mayan.finance](mailto:support@mayan.finance) or reach the team in [Discord](https://discord.com/invite/MayanFinance).
+You need an API key, a UUID, to call the tracking API, connect to the event stream, and log in to the [MPS panel](https://mps.mayan.finance). Pass the same key when you request the quote. The deposit address is tied to that key, and only that key can track its payments. To request a key, email [support@mayan.finance](mailto:support@mayan.finance) or reach the team in [Discord](https://discord.com/invite/MayanFinance).
 
 <Tip>
   **Want to try it right away?** Use the shared demo key:

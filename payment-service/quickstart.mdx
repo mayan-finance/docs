@@ -7,7 +7,7 @@ This guide takes you from zero to a working cross-chain payment: get a deposit a
 
 ## Prerequisites
 
-- An **API key** (UUID) from the Mayan team. Email [support@mayan.finance](mailto:support@mayan.finance) to get one. No key yet? Try the public demo key `03b9969f-7c6a-4bd1-9ad4-c0e0e9f3dcb7` (shared, for evaluation only). You need a key for the [MPS panel](https://mps.mayan.finance) and for the tracking endpoints below. **Pass the same key when you request the quote**: the deposit address is tied to it, so only that key can track its payments.
+- An **API key** (UUID) from the Mayan team. Email [support@mayan.finance](mailto:support@mayan.finance) to get one. No key yet? Try the public demo key `03b9969f-7c6a-4bd1-9ad4-c0e0e9f3dcb7` (shared, for evaluation only). You need a key for the [MPS panel](https://mps.mayan.finance) and for the tracking endpoints below. Pass the same key when you request the quote, because the deposit address is tied to it and only that key can track its payments.
 - The base URL: `https://mps-api.mayan.finance`.
 
 All authenticated requests send your key in the `x-api-key` header.
