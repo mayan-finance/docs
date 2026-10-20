@@ -306,7 +306,8 @@
       "og:image:width": "1200",
       "og:type": "website",
       "twitter:card": "summary_large_image",
-      "twitter:image": "https://docs.mayan.finance/images/docs.mayan.finance.png"
+      "twitter:image": "https://docs.mayan.finance/images/docs.mayan.finance.png",
+      "twitter:site": "@mayan"
     }
   },
   "description": "Integrate cross-chain swaps with Mayan. SDK, APIs, and guides for moving any asset to any chain."
