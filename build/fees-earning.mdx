@@ -54,7 +54,7 @@ Each route collects and pays differently.
 
 | Route | Paid on | Collected in | Maximum rate | Paid only if |
 | --- | --- | --- | --- | --- |
-| Swift | Source chain | The locked source asset, typically USDC or ETH | 200 bps | The order completes |
+| Swift | Source chain | The locked source asset, typically USDC, USDT or ETH | 200 bps | The order completes |
 | MCTP | Destination chain | The stablecoin minted during bridging | 100 bps from Solana, 50 bps from other chains | The order completes and includes a swap on the destination chain |
 | Fast MCTP | Destination chain | The stablecoin minted during bridging | 100 bps | The order completes |
 | Wormhole Swap | Solana | The output token | 50 bps, 10 bps by default | The order completes and includes a swap |

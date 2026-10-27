@@ -26,6 +26,7 @@ Pass the same object as `referrerAddresses` at swap time.
 - **Do not mix the two forms.** The SDK throws if `referrer` or `referrerBps` is set alongside `referrers`.
 - **The objects have to match.** The SDK throws at swap time if the object you pass differs from the one the quote was fetched with.
 - **POST flow only.** Multi-wallet referrers are not available on the `GET` quote endpoint.
+- **Fewer routes are quoted.** With `referrers` set, quotes come back only for Swift and for same-chain swaps that do not start on Solana. MCTP, Fast MCTP, Wormhole Swap, same-chain swaps from Solana and HyperCore withdrawals are not offered.
 
 ## Next steps
 

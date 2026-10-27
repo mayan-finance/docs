@@ -24,7 +24,7 @@ Any page as Markdown: append `.md` to its URL.
 ## The shape of an integration
 
 1. `fetchQuote` returns the routes available for a pair.
-2. `swapFromEvm`, `swapFromSolana`, or `createSwapFromSuiMoveCalls` builds and sends the transaction.
+2. `swapFromEvm` or `swapFromSolana` builds and sends the transaction. On Sui, `createSwapFromSuiMoveCalls` returns a Transaction that you sign and send yourself.
 3. Poll the Explorer API for `clientStatus` until it leaves `INPROGRESS`.
 
 ```typescript
