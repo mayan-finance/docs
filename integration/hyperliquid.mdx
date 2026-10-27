@@ -1,6 +1,6 @@
 ---
 title: "Hyperliquid (HyperCore)"
-description: "Deposit USDC into a Hyperliquid (HyperCore) spot or perps balance from any supported chain, and withdraw USDC back out to an EVM chain, using the Mayan Swap SDK."
+description: "Deposit USDC into a Hyperliquid (HyperCore) spot or perps balance from any supported chain, and withdraw USDC back out to Solana or an EVM chain, using the Mayan Swap SDK."
 sidebarTitle: "HyperCore Deposit & Withdraw"
 "og:image": "https://docs.mayan.finance/images/og-hypercore.png"
 "twitter:image": "https://docs.mayan.finance/images/og-hypercore.png"
@@ -12,7 +12,7 @@ sidebarTitle: "HyperCore Deposit & Withdraw"
 Mayan supports **direct Hyperliquid (HyperCore) deposits and withdrawals** through the [Swap SDK](https://github.com/mayan-finance/swap-sdk). You can:
 
 - **Deposit:** swap from any supported token on any supported chain into a HyperCore **USDC** balance.
-- **Withdraw:** move **USDC** out of a HyperCore balance back to an EVM chain.
+- **Withdraw:** move **USDC** out of a HyperCore balance to any token on Solana or a supported EVM chain.
 
 A HyperCore account is identified by an ordinary EVM-style `0x…` address, the **same address** the user signs with. HyperCore holds USDC in two distinct balances, and every deposit/withdrawal targets one of them:
 
@@ -72,7 +72,7 @@ const quote = quotes[0];
   - The input token can be anything Mayan supports on the source chain (native ETH, USDC, etc.); Mayan swaps it to USDC and deposits it.
   - `gasDrop` is **not supported** for HyperCore deposits and is ignored.
   - HyperCore deposits **do not accept a caller-supplied payload**. Passing one throws. The route builds its own fixed payload.
-  - HyperCore enforces a minimum deposit (around **5 USDC** of output). Size `amountIn64` so the expected output clears it.
+  - The minimum deposit is around **3 USDC** of output. Size `amountIn64` so the expected output clears it, because smaller quotes fail.
 </Info>
 
 ### 2. Execute the deposit
@@ -119,7 +119,7 @@ const { clientStatus } = await res.json();
 
 ## Withdraw (out of HyperCore)
 
-Move USDC out of a HyperCore balance to an EVM chain. Withdrawals are **gasless**: the user signs an EIP-712 typed-data message instead of sending an on-chain transaction, and the SDK submits it to the Mayan relayer. **No source-chain gas is required.** Withdrawals land in as little as 7 seconds.
+Move USDC out of a HyperCore balance to Solana or a supported EVM chain. Withdrawals are **gasless**: the user signs an EIP-712 typed-data message instead of sending an on-chain transaction, and the SDK submits it to the Mayan relayer. **No source-chain gas is required.** Withdrawals land in as little as 7 seconds.
 
 ### 1. Fetch a quote
 

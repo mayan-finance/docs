@@ -37,7 +37,8 @@ Read `clientStatus`:
 | `toAmount` | What actually arrived. Show this, not the quote. |
 | `completedAt` | Settlement time, for display or for measuring your own latency. |
 | `status` | The granular internal status. `clientStatus` is the one to build on. |
-| `sourceTxHash` / `destTxHash` | For linking out to block explorers. |
+| `sourceTxHash` / `fulfillTxHash` | The user's transaction on the source chain, and the destination-chain transaction that delivered the output. |
+| `txs` | Every transaction in the swap, each with a block explorer link in `scannerUrl`. Use it for linking out rather than building URLs yourself. |
 
 ## Next steps
 
