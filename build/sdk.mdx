@@ -24,7 +24,7 @@ npm install --save @mayanfinance/swap-sdk
 Three calls, in order:
 
 1. **[Fetch a quote](/build/sdk/fetching-quotes).** `fetchQuote` returns the routes available for a pair.
-2. **[Execute the swap](/build/sdk/executing-swaps).** One of `swapFromEvm`, `swapFromSolana`, or `createSwapFromSuiMoveCalls` builds and sends the transaction.
+2. **[Execute the swap](/build/sdk/executing-swaps).** `swapFromEvm` or `swapFromSolana` builds and sends the transaction. On Sui, `createSwapFromSuiMoveCalls` returns a Transaction that you sign and send yourself.
 3. **[Track it](/build/track-transactions).** The Explorer API tells you when it finished.
 
 ```typescript
