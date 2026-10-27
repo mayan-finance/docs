@@ -31,7 +31,7 @@ const quotes = await fetchQuote(
 
 | Param | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `amountIn64` | `string` | Yes | Base units. `amountIn` accepts a human-readable number instead. |
+| `amountIn64` | `string` | Yes | Base units. The deprecated `amount` accepts a human-readable number instead. |
 | `fromChain` / `toChain` | `string` | Yes | Chain name, not chain ID. |
 | `fromToken` / `toToken` | `string` | Yes | Contract address. Use the zero address for native tokens. |
 | `slippageBps` | `number \| "auto"` | Yes | `"auto"` lets Mayan pick a safe level for the pair. A number is basis points, so `300` is 3%. The response always returns a number. |
@@ -65,9 +65,14 @@ These are the fields that matter in a confirmation screen.
 | Ethereum | 0.05 ETH |
 | BSC | 0.02 BNB |
 | Polygon | 0.2 POL |
-| Avalanche | 0.2 AVAX |
-| Solana | 0.2 SOL |
-| Arbitrum, Optimism, Base, Unichain | 0.01 ETH |
+| Avalanche | 0.1 AVAX |
+| Solana | 0.1 SOL |
+| Sui | 0.1 SUI |
+| Monad | 3 MON |
+| HyperEVM | 0.01 HYPE |
+| Arbitrum, Optimism, Base, Unichain, Linea | 0.01 ETH |
+
+A request above the ceiling fails with `GAS_DROP_TOO_HIGH`. On Solana a non-zero `gasDrop` must be at least 0.0009 SOL, or the request fails with `GAS_DROP_TOO_LOW`. Each quote also returns `maxUserGasDrop`, which can be lower than the ceiling on small swaps.
 
 See [gas on destination](/application/gas-on-destination).
 

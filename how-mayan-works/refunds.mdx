@@ -4,15 +4,17 @@ description: "What happens when a swap cannot be filled, and how refunds work."
 "og:title": "Refunds"
 ---
 
-Every order carries a deadline. If no driver fills it before that deadline passes, the order is refunded and the input returns to the sender. Mayan does not take custody of funds at any point, in either case.
+Every order carries a deadline. If no driver fills it before that deadline passes, the order is refunded. On Swift the input returns to the sender on the source chain. On MCTP and Fast MCTP the funds have already crossed to the destination chain as USDC, so the refund pays that USDC to the recipient there. Mayan does not take custody of funds at any point, in either case.
 
 ## When does a swap get refunded?
 
-When no driver takes the order before its deadline. The order can no longer be filled after that point, and the input goes back to the sender.
+When no driver takes the order before its deadline. The order can no longer be filled after that point, and it is refunded as described below.
 
 ## What does the user get back?
 
 On Swift, the input may be converted into the primary locked asset on the source chain before the order opens, typically USDC or ETH. If that order is later refunded, the user receives the converted asset rather than the token they started with.
+
+On MCTP and Fast MCTP, the input is swapped to USDC on the source chain and bridged through Circle's CCTP before the order is filled. A refund pays that USDC, minus the refund fee, to the recipient's address on the destination chain, together with any gas drop. Nothing goes back to the source chain or to the sender's wallet.
 
 Surface this in your interface. A user who sent one token and got a different one back will otherwise open a support ticket.
 

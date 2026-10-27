@@ -58,7 +58,7 @@ const tx = await swapFromEvm(
 - **On a gasless quote, `swapFromEvm` returns an order hash string, not a transaction.** Branch on `quote.gasless`.
 - **ERC20 inputs need an allowance against the Mayan Forwarder**, available as `addresses.MAYAN_FORWARDER_CONTRACT`, or an EIP-2612 permit.
 - **Read `protocolBps` off the quote rather than hardcoding a fee.**
-- **Import the SDK as ESM.** It loads ESM-only dependencies at import time, so `require()` needs Node 20.19+ or 22.12+.
+- **Import the SDK as ESM.** It needs Node 22+, and it loads ESM-only dependencies at import time, so `require()` needs Node 22.12+.
 - **Never invent a parameter.** If it is not in the docs, fetch the page and check.
 
 ## Displaying a quote to a user

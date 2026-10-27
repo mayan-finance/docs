@@ -27,7 +27,6 @@ Every chain Mayan supports, with the identifiers you pass to the API and the con
 | Unichain | `unichain` | 44 | 130 |
 | HyperEVM | `hyperevm` | 47 | 999 |
 | Monad | `monad` | 48 | 143 |
-| Fogo | `fogo` | 51 | n/a |
 | HyperCore | `hypercore` | 65000 | n/a |
 
 Support differs by direction. `GET https://sia.mayan.finance/v10/init` returns the live list with `originActive` and `destinationActive` per chain. Read it rather than assuming a chain works both ways.
@@ -81,10 +80,11 @@ See [Deposit Addresses](/features/deposit-addresses).
 
 | Contract | Chain | Address |
 | --- | --- | --- |
-| Bridge | Arbitrum | `0x2df1c51e09aecf9cacb7bc98cb1742757f163df7` |
-| Deposit processor | Arbitrum | `0xdDd77e62C848C3334f1148d4F1457FC59ede4E4B` |
-| Withdraw processor | Arbitrum | `0xe087f468efaece33b6b9b15c9448b8268bc3efe4` |
 | Deposit processor | HyperEVM | `0x56032241c0adab58a29b13e94fb595a4bc414e33` |
+| Withdraw processor | Arbitrum | `0xe087f468efaece33b6b9b15c9448b8268bc3efe4` |
+| Hyperliquid Bridge2 | Arbitrum | `0x2df1c51e09aecf9cacb7bc98cb1742757f163df7` |
+
+Deposits go through the HyperEVM deposit processor, and withdrawals go through the Arbitrum withdraw processor. Bridge2 is Hyperliquid's own USDC bridge on Arbitrum, not a Mayan contract.
 
 See [HyperCore Deposit & Withdraw](/integration/hyperliquid).
 

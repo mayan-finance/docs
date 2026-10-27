@@ -17,7 +17,7 @@ Going straight to the [Quote API](/integration/quote-api) is also supported, and
 npm install --save @mayanfinance/swap-sdk
 ```
 
-**Requirements.** Node 20.19 or later, or 22.12 or later, if you consume the package with `require()`. The SDK eagerly loads ESM-only dependencies at import time, so on older Node a CommonJS `require` throws `ERR_REQUIRE_ESM` and the package fails to load regardless of which chains you use. Importing as ESM works on any modern runtime.
+**Requirements.** The SDK needs Node 22 or later, because its Sui dependency does. If you consume the package with `require()`, use 22.12 or later. The SDK eagerly loads ESM-only dependencies at import time, so on older Node a CommonJS `require` throws `ERR_REQUIRE_ESM` and the package fails to load regardless of which chains you use.
 
 ## The shape of an integration
 
