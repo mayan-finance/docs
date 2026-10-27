@@ -103,7 +103,7 @@ The table above is a convenience snapshot. The authoritative, live list, with cu
 
 Mayan takes a small settlement cost from each deposit to pay for gas. On EVM chains it covers the swap transaction and, on the first deposit on each chain, the deployment of the user's wallet. On Solana it is a flat fee of about 0.004 SOL, and USDC, USDT and WETH sent cross-chain from Solana are not charged. The cost is capped at 5% of the deposit, and quotes requested with `mpsDeposit: true` already show the amount after it is deducted.
 
-Any referrer fee you set on the quote is charged on top of this cost and is saved on the deposit address. The [Quote API](/integration/quote-api#deposit-address-mpsdeposit) page explains how it is applied.
+Any referrer fee you set on the quote is charged on top of this cost and is saved on the deposit address. It is not charged on a Solana deposit swapped into another token on Solana, or on a deposit that is already the destination token on the destination chain. The [Quote API](/integration/quote-api#deposit-address-mpsdeposit) page explains where it is paid, and [`GET /swaps`](/payment-service/api-reference#list-swaps) shows the referrer on each settlement.
 
 ## Unsettled funds
 

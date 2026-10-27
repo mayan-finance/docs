@@ -203,7 +203,15 @@ Deposit-address quotes are priced on the deposit minus Mayan's settlement cost. 
 
 A quote that carries `mpsDepositAddress` is meant to be paid by a transfer to that address. To swap directly, request the quote without `mpsDeposit`.
 
-The `referrer` and `referrerBps` (or `referrers`) sent with the quote are saved on the deposit address and apply to every deposit settled from it, up to 200 bps. Each new quote replaces them, so send the same referrer every time, because a quote without one removes it. Use a referrer address of the same type as the deposit address, which means a `0x…` address for EVM sources and a Solana address for Solana.
+The `referrer` and `referrerBps` (or `referrers`) sent with the quote are saved on the deposit address and apply to the deposits swapped from it, up to 200 bps. Each new quote replaces them, so send the same referrer every time, because a quote without one removes it. Use a referrer address of the same type as the deposit address, which means a `0x…` address for EVM sources and a Solana address for Solana. Each [`GET /swaps`](/payment-service/api-reference#list-swaps) item reports the referrer saved on its deposit address.
+
+The referrer fee is paid to the referrer, never to `destinationAddress`, and only when the deposit is swapped:
+
+- **Swift and mono-chain swaps** pay it on the deposit's chain. On EVM chains it is credited to the referrer in Mayan's fee manager contract, which pays it out. On Solana it is sent when the order unlocks to the referrer's token account for USDC, USDT or WETH. A single Solana `referrer` needs that token account to exist, otherwise the fee is not paid. A `referrers` list does not need it.
+- **Fast MCTP** settlements pay it in USDC on the destination chain. They carry a referrer only when it is a single EVM referrer of at most 100 bps and the destination is an EVM chain.
+- **No referrer fee** is charged on a Solana deposit swapped into another token on Solana, or on a deposit that is already the destination token on the destination chain, which is delivered as a plain transfer.
+
+A `referrers` list is paid only through Swift and mono-chain routes. A deposit that neither route can settle is retried and ends as `dead`, instead of being swapped without the fee.
 
 <Note>
   The [Mayan SDK](https://github.com/mayan-finance/swap-sdk) (v15.2.2+) exposes this as `fetchQuote` options `mpsDeposit` and `mpsUserId`, and reads it back as `quote.mpsDepositAddress`. If you call the API directly, send `sdkVersion` `15_2_2` or later, or no address is returned.
