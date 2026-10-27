@@ -58,6 +58,7 @@ API error responses use the same fields without `retryable`, wrapped as `{ "erro
 | `NOT_CONFIGURED` | no | A server feature is not configured |
 | `NOT_FOUND` | no | Resource does not exist |
 | `INSUFFICIENT_BALANCE` | yes | Relayer/wallet lacked funds to send the tx |
+| `AMOUNT_TOO_SMALL` | yes | Deposit value is below what the route allows; a later deposit can push it over |
 | `FEE_NOT_COVERED` | yes | Collected fee does not cover settlement cost |
 | `NO_ROUTE` | yes | No quote/route available for this pair right now |
 | `QUOTE_INVALID` | yes | A quote was returned but failed validation |
@@ -149,6 +150,9 @@ GET /swaps?limit=20&cursor=<ISO timestamp>
       "destChain": "30",
       "destWallet": "0x...",
       "destToken": "0x...",
+      "referrerAddress": "0x...",
+      "referrerBps": 15,
+      "chainReferrers": null,
       "createdAt": "2026-04-03T00:00:00.000Z",
       "updatedAt": "2026-04-03T00:01:00.000Z"
     }
@@ -160,6 +164,7 @@ GET /swaps?limit=20&cursor=<ISO timestamp>
 - `chainId` is the **Wormhole chain ID** the funds are on; `tokenAddress` is the token being settled.
 - `amount` is a **best-effort snapshot** for display (raw smallest-unit string, or `null` for a request-indexed settlement). The actual settled amount is the wallet's live balance at swap time.
 - `error` is `null` unless the item is failing/deferred. A non-null `error` never means success.
+- `referrerAddress`, `referrerBps` and `chainReferrers` are the referrer config saved on the deposit address (from the quote's `referrer`/`referrerBps` or `referrers`) for the item's source chain type. A single referrer fills `referrerAddress` and `referrerBps`. A split list fills `chainReferrers` with that chain's list only (`{ "evm": [...] }` or `{ "solana": [...] }`). Unused fields are `null`. They show the configured rate, not the fee amount paid, and follow the address's current config.
 - See [Swap Statuses](/payment-service/statuses) for `status`/`phase`/`category`/`terminal`, and `swapTxHash` for the settlement transaction (view it on [Mayan Explorer](https://explorer.mayan.finance/)).
 
 ---
@@ -262,9 +267,9 @@ GET /source-config
       "kind": "svm",
       "tokens": [
         { "address": "11111111111111111111111111111111", "symbol": "SOL", "standard": "native", "minDeposit": "0.11789088", "decimals": 9 },
-        { "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "symbol": "USDC", "standard": "spl", "minDeposit": "1", "decimals": 6 },
-        { "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "standard": "spl", "minDeposit": "1", "decimals": 6 },
-        { "address": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", "symbol": "WETH", "standard": "spl", "minDeposit": "0.0004", "decimals": 8 },
+        { "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "symbol": "USDC", "standard": "spl", "minDeposit": "1.5", "decimals": 6 },
+        { "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "standard": "spl", "minDeposit": "1.5", "decimals": 6 },
+        { "address": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", "symbol": "WETH", "standard": "spl", "minDeposit": "0.0006", "decimals": 8 },
         { "address": "So11111111111111111111111111111111111111112", "symbol": "WSOL", "standard": "spl", "minDeposit": "0.117", "decimals": 9 }
       ]
     }
