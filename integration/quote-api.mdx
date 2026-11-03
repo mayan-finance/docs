@@ -187,6 +187,33 @@ The following table shows the common fields of response:
   - `3`: Exact-out. The user is guaranteed to receive exactly `expectedAmountOut`.
 </Tip>
 
+### Amount limits
+
+When the amount is too small or too large for every requested route, the request fails with HTTP `406`:
+
+```json
+{
+  "code": "AMOUNT_TOO_LARGE",
+  "msg": "Amount too large (max ~740 ETH)",
+  "data": {
+    "maxAmountIn": 740
+  }
+}
+```
+
+| Code | Route | Meaning |
+| --- | --- | --- |
+| `AMOUNT_TOO_SMALL` | Any | Below the minimum. `data.minAmountIn` is the minimum. |
+| `AMOUNT_TOO_LARGE` | [Swift](/architecture/swift) | Above what Swift can carry right now. `data.maxAmountIn` is the maximum, rounded down. |
+| `ALLOWANCE_TOO_LOW` | Fast MCTP | Above Circle's current CCTP fast transfer allowance. |
+| `BRIDGE_LIMIT_EXCEEDED` | MCTP, Fast MCTP | Above Circle's CCTP limit. `msg` states the limit. |
+
+Amounts are in the input token, like `amountIn`. When several routes fail, you get the error listed first.
+
+The Swift maximum changes over time and is not reserved, so request a fresh quote at the amount the user enters rather than caching it.
+
+The [SDK](https://github.com/mayan-finance/swap-sdk)'s `fetchQuote` throws the same `code` and `data`, with `msg` as `message`.
+
 ### Deposit address (`mpsDeposit`)
 
 Pass `mpsDeposit: true` to make a quote **fundable by a plain transfer**. On eligible quotes the response carries an `mpsDepositAddress`, a deterministic address on the _source_ chain, plus `mpsIntegratorId` and `mpsUserId`. When the payer simply sends the input token to that address, Mayan detects the deposit and settles the swap to `destinationAddress` on the destination chain, with **no transaction to sign** and no SDK swap call. This is the recommended way to obtain a [deposit address](/features/deposit-addresses). The quote endpoint derives it for you inline, so there is no separate address-generation call to make.
