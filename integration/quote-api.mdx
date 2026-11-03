@@ -189,7 +189,7 @@ The following table shows the common fields of response:
 
 ### Amount limits
 
-When no requested route can quote the amount because it is too small or too large, the request fails with HTTP `406`. For [Swift](/architecture/swift), the body tells you the nearest amount that would quote:
+When the amount is too small or too large for every requested route, the request fails with HTTP `406`:
 
 ```json
 {
@@ -201,18 +201,16 @@ When no requested route can quote the amount because it is too small or too larg
 }
 ```
 
-| Code | Route | `data` field | Meaning |
-| --- | --- | --- | --- |
-| `AMOUNT_TOO_SMALL` | Any | `minAmountIn` | The amount is below the minimum. Retry with at least `minAmountIn`. |
-| `AMOUNT_TOO_LARGE` | Swift | `maxAmountIn` | The amount is above what Swift can carry right now. Retry with at most `maxAmountIn`. |
-| `BRIDGE_LIMIT_EXCEEDED` | MCTP, Fast MCTP | None | The amount is above Circle's CCTP limit for the transfer. `msg` carries the limit in the input token, for example `CCTPv2 does not have enough capacity for this amount. Max per swap: 10000000`. Wormhole Swap returns the same code for its bridge limit. |
-| `ALLOWANCE_TOO_LOW` | Fast MCTP | None | The amount is above Circle's current fast transfer allowance. |
+| Code | Route | Meaning |
+| --- | --- | --- |
+| `AMOUNT_TOO_SMALL` | Any | Below the minimum. `data.minAmountIn` is the minimum. |
+| `AMOUNT_TOO_LARGE` | [Swift](/architecture/swift) | Above what Swift can carry right now. `data.maxAmountIn` is the maximum, rounded down. |
+| `ALLOWANCE_TOO_LOW` | Fast MCTP | Above Circle's current CCTP fast transfer allowance. |
+| `BRIDGE_LIMIT_EXCEEDED` | MCTP, Fast MCTP | Above Circle's CCTP limit. `msg` states the limit. |
 
-`minAmountIn` and `maxAmountIn` are in the input token and in human-readable units, like `amountIn`. `maxAmountIn` is rounded down.
+Amounts are in the input token, like `amountIn`. When several routes fail, you get the error listed first.
 
-The Swift maximum changes over time and is not reserved for the user, so it can drop between the quote and the swap. Use it to guide the amount the user enters, then request a fresh quote at that amount rather than caching the limit.
-
-When several routes fail, the response carries one error, picked in this order: `AMOUNT_TOO_SMALL`, `AMOUNT_TOO_LARGE`, `ALLOWANCE_TOO_LOW`, `BRIDGE_LIMIT_EXCEEDED`, `ROUTE_NOT_FOUND`. A request that includes Swift therefore reports Swift's `maxAmountIn`, even where MCTP or Fast MCTP can carry more. Quote those routes on their own to see their limits.
+The Swift maximum changes over time and is not reserved, so request a fresh quote at the amount the user enters rather than caching it.
 
 The [SDK](https://github.com/mayan-finance/swap-sdk)'s `fetchQuote` throws the same `code` and `data`, with `msg` as `message`.
 
