@@ -265,15 +265,18 @@ To get the aggregated list of tokens from all chains remove `chain` from the que
 
 ### Supported Chains
 
-#### `GET` `sia.mayan.finance/v10/init`
+#### `GET` `price-api.mayan.finance/v3/chains`
 
 Returns configuration for every supported chain, including whether it can be used as an origin or destination chain.
+
+<Card title="Swagger UI" color="#83E72E" icon="circle-s" horizontal href="https://price-api.mayan.finance/swagger/#/default/ChainsController_getChains">
+</Card>
 
 #### Example:
 
 ```powershell
 curl -X 'GET' \
-  'https://sia.mayan.finance/v10/init' \
+  'https://price-api.mayan.finance/v3/chains' \
   -H 'accept: application/json'
 ```
 
