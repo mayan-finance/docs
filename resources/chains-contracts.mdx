@@ -29,7 +29,7 @@ Every chain Mayan supports, with the identifiers you pass to the API and the con
 | Monad | `monad` | 48 | 143 |
 | HyperCore | `hypercore` | 65000 | n/a |
 
-Support differs by direction. `GET https://sia.mayan.finance/v10/init` returns the live list with `originActive` and `destinationActive` per chain. Read it rather than assuming a chain works both ways.
+Support differs by direction. `GET https://price-api.mayan.finance/v3/chains` returns the live list with `originActive` and `destinationActive` per chain. Read it rather than assuming a chain works both ways.
 
 ## EVM contracts
 
@@ -94,7 +94,7 @@ See [HyperCore Deposit & Withdraw](/integration/hyperliquid).
 | --- | --- |
 | Quote API | `https://price-api.mayan.finance/v3` |
 | Explorer API | `https://explorer-api.mayan.finance/v3` |
-| Chain and token config | `https://sia.mayan.finance/v10/init` |
+| Supported chains | `https://price-api.mayan.finance/v3/chains` |
 
 ## Tokens
 
