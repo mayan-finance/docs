@@ -28,25 +28,21 @@ Show `clientRelayerFeeSuccess` if you display a cost breakdown. It is already th
 
 ## Earning as an integrator
 
-Set a `referrer` address and a `referrerBps` on the quote, then pass the matching `referrerAddresses` at swap time. The fee is collected onchain.
+Pass `referrers` as the second argument to `fetchQuote`, with your wallet on each network and its rate in basis points, then pass the same object as `referrerAddresses` at swap time. The fee is collected onchain.
 
 ```typescript
-const quotes = await fetchQuote({
-  // ...
-  referrer: "YOUR_SOLANA_ADDRESS",
-  referrerBps: 5,
-});
+const referrers = {
+  evm: [{ address: "YOUR_EVM_ADDRESS", bps: 5 }],
+  solana: [{ address: "YOUR_SOLANA_ADDRESS", bps: 5 }],
+  sui: [{ address: "YOUR_SUI_ADDRESS", bps: 5 }],
+};
+
+const quotes = await fetchQuote({ /* ... */ }, { referrers });
 ```
 
-Always pass your **Solana** address as `referrer`, whatever the source and destination chains, including EVM to EVM.
+Each route pays the fee on one chain, shown in the table below, to your wallet for that network. List a wallet for every network you support, because a route that pays on a network without one carries no referrer fee. This needs SDK v16.1.0 or later. On older versions, a `referrers` request is quoted only on Swift and on same-chain swaps that do not start on Solana.
 
-`referrerAddresses` is keyed by network type, because the address that receives the fee depends on which chain it settles on:
-
-```typescript
-{ evm: "...", solana: "...", sui: "..." }
-```
-
-Pass the full object at swap time. The SDK picks the right wallet for the route.
+The `referrer` and `referrerBps` quote parameters still work. Pass your Solana address as `referrer`, then pass `{ evm, solana, sui }` with one address per network as `referrerAddresses` at swap time, and the SDK picks the right wallet for the route. Do not combine them with `referrers`.
 
 ## Where the fee is paid
 
@@ -63,7 +59,7 @@ Two cases earn nothing. On MCTP, a plain USDC to USDC transfer has no destinatio
 
 ### Setting the rate
 
-On Swift, MCTP and Fast MCTP, set the rate with `referrerBps` on the quote request.
+On Swift, MCTP and Fast MCTP, the rate is the `bps` of your wallet in `referrers`, or `referrerBps` when you use `referrer`.
 
 On Wormhole Swap the rate is set onchain instead. Use [Referrer Fee Management](https://explorer.mayan.finance/referrer-fee) to set it against your Solana address.
 
@@ -96,7 +92,7 @@ To track all of this, sign in with your referrer wallet, EVM or Solana, at [expl
 
 ## Splitting across wallets
 
-Pass a `referrers` object to `fetchQuote` instead, with a bps share per wallet, then pass the same object at swap time. The SDK throws if it does not match the quote. See [Fee Splitting](/build/sdk/fee-splitting).
+To split the fee on a network, list several wallets for it in `referrers`, each with its own bps share, then pass the same object at swap time. The SDK throws if it does not match the quote. See [Fee Splitting](/build/sdk/fee-splitting).
 
 ## Next steps
 
@@ -106,6 +102,6 @@ Pass a `referrers` object to `fetchQuote` instead, with a bps share per wallet, 
   </Card>
 
   <Card title="Fetching Quotes" icon="magnifying-glass" href="/build/sdk/fetching-quotes">
-    Setting `referrer` and `referrerBps` on the quote.
+    Setting `referrers` on the quote.
   </Card>
 </CardGroup>

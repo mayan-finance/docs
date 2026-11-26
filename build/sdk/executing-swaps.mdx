@@ -15,18 +15,44 @@ Hand a quote to the function for its source chain. The user signs once, and deli
       quotes[0],
       swapperAddress,            // must match signer.getAddress()
       destinationWalletAddress,
-      referrerAddresses,         // { evm, solana, sui } or null
+      referrerAddresses,         // the quote's referrers, or null
       signer,                    // ethers v6 Signer with provider
       permit,                    // Erc20Permit or null
       overrides,                 // ethers Overrides or null
       payload,                   // Buffer | Uint8Array or null
-      options,                   // { swiftRefundAddress?, apiKey? }, optional
+      options,                   // { evmProvider, refundAddress?, apiKey?, includeAllowanceTx? }
     );
     ```
 
-    **ERC20 allowance.** Approve the Mayan Forwarder contract before swapping an ERC20 input. The address is available as `addresses.MAYAN_FORWARDER_CONTRACT`.
+    `options.evmProvider` is required. Pass an ethers `JsonRpcProvider` on the source chain, from your own RPC endpoint. The call throws if it is missing or on a different chain than the signer.
 
-    Alternatively, pass an [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) permit if the input token supports it:
+    **ERC20 allowance.** Approve the Mayan Forwarder contract before swapping an ERC20 input. The address is available as `addresses.MAYAN_FORWARDER_CONTRACT`. The SDK can do this for you:
+
+    ```typescript
+    import {
+      isEvmSwapAllowanceEnough,
+      signEvmSwapPermit,
+      getEvmSwapApproveTxs,
+    } from "@mayanfinance/swap-sdk";
+    
+    let permit = null;
+    if (!(await isEvmSwapAllowanceEnough(quote, swapperAddress, evmProvider))) {
+      permit = await signEvmSwapPermit(quote, signer);
+      if (!permit) {
+        for (const tx of await getEvmSwapApproveTxs(quote, swapperAddress, evmProvider)) {
+          await (await signer.sendTransaction(tx)).wait();
+        }
+      }
+    }
+    ```
+
+    `signEvmSwapPermit` signs an [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) permit, which costs no gas, and returns `null` when the token does not support one. `getEvmSwapApproveTxs` then returns the approve transactions to send, usually one, or two for USDT on Ethereum when its current allowance is not zero. Pass the permit to `swapFromEvm` as `permit`. The provider must be on the quote's source chain.
+
+    To sign the permit outside the SDK, `getEvmSwapPermitParams(quote, owner, provider)` returns it as EIP-712 typed data, and `getEvmSwapApproval(quote, owner, provider)` returns the spender and amount behind it.
+
+    With `includeAllowanceTx: true` in `options`, a wallet that supports atomic batches ([EIP-5792](https://eips.ethereum.org/EIPS/eip-5792)) sends the approval and the swap together, and `swapFromEvm` returns the transaction hash as a string. The SDK throws if the wallet does not support atomic batching.
+
+    The permit passed to `swapFromEvm` has this shape:
 
     ```typescript
     {
@@ -72,7 +98,7 @@ Hand a quote to the function for its source chain. The user signs once, and deli
     const digest = res.Transaction?.digest ?? res.FailedTransaction?.digest;
     ```
 
-    Returns a Transaction containing the required Move calls, which you sign and broadcast yourself.
+    Returns a Transaction containing the required Move calls, which you sign and broadcast yourself. From Sui, the SDK executes MCTP and Fast MCTP quotes. Swift quotes are not supported from Sui.
 
     **Sui requires `@mysten/sui` v2 and a Core API client** as of SDK v15. A v1 `SuiClient` throws `core.listCoins is not a function`. `SuiGrpcClient` is recommended.
   </Tab>
@@ -80,29 +106,32 @@ Hand a quote to the function for its source chain. The user signs once, and deli
 
 ## Referrer addresses
 
-`referrerAddresses` is an object keyed by network type, because the address that receives the fee depends on which chain it settles on.
+Pass the same `referrers` object you fetched the quote with as `referrerAddresses`, or `null` if you did not set one. If you used the `referrer` and `referrerBps` quote parameters instead, pass one address per network, because the address that receives the fee depends on which chain it settles on.
 
 ```typescript
 { evm: "...", solana: "...", sui: "..." }
 ```
 
-Pass `null` until you set one up. See [fees & earning](/build/fees-earning).
+See [fees & earning](/build/fees-earning).
 
 ## Custom refund address
 
-On Swift quotes only, `swiftRefundAddress` sends a refund to a different source-chain address than the wallet that signed.
+On Swift quotes, `refundAddress` sends a refund to a different source-chain address than the wallet that signed.
 
 ```typescript
 const tx = await swapFromEvm(
   quote, swapperAddress, destinationWalletAddress, referrerAddresses,
   signer, permit, overrides, payload,
-  { swiftRefundAddress: "REFUND_WALLET_ON_SOURCE_CHAIN" },
+  { evmProvider, refundAddress: "REFUND_WALLET_ON_SOURCE_CHAIN" },
 );
 ```
 
+On Solana, pass it in the `instructionOptions` argument of `swapFromSolana`.
+
 - Request the quote with `gasless: false`. Gasless Swift orders require the refund address to match the signer, and the SDK throws otherwise.
-- Other quote types ignore it and refund to the swapper wallet. Filter on `quote.type === "SWIFT"` if this matters to your flow.
+- MCTP and Fast MCTP refund to `destinationAddress` on the destination chain. Wormhole Swap and same-chain swaps refund to the swapper wallet. On these quote types the SDK throws if `refundAddress` names any other wallet.
 - The address must be a valid wallet on the source chain. Zero addresses are rejected.
+- `swiftRefundAddress`, the previous name of this option, is still accepted on Swift quotes. If you pass both, they must name the same wallet.
 
 See [refunds](/how-mayan-works/refunds).
 

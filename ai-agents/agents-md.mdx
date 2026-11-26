@@ -37,6 +37,8 @@ const quotes = await fetchQuote({
   toChain: "solana",
   toToken: SOL,
   slippageBps: "auto",
+  destinationAddress,
+  swapperAddress,
 });
 
 const tx = await swapFromEvm(
@@ -46,6 +48,7 @@ const tx = await swapFromEvm(
     null,    // permit
     null,    // overrides
     null,    // payload
+    { evmProvider },  // ethers JsonRpcProvider on the source chain
   );
 ```
 
@@ -56,6 +59,8 @@ const tx = await swapFromEvm(
 - **Amounts are base units.** `amountIn64` is a string. `amountIn` takes a human-readable number instead.
 - **Do not assume every quote in the array is the same route type.** Check `type` on the quote you selected before building anything.
 - **On a gasless quote, `swapFromEvm` returns an order hash string, not a transaction.** Branch on `quote.gasless`.
+- **`swapFromEvm` and `getSwapFromEvmTxPayload` require `options.evmProvider`**, an ethers `JsonRpcProvider` on the source chain.
+- **Pass `destinationAddress` and `swapperAddress` to `fetchQuote`**, and the same addresses to the swap function.
 - **ERC20 inputs need an allowance against the Mayan Forwarder**, available as `addresses.MAYAN_FORWARDER_CONTRACT`, or an EIP-2612 permit.
 - **Read `protocolBps` off the quote rather than hardcoding a fee.**
 - **Import the SDK as ESM.** It needs Node 22+, and it loads ESM-only dependencies at import time, so `require()` needs Node 22.12+.

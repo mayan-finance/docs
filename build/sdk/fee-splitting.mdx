@@ -4,7 +4,7 @@ description: "Split the referrer fee across several wallets."
 "og:title": "Fee Splitting"
 ---
 
-A standard integration sets one `referrer` address and one `referrerBps`. When the fee needs to go to more than one wallet, pass a `referrers` object instead.
+A standard integration lists one wallet per network in `referrers`. When the fee on a network needs to go to more than one wallet, list several wallets for that network.
 
 ## Setting it up
 
@@ -23,10 +23,12 @@ Pass the same object as `referrerAddresses` at swap time.
 
 ## Rules
 
-- **Do not mix the two forms.** The SDK throws if `referrer` or `referrerBps` is set alongside `referrers`.
+- **Do not mix the two forms.** The SDK throws if `referrerBps` is set alongside `referrers`, and the quote request fails with `REFERRER_CONFLICT` if `referrer` is.
 - **The objects have to match.** The SDK throws at swap time if the object you pass differs from the one the quote was fetched with.
-- **POST flow only.** Multi-wallet referrers are not available on the `GET` quote endpoint.
-- **Fewer routes are quoted.** With `referrers` set, quotes come back only for Swift and for same-chain swaps that do not start on Solana. MCTP, Fast MCTP, Wormhole Swap, same-chain swaps from Solana and HyperCore withdrawals are not offered.
+- **POST flow only in the SDK.** `generateFetchQuoteUrl`, which builds a `GET` URL, throws when `referrers` is set. Use `fetchQuote` or `generateFetchQuoteUrlAndBody`.
+- **Each list is limited.** A network takes up to 10 wallets, each `bps` is an integer from 0 to 255, and an address can appear only once. A list that breaks these rules, or holds an address that is not valid for its network, fails the quote.
+- **Fewer routes are quoted.** A split on the source network is offered on Swift and on same-chain swaps, except same-chain swaps from Solana. MCTP and Fast MCTP pay on the destination network, and are not offered when that network's list holds more than one wallet. The route's maximum rate applies to the total of the split.
+- **Use SDK v16.1.0 or later.** On older versions, a `referrers` list is always paid through an address derived from the list, even with one wallet per network, so it is quoted only on Swift and on same-chain swaps that do not start on Solana.
 
 ## Next steps
 

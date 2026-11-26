@@ -63,6 +63,8 @@ const quotes = await fetchQuote({
   toToken: HC_USDC.spot, // or HC_USDC.perps
   toChain: 'hypercore',
   slippageBps: 'auto',
+  destinationAddress: wallet.address,
+  swapperAddress: wallet.address,
 });
 
 const quote = quotes[0];
@@ -94,6 +96,7 @@ const res = (await swapFromEvm(
   null,              // permit
   null,              // overrides
   null,              // payload — must be null for HyperCore deposits
+  { evmProvider },   // ethers JsonRpcProvider on the source chain
 )) as TransactionResponse;
 
 console.log('source tx:', res.hash);
