@@ -45,6 +45,7 @@ curl -X 'GET' 'https://price-api.mayan.finance/v3/quote?amountIn=100&fromToken=0
 | sdkVersion | String | Yes | SDK version in `major_minor_patch` format, for example `16_1_0`. Requests without it fail with `406 SDK_VERSION_TOO_OLD`. Some routes only appear for recent versions, so send the latest. |
 | referrer | String | No | Referrer Solana address that receives the referrer fee |
 | referrerBps | Number | No | Default is 0. The basis points the integrator earns through the referral program |
+| referrers | Object | No | Fee wallets per network, `{ evm, solana, sui }`, each a list of `{ address, bps }`. In a `GET` query string, use bracket notation, for example `referrers[evm][0][address]=0x…&referrers[evm][0][bps]=5`. Cannot be combined with `referrer`. See [Fees & Earning](/build/fees-earning). |
 | gasDrop | Number | No | Default is 0. Amount of native gas to deliver to the user on the destination chain |
 | fullList | Boolean | No | Default is `false`. Enables returning all available quote options instead of the default limited (fastest and best-return) results |
 | destinationAddress | String | No | Helps provide a more accurate quote, for example by checking whether the Solana ATA exists. |
@@ -234,11 +235,11 @@ The `referrer` and `referrerBps` (or `referrers`) sent with the quote are saved 
 
 The referrer fee is paid to the referrer, never to `destinationAddress`, and only when the deposit is swapped:
 
-- **Swift and mono-chain swaps** pay it on the deposit's chain. On EVM chains it is credited to the referrer in Mayan's fee manager contract, which pays it out. On Solana it is sent when the order unlocks to the referrer's token account for USDC, USDT or WETH. A single Solana `referrer` needs that token account to exist, otherwise the fee is not paid. A `referrers` list does not need it.
+- **Swift and mono-chain swaps** pay it on the deposit's chain. On EVM chains it is credited to the referrer in Mayan's fee manager contract, which pays it out. On Solana it is sent when the order unlocks to the referrer's token account for USDC, USDT or WETH. A single Solana `referrer` needs that token account to exist, otherwise the fee is lost. A `referrers` list with one wallet is saved as a single referrer and needs it too. A list with two or more wallets does not.
 - **Fast MCTP** settlements pay it in USDC on the destination chain. They carry a referrer only when it is a single EVM referrer of at most 100 bps and the destination is an EVM chain.
 - **No referrer fee** is charged on a Solana deposit swapped into another token on Solana, or on a deposit that is already the destination token on the destination chain, which is delivered as a plain transfer.
 
-A `referrers` list is paid only through Swift and mono-chain routes. A deposit that neither route can settle is retried and ends as `dead`, instead of being swapped without the fee.
+A `referrers` list with two or more wallets is paid only through Swift and mono-chain routes. A deposit that neither route can settle is retried and ends as `dead`, instead of being swapped without the fee.
 
 <Note>
   The [Mayan SDK](https://github.com/mayan-finance/swap-sdk) (v15.2.2+) exposes this as `fetchQuote` options `mpsDeposit` and `mpsUserId`, and reads it back as `quote.mpsDepositAddress`. If you call the API directly, send `sdkVersion` `15_2_2` or later, or no address is returned.

@@ -18,13 +18,12 @@ const quotes = await fetchQuote(
     toChain: "solana",
     slippageBps: "auto",
     gasDrop: 0.04,                   // optional
-    referrer: "YOUR_SOLANA_ADDRESS", // optional
-    referrerBps: 5,                  // optional
     destinationAddress,              // optional
     swapperAddress,                  // optional
   },
   {
     apiKey: "YOUR_API_KEY",          // optional, second argument
+    referrers,                       // optional
   }
 );
 ```
@@ -38,12 +37,12 @@ const quotes = await fetchQuote(
 | `fromToken` / `toToken` | `string` | Yes | Contract address. Use the zero address for native tokens. |
 | `slippageBps` | `number \| "auto"` | Yes | `"auto"` lets Mayan pick a safe level for the pair. A number is basis points, so `300` is 3%. The response always returns a number. |
 | `gasDrop` | `number` | No | Native gas to deliver on the destination chain. See the ceilings below. |
-| `referrer` | `string` | No | Wallet address that receives the referrer fee. |
-| `referrerBps` | `number` | No | Your share in basis points. |
+| `referrer` | `string` | No | Wallet address that receives the referrer fee. Prefer `referrers` in the second argument. See [fees & earning](/build/fees-earning). |
+| `referrerBps` | `number` | No | Your share in basis points, used with `referrer`. |
 | `destinationAddress` | `string` | No | The recipient on the destination chain. Improves quote accuracy, for example by checking whether a Solana ATA exists. Pass it, and the same address to the swap function. |
 | `swapperAddress` | `string` | No | The wallet that signs the swap on the source chain. Pass it, and the same address to the swap function. |
 
-As of v15, `fetchQuote` uses HTTP `POST` by default. The `GET` endpoint still works, but some options are POST-only, including `extraInstructions` and multi-wallet `referrers`.
+As of v15, `fetchQuote` uses HTTP `POST` by default. The `GET` endpoint still works, but `generateFetchQuoteUrl`, which builds its URL, throws on some options, including `extraInstructions` and `referrers`.
 
 ## Reading the response
 

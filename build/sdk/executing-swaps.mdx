@@ -15,7 +15,7 @@ Hand a quote to the function for its source chain. The user signs once, and deli
       quotes[0],
       swapperAddress,            // must match signer.getAddress()
       destinationWalletAddress,
-      referrerAddresses,         // { evm, solana, sui } or null
+      referrerAddresses,         // the quote's referrers, or null
       signer,                    // ethers v6 Signer with provider
       permit,                    // Erc20Permit or null
       overrides,                 // ethers Overrides or null
@@ -106,13 +106,13 @@ Hand a quote to the function for its source chain. The user signs once, and deli
 
 ## Referrer addresses
 
-`referrerAddresses` is an object keyed by network type, because the address that receives the fee depends on which chain it settles on.
+Pass the same `referrers` object you fetched the quote with as `referrerAddresses`, or `null` if you did not set one. If you used the `referrer` and `referrerBps` quote parameters instead, pass one address per network, because the address that receives the fee depends on which chain it settles on.
 
 ```typescript
 { evm: "...", solana: "...", sui: "..." }
 ```
 
-Pass `null` until you set one up. See [fees & earning](/build/fees-earning).
+See [fees & earning](/build/fees-earning).
 
 ## Custom refund address
 
@@ -129,7 +129,6 @@ const tx = await swapFromEvm(
 On Solana, pass it in the `instructionOptions` argument of `swapFromSolana`.
 
 - Request the quote with `gasless: false`. Gasless Swift orders require the refund address to match the signer, and the SDK throws otherwise.
-- On Solana, only Swift v2 quotes (`quote.swiftVersion === "V2"`) accept it.
 - MCTP and Fast MCTP refund to `destinationAddress` on the destination chain. Wormhole Swap and same-chain swaps refund to the swapper wallet. On these quote types the SDK throws if `refundAddress` names any other wallet.
 - The address must be a valid wallet on the source chain. Zero addresses are rejected.
 - `swiftRefundAddress`, the previous name of this option, is still accepted on Swift quotes. If you pass both, they must name the same wallet.
