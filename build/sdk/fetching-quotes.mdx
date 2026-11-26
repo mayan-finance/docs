@@ -20,6 +20,8 @@ const quotes = await fetchQuote(
     gasDrop: 0.04,                   // optional
     referrer: "YOUR_SOLANA_ADDRESS", // optional
     referrerBps: 5,                  // optional
+    destinationAddress,              // optional
+    swapperAddress,                  // optional
   },
   {
     apiKey: "YOUR_API_KEY",          // optional, second argument
@@ -38,7 +40,8 @@ const quotes = await fetchQuote(
 | `gasDrop` | `number` | No | Native gas to deliver on the destination chain. See the ceilings below. |
 | `referrer` | `string` | No | Wallet address that receives the referrer fee. |
 | `referrerBps` | `number` | No | Your share in basis points. |
-| `destinationAddress` | `string` | No | Improves quote accuracy, for example by checking whether a Solana ATA exists. |
+| `destinationAddress` | `string` | No | The recipient on the destination chain. Improves quote accuracy, for example by checking whether a Solana ATA exists. Pass it, and the same address to the swap function. |
+| `swapperAddress` | `string` | No | The wallet that signs the swap on the source chain. Pass it, and the same address to the swap function. |
 
 As of v15, `fetchQuote` uses HTTP `POST` by default. The `GET` endpoint still works, but some options are POST-only, including `extraInstructions` and multi-wallet `referrers`.
 
@@ -52,7 +55,7 @@ These are the fields that matter in a confirmation screen.
 | `minAmountOut` | The floor on that amount. Part of what the user signs, so the order cannot fill below it. |
 | `etaSeconds` / `clientEta` | Estimated settlement time, in seconds and as a display string. |
 | `gasDrop` | Native gas delivered on the destination chain alongside the output. |
-| `type` | The transfer method the route uses: `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. |
+| `type` | The transfer method the route uses: `SWIFT`, `MCTP`, `FAST_MCTP`, `WH`, or `MONO_CHAIN`. |
 | `swiftAuctionMode` | On Swift quotes, how the output is determined. `2` settles at or above `minAmountOut`, `3` is exact-out. See [Guaranteed Price](/features/guaranteed-price). |
 | `gasless` | Whether the user signs a message instead of a transaction. Changes what `swapFromEvm` returns. See [gasless execution](/features/gasless-execution). |
 | `deadline64` | The timestamp after which the order becomes refundable rather than fillable. See [refunds](/how-mayan-works/refunds). |

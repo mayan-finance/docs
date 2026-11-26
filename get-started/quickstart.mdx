@@ -13,7 +13,7 @@ Install the SDK, request a quote, sign one transaction, and track it to completi
 
 - Node 22 or later.
 - A wallet holding the input token on the source chain, plus enough native gas for one transaction.
-- An [ethers v6](https://docs.ethers.org/v6/)  signer connected to a provider when the source chain is EVM, or a `@solana/web3.js` connection and signing callback when it is Solana.
+- An [ethers v6](https://docs.ethers.org/v6/)  signer connected to a provider and an ethers `JsonRpcProvider` on the source chain when the source chain is EVM, or a `@solana/web3.js` connection and signing callback when it is Solana.
 
 ## Sample transaction
 
@@ -40,6 +40,8 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
       toChain: "solana",
       toToken: "0x0000000000000000000000000000000000000000",   // native SOL
       slippageBps: "auto",
+      destinationAddress,
+      swapperAddress,
     });
     
     const quote = quotes[0];
@@ -58,7 +60,7 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
     | `minAmountOut` | The floor on that amount. |
     | `etaSeconds` / `clientEta` | Estimated settlement time, in seconds and as a display string. |
     | `gasDrop` | Native gas delivered on the destination chain alongside the output. |
-    | `type` | The route the order takes: `SWIFT`, `MCTP`, `FAST_MCTP`, or `WH`. |
+    | `type` | The route the order takes: `SWIFT`, `MCTP`, `FAST_MCTP`, `WH`, or `MONO_CHAIN`. |
 
     <Note>
       On Swift quotes, `swiftAuctionMode` tells you how the output amount is determined. Mode `2` settles at or above `minAmountOut`, typically near `expectedAmountOut`. Mode `3` is exact-out, which means the user receives exactly `expectedAmountOut`. See [Guaranteed Price](/features/guaranteed-price) for which routes support it.
@@ -81,6 +83,7 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
           null,                // permit (EIP-2612), optional
           null,                // overrides (gas settings), optional
           null,                // payload, optional
+          { evmProvider },     // ethers JsonRpcProvider on the source chain
         );
         ```
       </Tab>
@@ -122,12 +125,13 @@ The steps below move **100 USDC on Arbitrum** into **SOL on Solana**. Any pair w
 
 ```typescript
 import { fetchQuote, swapFromEvm } from "@mayanfinance/swap-sdk";
-import type { Signer, TransactionResponse } from "ethers";
+import type { JsonRpcProvider, Signer, TransactionResponse } from "ethers";
 
 const EXPLORER = "https://explorer-api.mayan.finance";
 
 export async function swapUsdcToSol(
   signer: Signer,             // ethers v6 Signer connected to a provider
+  evmProvider: JsonRpcProvider, // ethers JsonRpcProvider on Arbitrum
   destinationAddress: string, // a Solana address
 ) {
   const swapperAddress = await signer.getAddress();
@@ -139,6 +143,8 @@ export async function swapUsdcToSol(
     toChain: "solana",
     toToken: "0x0000000000000000000000000000000000000000",
     slippageBps: "auto",
+    destinationAddress,
+    swapperAddress,
   });
 
   const quote = quotes[0];
@@ -157,6 +163,7 @@ export async function swapUsdcToSol(
     null,   // permit
     null,   // overrides
     null,   // payload
+    { evmProvider },
   )) as TransactionResponse;
 
   // Poll until the swap reaches a terminal status.

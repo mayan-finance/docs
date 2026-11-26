@@ -54,7 +54,7 @@ Set a `referrer` address and `referrerBps` on the quote, then pass the matching 
 
 ### Do I need to approve a token before swapping?
 
-On EVM, yes, for ERC20 inputs. Approve the Mayan Forwarder contract, available as `addresses.MAYAN_FORWARDER_CONTRACT`. If the token supports [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) you can pass a permit instead. See [executing swaps](/build/sdk/executing-swaps).
+On EVM, yes, for ERC20 inputs. Approve the Mayan Forwarder contract, available as `addresses.MAYAN_FORWARDER_CONTRACT`. If the token supports [EIP-2612](https://eips.ethereum.org/EIPS/eip-2612) you can pass a permit instead. The SDK's `isEvmSwapAllowanceEnough`, `signEvmSwapPermit` and `getEvmSwapApproveTxs` handle both. See [executing swaps](/build/sdk/executing-swaps).
 
 ### Does the user need gas on the destination chain?
 
@@ -86,7 +86,7 @@ The order was refunded. On Swift, the input may be converted into the primary lo
 
 ### Can a refund go to a different address than the one that signed?
 
-On Swift quotes only, using `swiftRefundAddress`. Request the quote with `gasless: false`, since gasless Swift orders require the refund address to match the signer. See [executing swaps](/build/sdk/executing-swaps).
+On Swift quotes only, using `refundAddress`. Request the quote with `gasless: false`, since gasless Swift orders require the refund address to match the signer. See [executing swaps](/build/sdk/executing-swaps).
 
 ### Does Mayan ever hold user funds?
 

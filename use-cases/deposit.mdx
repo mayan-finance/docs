@@ -25,6 +25,8 @@ const quotes = await fetchQuote({
   toChain: "arbitrum",
   toToken: USDC_ARBITRUM,    // the asset your app settles in
   slippageBps: "auto",
+  destinationAddress,
+  swapperAddress,
 });
 ```
 

@@ -22,6 +22,8 @@ const quotes = await fetchQuote({
   toChain: "base",
   toToken: USDC_BASE,        // same asset here, but it can change
   slippageBps: "auto",
+  destinationAddress,
+  swapperAddress,
 });
 ```
 

@@ -57,6 +57,8 @@ const quotes = await fetchQuote(
     toChain: 'base',
     toToken: USDC_BASE,
     slippageBps: 'auto',
+    destinationAddress,
+    swapperAddress,
   },
   { payload: 'true' },
 );
@@ -86,7 +88,8 @@ const tx = await swapFromEvm(
   signer,
   undefined,     // optional permit
   undefined,     // optional overrides (gas settings)
-  customPayload
+  customPayload,
+  { evmProvider }
 );
 ```
 

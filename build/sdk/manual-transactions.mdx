@@ -8,9 +8,11 @@ The swap functions build a transaction and send it. When you need to own that st
 
 ## EVM
 
-`getSwapFromEvmTxPayload` returns the transaction payload without sending it.
+`getSwapFromEvmTxPayload` returns the transaction payload without sending it. Its `options` argument is required and takes the same `evmProvider` as `swapFromEvm`, a `JsonRpcProvider` that must be on the chain you pass as `signerChainId`.
 
 For a contract-level integration, the `_forwarder` object on that payload carries the method name and parameters for calling the [Forwarder contract](/integration/forwarder-contract) directly.
+
+To estimate the gas of a swap before the user signs, call `estimateQuoteRequiredGasAprox2(quote, payload, apiKey, evmProvider)` with the same `evmProvider` you pass to the swap. It returns `estimateGas`, `gasPrice` and `requiredNative`. `estimateQuoteRequiredGasAprox` is deprecated and throws.
 
 ## Solana
 
